@@ -33,12 +33,12 @@ function humanizeNumber(
 
 export const formatTxs = Intl.NumberFormat("en-US", {
 	notation: "compact",
-	maximumFractionDigits: 0,
+	maximumFractionDigits: 2,
 }).format;
 
 export const formatAccounts = Intl.NumberFormat("en-US", {
 	notation: "compact",
-	maximumFractionDigits: 0,
+	maximumFractionDigits: 2,
 }).format;
 
 export const formatRoundtrip = Intl.NumberFormat("en-US", {

@@ -1,5 +1,8 @@
 import { createStewardAgent } from "@sodazone/ocelloids-client";
 
+const httpUrl = import.meta.env.VITE_OC_HTTP_URL;
+const apiKey = import.meta.env.VITE_OC_API_KEY;
+
 const BASE_CDN =
 	"https://cdn.jsdelivr.net/gh/sodazone/intergalactic-asset-metadata";
 const BASE_ASSETS_URL = BASE_CDN + "/v2";
@@ -33,8 +36,8 @@ const EthereumChains = [
 async function fetchNetworkInfos() {
 	const networkMap = {};
 	const steward = createStewardAgent({
-		apiKey:
-			"eyJhbGciOiJFZERTQSIsImtpZCI6Im92SFVDU3hRM0NiYkJmc01STVh1aVdjQkNZcDVydmpvamphT2J4dUxxRDQ9In0.ewogICJpc3MiOiAiYXBpLm9jZWxsb2lkcy5uZXQiLAogICJqdGkiOiAiMDEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAiLAogICJzdWIiOiAicHVibGljQG9jZWxsb2lkcyIKfQo.qKSfxo6QYGxzv40Ox7ec6kpt2aVywKmhpg6lue4jqmZyY6y3SwfT-DyX6Niv-ine5k23E0RKGQdm_MbtyPp9CA",
+		httpUrl,
+		apiKey,
 	});
 
 	async function doFetch(cursor) {
@@ -111,8 +114,9 @@ export function resolveAssetIcon(key) {
 	}
 
 	const [chainId, assetId] = key.split("|");
+	const assetPath = assetId === "" ? "native" : assetId.split(":").join("/");
 	const path =
-		`${chainId.substring(8).split(":").join("/")}/assets/${assetId.split(":").join("/")}`.toLowerCase();
+		`${chainId.substring(8).split(":").join("/")}/assets/${assetPath}`.toLowerCase();
 
 	const icon = AssetIcons.find((p) => {
 		return p.substring(0, p.lastIndexOf("/")) === path;

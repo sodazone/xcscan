@@ -12,7 +12,7 @@ function AssetIconCellRenders(params) {
 	const url = resolveAssetIcon(params.data.key);
 	const img = url
 		? `<img src="${url}" class="h-6 w-6" />`
-		: `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>`;
+		: '<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>';
 	return `<div class="flex gap-2 items-center">${img}<span>${params.value}</span></div>`;
 }
 

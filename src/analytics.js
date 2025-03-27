@@ -1,4 +1,13 @@
-const url = "http://127.0.0.1:3000/query/xcm";
+const httpUrl = import.meta.env.VITE_OC_HTTP_URL;
+const apiKey = import.meta.env.VITE_OC_API_KEY;
+
+const queryUrl = `${httpUrl}/query/xcm`;
+const headers = Object.assign(
+	{
+		"Content-Type": "application/json",
+	},
+	apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
+);
 
 export const TIME_PERIODS = {
 	monthly: {
@@ -101,11 +110,9 @@ function fill(items, { timeframe, bucket }) {
 }
 
 async function _fetch(args) {
-	const response = await fetch(url, {
+	const response = await fetch(queryUrl, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
+		headers,
 		body: JSON.stringify({
 			args,
 		}),
