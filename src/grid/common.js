@@ -10,13 +10,17 @@ function sliceMax(arr, maxElements) {
 }
 
 export function SparklineCellRenderer(params) {
+	let dataPoints = sliceMax(params.value, 25).map((v) => v.value);
+	const minPoints = 20;
+
+	while (dataPoints.length < minPoints) {
+		dataPoints.push(0);
+	}
+	
 	return drawSparkline({
 		dataset: {
-			points: sliceMax(params.value, 50)
-				.map((v) => v.value)
+			points: dataPoints
 				.join(","),
-			width: "100",
-			height: "50",
 			gap: "1",
 			type: "bar",
 		},

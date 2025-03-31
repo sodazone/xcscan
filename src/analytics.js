@@ -47,48 +47,52 @@ function timeToLocal(originalTime) {
 }
 
 function getTimeRange(timeframe, bucket) {
-	const timeframeMatch = timeframe.match(/(\d+)\s*(\w+)/);
-	const bucketMatch = bucket.match(/(\d+)\s*(\w+)/);
+    const timeframeMatch = timeframe.match(/(\d+)\s*(\w+)/);
+    const bucketMatch = bucket.match(/(\d+)\s*(\w+)/);
 
-	if (!timeframeMatch || !bucketMatch) throw new Error("Invalid format");
+    if (!timeframeMatch || !bucketMatch) throw new Error("Invalid format");
 
-	const [_, timeframeValue, timeframeUnit] = timeframeMatch;
-	const [__, bucketValue, bucketUnit] = bucketMatch;
+    const [_, timeframeValue, timeframeUnit] = timeframeMatch;
+    const [__, bucketValue, bucketUnit] = bucketMatch;
 
-	// Convert to seconds
-	const unitToSeconds = {
-		second: 1,
-		seconds: 1,
-		minute: 60,
-		minutes: 60,
-		hour: 3600,
-		hours: 3600,
-		day: 86400,
-		days: 86400,
-		week: 604800,
-		weeks: 604800,
-	};
+    // Convert to seconds
+    const unitToSeconds = {
+        second: 1,
+        seconds: 1,
+        minute: 60,
+        minutes: 60,
+        hour: 3600,
+        hours: 3600,
+        day: 86400,
+        days: 86400,
+        week: 604800,
+        weeks: 604800,
+    };
 
-	const timeframeSeconds =
-		Number(timeframeValue) * unitToSeconds[timeframeUnit.toLowerCase()];
-	const bucketSeconds =
-		Number(bucketValue) * unitToSeconds[bucketUnit.toLowerCase()];
+    const timeframeSeconds =
+        Number(timeframeValue) * unitToSeconds[timeframeUnit.toLowerCase()];
+    const bucketSeconds =
+        Number(bucketValue) * unitToSeconds[bucketUnit.toLowerCase()];
 
-	// Get current time rounded down to the bucket interval
-	const now = new Date();
-	now.setMinutes(0, 0, 0); // Round to the nearest hour
+    // Get current time and align it to the bucket size (e.g., 6 hours)
+    const now = new Date();
+    const nowTimestamp = Math.floor(now.getTime() / 1000); // Unix timestamp in seconds
 
-	const endTime = Math.floor(now.getTime() / 1000); // Unix timestamp in seconds
-	const startTime = endTime - timeframeSeconds;
+    // Align the current time to the nearest bucket size
+    const alignedStartTime = nowTimestamp - (nowTimestamp % bucketSeconds); 
+    const startTime = alignedStartTime - timeframeSeconds; // Adjust start time by the timeframe size
 
-	// Generate timestamps
-	const timestamps = [];
-	for (let t = startTime; t <= endTime; t += bucketSeconds) {
-		timestamps.push(t);
-	}
+    const endTime = alignedStartTime; // End time is the aligned current time
 
-	return { startTime, endTime, bucketSize: bucketSeconds, timestamps };
+    // Generate timestamps
+    const timestamps = [];
+    for (let t = startTime; t <= endTime; t += bucketSeconds) {
+        timestamps.push(t);
+    }
+
+    return { startTime, endTime, bucketSize: bucketSeconds, timestamps };
 }
+
 
 function fill(items, { timeframe, bucket }) {
 	const range = getTimeRange(timeframe, bucket);
