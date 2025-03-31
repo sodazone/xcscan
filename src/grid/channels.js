@@ -1,3 +1,5 @@
+import { createGrid } from "ag-grid-community";
+
 import { getTransfersByChannel } from "../analytics.js";
 import {
 	isMobile,
@@ -81,7 +83,7 @@ export function setupChannelsGrid(element) {
 		],
 	};
 
-	const grid = agGrid.createGrid(element, gridOptions);
+	const grid = createGrid(element, gridOptions);
 
 	function update(period) {
 		loadResources().then(() => {

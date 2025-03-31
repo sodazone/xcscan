@@ -1,3 +1,5 @@
+import { AreaSeries, createChart } from "lightweight-charts";
+
 import { getTransfersCount } from "./analytics.js";
 
 export function setupSeriesChart(element) {
@@ -37,8 +39,8 @@ export function setupSeriesChart(element) {
 			priceFormatter: (p) => p.toFixed(0),
 		},
 	};
-	const chart = LightweightCharts.createChart(element, chartOptions);
-	const series = chart.addSeries(LightweightCharts.AreaSeries, {
+	const chart = createChart(element, chartOptions);
+	const series = chart.addSeries(AreaSeries, {
 		lastValueVisible: false,
 		crosshairMarkerVisible: true,
 		priceLineVisible: false,

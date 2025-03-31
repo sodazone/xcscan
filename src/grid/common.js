@@ -1,3 +1,5 @@
+import { themeQuartz } from "ag-grid-community";
+
 import { loadExtraInfos } from "../extras.js";
 import { drawSparkline } from "../sparkline.js";
 
@@ -36,7 +38,7 @@ export async function loadResources() {
 			});
 }
 
-export const themeGrid = agGrid.themeQuartz.withParams({
+export const themeGrid = themeQuartz.withParams({
 	backgroundColor: "transparent",
 	foregroundColor: "rgba(255,255,255,0.8)",
 	headerTextColor: "rgba(255,255,255,0.5)",

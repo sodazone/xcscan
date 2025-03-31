@@ -1,3 +1,5 @@
+import { createGrid } from "ag-grid-community";
+
 import { getTransfersVolumeByAsset } from "../analytics.js";
 import {
 	isMobile,
@@ -71,7 +73,7 @@ export function setupAssetsGrid(element) {
 		],
 	};
 
-	const grid = agGrid.createGrid(element, gridOptions);
+	const grid = createGrid(element, gridOptions);
 
 	function update(period) {
 		loadResources().then(() => {
