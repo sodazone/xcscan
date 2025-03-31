@@ -16,11 +16,10 @@ export function SparklineCellRenderer(params) {
 	while (dataPoints.length < minPoints) {
 		dataPoints.push(0);
 	}
-	
+
 	return drawSparkline({
 		dataset: {
-			points: dataPoints
-				.join(","),
+			points: dataPoints.join(","),
 			gap: "1",
 			type: "bar",
 		},
