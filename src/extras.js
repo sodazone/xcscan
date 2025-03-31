@@ -1,7 +1,6 @@
 import { createStewardAgent } from "@sodazone/ocelloids-client";
 
-const httpUrl = import.meta.env.VITE_OC_HTTP_URL;
-const apiKey = import.meta.env.VITE_OC_API_KEY;
+import { httpUrl, apiKey } from "./env.js";
 
 const BASE_CDN =
 	"https://cdn.jsdelivr.net/gh/sodazone/intergalactic-asset-metadata";

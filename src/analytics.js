@@ -1,5 +1,4 @@
-const httpUrl = import.meta.env.VITE_OC_HTTP_URL;
-const apiKey = import.meta.env.VITE_OC_API_KEY;
+import { httpUrl, apiKey } from "./env.js";
 
 const queryUrl = `${httpUrl}/query/xcm`;
 const headers = Object.assign(

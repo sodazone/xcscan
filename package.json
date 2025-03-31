@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "vite build && env $(cat .env.production | xargs) npx wrangler pages deploy"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@tailwindcss/vite": "^4.0.14",
     "tailwindcss": "^4.0.14",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "wrangler": "^4.6.0"
   },
   "dependencies": {
     "@sodazone/ocelloids-client": "^2.4.5"
