@@ -19,6 +19,8 @@ export function drawSparkline(conf) {
 			"viewBox",
 			`0 0 ${defaultOpts.width} ${defaultOpts.height}`,
 		);
+		svg.setAttribute("width", "100%");
+		svg.setAttribute("height", "100%");
 		defaultOpts.svg = svg;
 		return defaultOpts;
 	}
@@ -76,7 +78,7 @@ export function drawSparkline(conf) {
 	render(opts);
 
 	const container = document.createElement("div");
-	container.className = "w-full h-full pt-1";
+	container.className = "w-full pt-1";
 	container.appendChild(opts.svg);
 	return container;
 }
