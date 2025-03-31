@@ -1,7 +1,16 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+//import Sonda from "sonda/vite";
+
 export default defineConfig({
-  plugins: [
-    tailwindcss(),
-  ],
-})
+	build: {
+		sourcemap: true,
+		rollupOptions: {
+			treeshake: "recommended",
+		},
+	},
+	plugins: [
+		tailwindcss(),
+		//Sonda()
+	],
+});
