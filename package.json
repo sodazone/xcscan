@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "vite build && env $(cat .env.production | xargs) npx wrangler pages deploy"
+    "publish:pages": "vite build && env $(cat .env.production | xargs) npx wrangler pages deploy"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
