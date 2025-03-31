@@ -17,11 +17,7 @@ export const TIME_PERIODS = {
 	weekly: {
 		label: "Week to Date",
 		timeframe: "7 days",
-		bucket: "1 hours",
-		trend: {
-			timeframe: "7 days",
-			bucket: "6 hours",
-		},
+		bucket: "6 hours",
 	},
 	daily: {
 		label: "Last 24 hours",
@@ -30,19 +26,10 @@ export const TIME_PERIODS = {
 	},
 };
 
-function timeToLocal(originalTime) {
+function timeToLocal(originalTime, bucketSeconds) {
 	const d = new Date(originalTime * 1000);
-	return (
-		Date.UTC(
-			d.getFullYear(),
-			d.getMonth(),
-			d.getDate(),
-			d.getHours(),
-			d.getMinutes(),
-			d.getSeconds(),
-			d.getMilliseconds(),
-		) / 1000
-	);
+	// Align to the bucket size (e.g., 1 hour = 3600 seconds)
+	return Math.floor(originalTime / bucketSeconds) * bucketSeconds;
 }
 
 function getTimeRange(timeframe, bucket) {
@@ -73,17 +60,19 @@ function getTimeRange(timeframe, bucket) {
 	const bucketSeconds =
 		Number(bucketValue) * unitToSeconds[bucketUnit.toLowerCase()];
 
-	// Get current time and align it to the bucket size (e.g., 6 hours)
-	const now = new Date();
-	const nowTimestamp = Math.floor(now.getTime() / 1000); // Unix timestamp in seconds
+	// Get the current timestamp in seconds
+	const nowTimestamp = Math.floor(Date.now() / 1000);
 
-	// Align the current time to the nearest bucket size
+	// Align the current timestamp to the nearest bucket size
 	const alignedStartTime = nowTimestamp - (nowTimestamp % bucketSeconds);
-	const startTime = alignedStartTime - timeframeSeconds; // Adjust start time by the timeframe size
 
-	const endTime = alignedStartTime; // End time is the aligned current time
+	// Calculate the actual start time for the timeframe
+	const startTime = alignedStartTime - timeframeSeconds;
 
-	// Generate timestamps
+	// End time is aligned to the current time
+	const endTime = alignedStartTime;
+
+	// Generate the timestamps from start time to end time
 	const timestamps = [];
 	for (let t = startTime; t <= endTime; t += bucketSeconds) {
 		timestamps.push(t);
@@ -96,16 +85,20 @@ function fill(items, { timeframe, bucket }) {
 	const range = getTimeRange(timeframe, bucket);
 	const pointsByTime = {};
 
+	// Align the timestamps for each item based on the bucket size
 	for (const i of items) {
-		pointsByTime[timeToLocal(i.time)] = i.value;
+		const alignedTime = timeToLocal(i.time, range.bucketSize);
+		pointsByTime[alignedTime] = i.value;
 	}
 
+	// Fill missing timestamps with zero value
 	for (const t of range.timestamps) {
 		if (pointsByTime[t] === undefined) {
 			pointsByTime[t] = 0;
 		}
 	}
 
+	// Convert pointsByTime back to an array of objects and sort them by time
 	return Object.entries(pointsByTime)
 		.map(([time, value]) => ({ time: Number(time), value }))
 		.sort((a, b) => a.time - b.time);
@@ -142,7 +135,6 @@ export async function getTransfersTotal(period) {
 export async function getTransfersCount(period) {
 	try {
 		const criteria = TIME_PERIODS[period];
-
 		return fill(
 			(
 				await _fetch({
