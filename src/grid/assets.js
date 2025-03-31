@@ -68,6 +68,7 @@ export function setupAssetsGrid(element) {
 				field: "series",
 				type: "rightAligned",
 				maxWidth: 150,
+				sortable: false,
 				cellRenderer: SparklineCellRenderer,
 			},
 		],

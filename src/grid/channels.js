@@ -23,10 +23,10 @@ function ChannelIconCellRenders(params) {
 		name: resolveNetworkName(chains[1]) ?? chains[1],
 	};
 	const imgFrom = from.url
-		? `<img src="${from.url}" class="h-6 w-6 rounded-full bg-white" />`
+		? `<img src="${from.url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
 		: placeholder;
 	const imgTo = to.url
-		? `<img src="${to.url}" class="h-6 w-6 rounded-full bg-white" />`
+		? `<img src="${to.url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
 		: placeholder;
 
 	return `<div class="flex gap-2 items-center"><div class="flex -space-x-2">${imgFrom}${imgTo}</div><span class="truncate">${from.name} / ${to.name}</span></div>`;
@@ -78,6 +78,7 @@ export function setupChannelsGrid(element) {
 				field: "series",
 				type: "rightAligned",
 				maxWidth: 150,
+				sortable: false,
 				cellRenderer: SparklineCellRenderer,
 			},
 		],
