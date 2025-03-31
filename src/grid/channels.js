@@ -57,6 +57,7 @@ export function setupChannelsGrid(element) {
 				suppressMovable: true,
 				flex: 0,
 				width: 300,
+				valueFormatter: ({ value }) => value.name,
 				cellRenderer: ChannelIconCellRenders,
 			},
 			{
@@ -78,6 +79,7 @@ export function setupChannelsGrid(element) {
 				field: "series",
 				maxWidth: 150,
 				sortable: false,
+				valueFormatter: ({ value }) => value[value.length - 1],
 				cellRenderer: SparklineCellRenderer,
 			},
 		],

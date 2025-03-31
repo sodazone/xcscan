@@ -41,6 +41,7 @@ export function setupAssetsGrid(element) {
 				headerName: "Asset",
 				pinned: "left",
 				suppressMovable: true,
+				valueFormatter: ({ value }) => value,
 				cellRenderer: AssetIconCellRenders,
 			},
 			{
@@ -68,6 +69,7 @@ export function setupAssetsGrid(element) {
 				field: "series",
 				maxWidth: 150,
 				sortable: false,
+				valueFormatter: ({ value }) => value[value.length - 1],
 				cellRenderer: SparklineCellRenderer,
 			},
 		],
