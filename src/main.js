@@ -7,6 +7,7 @@ import {
 	PaginationModule,
 	ClientSideRowModelModule,
 	CellStyleModule,
+	ColumnAutoSizeModule,
 } from "ag-grid-community";
 
 ModuleRegistry.registerModules([
@@ -15,6 +16,7 @@ ModuleRegistry.registerModules([
 	PaginationModule,
 	ClientSideRowModelModule,
 	CellStyleModule,
+	ColumnAutoSizeModule,
 ]);
 
 import { setupSeriesChart } from "./chart.js";
