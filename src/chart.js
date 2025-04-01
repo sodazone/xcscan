@@ -81,7 +81,7 @@ export function setupSeriesChart(element) {
 		) {
 			toolTip.style.display = "none";
 		} else {
-			const dateStr = new Date(param.time * 1000).toLocaleString();
+			const dateStr = new Date(param.time * 1000).toUTCString();
 			toolTip.style.display = "block";
 			const data = param.seriesData.get(series);
 			const price = data.value !== undefined ? data.value : data.close;

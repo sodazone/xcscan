@@ -26,8 +26,7 @@ export const TIME_PERIODS = {
 	},
 };
 
-function timeToLocal(originalTime, bucketSeconds) {
-	const d = new Date(originalTime * 1000);
+function alignTime(originalTime, bucketSeconds) {
 	// Align to the bucket size (e.g., 1 hour = 3600 seconds)
 	return Math.floor(originalTime / bucketSeconds) * bucketSeconds;
 }
@@ -87,7 +86,7 @@ function fill(items, { timeframe, bucket }) {
 
 	// Align the timestamps for each item based on the bucket size
 	for (const i of items) {
-		const alignedTime = timeToLocal(i.time, range.bucketSize);
+		const alignedTime = alignTime(i.time, range.bucketSize);
 		pointsByTime[alignedTime] = i.value;
 	}
 
