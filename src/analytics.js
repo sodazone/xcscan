@@ -40,7 +40,6 @@ function getTimeRange(timeframe, bucket) {
 	const [_, timeframeValue, timeframeUnit] = timeframeMatch;
 	const [__, bucketValue, bucketUnit] = bucketMatch;
 
-	// Convert to seconds
 	const unitToSeconds = {
 		second: 1,
 		seconds: 1,
@@ -59,21 +58,15 @@ function getTimeRange(timeframe, bucket) {
 	const bucketSeconds =
 		Number(bucketValue) * unitToSeconds[bucketUnit.toLowerCase()];
 
-	// Get the current timestamp in seconds
 	const nowTimestamp = Math.floor(Date.now() / 1000);
-
-	// Align the current timestamp to the nearest bucket size
 	const alignedStartTime = nowTimestamp - (nowTimestamp % bucketSeconds);
 
-	// Calculate the actual start time for the timeframe
-	const startTime = alignedStartTime - timeframeSeconds;
-
-	// End time is aligned to the current time
+	// Fix: Adjust startTime to prevent extra bucket
+	const startTime = alignedStartTime - timeframeSeconds + bucketSeconds;
 	const endTime = alignedStartTime;
 
-	// Generate the timestamps from start time to end time
 	const timestamps = [];
-	for (let t = startTime; t <= endTime; t += bucketSeconds) {
+	for (let t = startTime; t < endTime; t += bucketSeconds) {
 		timestamps.push(t);
 	}
 
@@ -121,7 +114,6 @@ async function _fetch(args) {
 export async function getTransfersTotal(period) {
 	try {
 		const criteria = TIME_PERIODS[period];
-
 		return await _fetch({
 			op: "transfers_total",
 			criteria,
@@ -134,15 +126,11 @@ export async function getTransfersTotal(period) {
 export async function getTransfersCount(period) {
 	try {
 		const criteria = TIME_PERIODS[period];
-		return fill(
-			(
-				await _fetch({
-					op: "transfers_count_series",
-					criteria,
-				})
-			).items,
+		const r = await _fetch({
+			op: "transfers_count_series",
 			criteria,
-		);
+		});
+		return fill(r.items, criteria);
 	} catch (error) {
 		console.error(error.message);
 	}
