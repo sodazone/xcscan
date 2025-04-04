@@ -33,69 +33,84 @@ function ChannelIconCellRenders(params) {
 }
 
 export function setupChannelsGrid(element) {
-	const gridOptions = {
-		rowData: [],
-		theme: themeGrid,
-		suppressCellFocus: true,
-		domLayout: "autoHeight",
-		paginationPageSize: 15,
-		pagination: true,
-		paginationPageSizeSelector: false,
-		autoSizeStrategy: isMobile()
-			? {
-					type: "fitCellContents",
-				}
-			: {},
-		defaultColDef: {
-			flex: 1,
-		},
-		columnDefs: [
-			{
-				field: "key",
-				headerName: "Channel",
-				pinned: "left",
-				suppressMovable: true,
-				flex: 0,
-				width: 300,
-				valueFormatter: ({ value }) => value.name,
-				cellRenderer: ChannelIconCellRenders,
-			},
-			{
-				field: "total",
-				headerName: "Transfers",
-				type: "numericColumn",
-				valueFormatter: ({ value }) => formatTxs(value),
-			},
-			{
-				headerName: "Share %",
-				type: "numericColumn",
-				field: "percentage",
-				valueFormatter: ({ value }) => {
-					return Number(value).toFixed(2) + "%";
-				},
-			},
-			{
-				headerName: "Trend",
-				field: "series",
-				maxWidth: 150,
-				sortable: false,
-				valueFormatter: ({ value }) => value[value.length - 1],
-				cellRenderer: SparklineCellRenderer,
-			},
-		],
-	};
+	let grid;
+	let data;
 
-	const grid = createGrid(element, gridOptions);
+	function install() {
+		const gridOptions = {
+			rowData: [],
+			theme: themeGrid,
+			suppressCellFocus: true,
+			domLayout: "autoHeight",
+			paginationPageSize: 15,
+			pagination: true,
+			paginationPageSizeSelector: false,
+			autoSizeStrategy: isMobile()
+				? {
+						type: "fitCellContents",
+					}
+				: {},
+			defaultColDef: {
+				flex: 1,
+			},
+			columnDefs: [
+				{
+					field: "key",
+					headerName: "Channel",
+					pinned: "left",
+					suppressMovable: true,
+					flex: 0,
+					width: 300,
+					valueFormatter: ({ value }) => value.name,
+					cellRenderer: ChannelIconCellRenders,
+				},
+				{
+					field: "total",
+					headerName: "Transfers",
+					type: "numericColumn",
+					valueFormatter: ({ value }) => formatTxs(value),
+				},
+				{
+					headerName: "Share %",
+					type: "numericColumn",
+					field: "percentage",
+					valueFormatter: ({ value }) => {
+						return Number(value).toFixed(2) + "%";
+					},
+				},
+				{
+					headerName: "Trend",
+					field: "series",
+					maxWidth: 150,
+					sortable: false,
+					valueFormatter: ({ value }) => value[value.length - 1],
+					cellRenderer: SparklineCellRenderer,
+				},
+			],
+		};
+
+		grid = createGrid(element, gridOptions);
+	}
 
 	function update(period) {
 		loadResources().then(() => {
-			getTransfersByChannel(period).then((data) => {
+			getTransfersByChannel(period).then((newData) => {
+				data = newData;
 				grid.setGridOption("rowData", data);
 			});
 		});
 	}
 
+	install();
+
 	window.addEventListener("timeChanged", function (e) {
 		update(e.detail);
+	});
+
+	window.addEventListener("resize", function () {
+		element.textContent = "";
+		install();
+
+		grid.setGridOption("rowData", data);
 	});
 }
