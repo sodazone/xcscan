@@ -133,11 +133,23 @@ export function setupSeriesChart(element) {
 		update(e.detail);
 	});
 
+	let w =
+		window.innerWidth ||
+		document.documentElement.clientWidth ||
+		document.body.clientWidth;
 	window.addEventListener("resize", function () {
-		element.textContent = "";
-		install();
+		const nw =
+			window.innerWidth ||
+			document.documentElement.clientWidth ||
+			document.body.clientWidth;
+		if (w !== nw) {
+			w = nw;
 
-		series.setData(data);
-		chart.timeScale().fitContent();
+			element.textContent = "";
+			install();
+
+			series.setData(data);
+			chart.timeScale().fitContent();
+		}
 	});
 }

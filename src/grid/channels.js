@@ -107,10 +107,21 @@ export function setupChannelsGrid(element) {
 		update(e.detail);
 	});
 
+	let w =
+		window.innerWidth ||
+		document.documentElement.clientWidth ||
+		document.body.clientWidth;
 	window.addEventListener("resize", function () {
-		element.textContent = "";
-		install();
+		const nw =
+			window.innerWidth ||
+			document.documentElement.clientWidth ||
+			document.body.clientWidth;
+		if (w !== nw) {
+			w = nw;
+			element.textContent = "";
+			install();
 
-		grid.setGridOption("rowData", data);
+			grid.setGridOption("rowData", data);
+		}
 	});
 }
