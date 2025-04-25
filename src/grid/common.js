@@ -4,7 +4,7 @@ import { loadExtraInfos } from "../extras.js";
 import { drawSparkline } from "../sparkline.js";
 
 export function isMobile() {
-	return window.outerWidth < 800;
+	return window.innerWidth < 800;
 }
 
 function sliceMax(arr, maxElements) {
