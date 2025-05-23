@@ -1,11 +1,10 @@
 import { createGrid } from "ag-grid-community";
 
-import { getTransfersByChannel } from "../analytics.js";
+import { getTransfersByNetwork } from "../analytics.js";
 import { resolveNetworkIcon, resolveNetworkName } from "../extras.js";
-import { formatAssetVolume, formatTxs } from "../formats.js";
+import { formatAssetVolume } from "../formats.js";
 import {
 	FlowCellRenders,
-	SparklineCellRenderer,
 	isMobile,
 	loadResources,
 	themeGrid,
@@ -14,26 +13,26 @@ import {
 const placeholder = `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>`;
 
 function ChannelIconCellRenders(params) {
-	const chains = params.value.split("-");
-	const from = {
-		url: resolveNetworkIcon(chains[0]),
-		name: resolveNetworkName(chains[0]) ?? chains[0],
+	const chain = {
+		url: resolveNetworkIcon(params.value),
+		name: resolveNetworkName(params.value) ?? params.value,
 	};
-	const to = {
-		url: resolveNetworkIcon(chains[1]),
-		name: resolveNetworkName(chains[1]) ?? chains[1],
-	};
-	const imgFrom = from.url
-		? `<img src="${from.url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
-		: placeholder;
-	const imgTo = to.url
-		? `<img src="${to.url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
-		: placeholder;
+	const imgIcon =
+		chain.url && chain.url !== "#"
+			? `<img src="${chain.url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
+			: placeholder;
 
-	return `<div class="flex gap-2 items-center"><div class="flex -space-x-2">${imgFrom}${imgTo}</div><span class="truncate">${from.name} / ${to.name}</span></div>`;
+	return `<div class="flex gap-2 items-center"><div class="flex -space-x-2">${imgIcon}</div><span class="truncate">${chain.name}</span></div>`;
 }
 
-export function setupChannelsGrid(element) {
+function NetFlowCellRenders(params) {
+	const net = params.value;
+	return net === 0
+		? `<div class="text-white/30">N/A</div>`
+		: `<div class="${net > 0 ? "pct-positive" : "pct-negative"}">${net > 0 ? "+" : "-"}${formatAssetVolume(Math.abs(net))}</div>`;
+}
+
+export function setupNetworksGrid(element) {
 	let grid;
 	let data;
 
@@ -56,8 +55,8 @@ export function setupChannelsGrid(element) {
 			},
 			columnDefs: [
 				{
-					field: "key",
-					headerName: "Channel",
+					field: "network",
+					headerName: "Network",
 					pinned: "left",
 					suppressMovable: true,
 					flex: 0,
@@ -72,26 +71,22 @@ export function setupChannelsGrid(element) {
 					cellRenderer: FlowCellRenders,
 				},
 				{
-					field: "total",
-					headerName: "Transfers",
+					field: "volumeIn",
+					headerName: "Inflow (USD)",
 					type: "numericColumn",
-					valueFormatter: ({ value }) => formatTxs(value),
+					cellRenderer: FlowCellRenders,
 				},
 				{
-					headerName: "Share %",
+					headerName: "Outflow (USD)",
 					type: "numericColumn",
-					field: "percentage",
-					valueFormatter: ({ value }) => {
-						return `${Number(value).toFixed(2)}%`;
-					},
+					field: "volumeOut",
+					cellRenderer: FlowCellRenders,
 				},
 				{
-					headerName: "Trend",
-					field: "series",
-					maxWidth: 150,
-					sortable: false,
-					valueFormatter: ({ value }) => value[value.length - 1],
-					cellRenderer: SparklineCellRenderer,
+					headerName: "Netflow (USD)",
+					type: "numericColumn",
+					field: "netFlow",
+					cellRenderer: NetFlowCellRenders,
 				},
 			],
 		};
@@ -101,7 +96,7 @@ export function setupChannelsGrid(element) {
 
 	function update(period) {
 		loadResources().then(() => {
-			getTransfersByChannel(period).then((newData) => {
+			getTransfersByNetwork(period).then((newData) => {
 				data = newData;
 				grid.setGridOption("rowData", data);
 			});

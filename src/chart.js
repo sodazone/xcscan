@@ -111,8 +111,8 @@ export function setupSeriesChart(element) {
 				if (top > element.clientHeight - toolTipHeight) {
 					top = y - toolTipHeight - toolTipMargin;
 				}
-				toolTip.style.left = left + "px";
-				toolTip.style.top = top + "px";
+				toolTip.style.left = `${left}px`;
+				toolTip.style.top = `${top}px`;
 			}
 		});
 	}
@@ -129,7 +129,7 @@ export function setupSeriesChart(element) {
 
 	install();
 
-	window.addEventListener("timeChanged", function (e) {
+	window.addEventListener("timeChanged", (e) => {
 		update(e.detail);
 	});
 
@@ -137,7 +137,7 @@ export function setupSeriesChart(element) {
 		window.innerWidth ||
 		document.documentElement.clientWidth ||
 		document.body.clientWidth;
-	window.addEventListener("resize", function () {
+	window.addEventListener("resize", () => {
 		const nw =
 			window.innerWidth ||
 			document.documentElement.clientWidth ||

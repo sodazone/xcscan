@@ -26,8 +26,8 @@ export function drawSparkline(conf) {
 	}
 
 	function parseIntWithDefault(val, defaultValue) {
-		const parsed = parseInt(val, 10);
-		return isNaN(parsed) ? defaultValue : parsed;
+		const parsed = Number.parseInt(val, 10);
+		return Number.isNaN(parsed) ? defaultValue : parsed;
 	}
 
 	function bar(opts) {

@@ -15,16 +15,21 @@ function humanizeNumber(
 		maximumFractionDigits: 6,
 	});
 	if (absValue >= 1000000000000) {
-		return formatter.format(value / 1000000000000) + siSeparator + "T";
-	} else if (absValue >= 1000000000) {
-		return formatter.format(value / 1000000000) + siSeparator + "B";
-	} else if (absValue >= 1000000) {
-		return formatter.format(value / 1000000) + siSeparator + "M";
-	} else if (absValue >= 100000) {
-		return formatter.format(value / 1000) + siSeparator + "K";
-	} else if (absValue > 10000) {
+		return `${formatter.format(value / 1000000000000) + siSeparator}T`;
+	}
+	if (absValue >= 1000000000) {
+		return `${formatter.format(value / 1000000000) + siSeparator}B`;
+	}
+	if (absValue >= 1000000) {
+		return `${formatter.format(value / 1000000) + siSeparator}M`;
+	}
+	if (absValue >= 100000) {
+		return `${formatter.format(value / 1000) + siSeparator}K`;
+	}
+	if (absValue > 10000) {
 		return formatter.format(Math.round(absValue));
-	} else if (absValue > 10) {
+	}
+	if (absValue > 10) {
 		return formatter.format(value);
 	}
 

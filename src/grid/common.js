@@ -2,6 +2,13 @@ import { themeQuartz } from "ag-grid-community";
 
 import { loadExtraInfos } from "../extras.js";
 import { drawSparkline } from "../sparkline.js";
+import { formatAssetVolume } from "../formats.js";
+
+export function FlowCellRenders({ value }) {
+	return value === 0
+		? `<div class="text-white/30">N/A</div>`
+		: `<div>${formatAssetVolume(value)}</div>`;
+}
 
 export function isMobile() {
 	return window.innerWidth < 800;
@@ -12,7 +19,7 @@ function sliceMax(arr, maxElements) {
 }
 
 export function SparklineCellRenderer(params) {
-	let dataPoints = sliceMax(params.value, 25).map((v) => v.value);
+	const dataPoints = sliceMax(params.value, 25).map((v) => v.value);
 	const minPoints = 20;
 
 	while (dataPoints.length < minPoints) {

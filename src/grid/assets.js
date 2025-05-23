@@ -1,14 +1,15 @@
 import { createGrid } from "ag-grid-community";
 
 import { getTransfersVolumeByAsset } from "../analytics.js";
+import { resolveAssetIcon } from "../extras.js";
+import { formatAssetVolume, formatTxs } from "../formats.js";
 import {
+	FlowCellRenders,
+	SparklineCellRenderer,
 	isMobile,
 	loadResources,
-	SparklineCellRenderer,
 	themeGrid,
 } from "./common.js";
-import { formatAssetVolume, formatTxs } from "../formats.js";
-import { resolveAssetIcon } from "../extras.js";
 
 function AssetIconCellRenders(params) {
 	const url = resolveAssetIcon(params.data.key);
@@ -49,6 +50,12 @@ export function setupAssetsGrid(element) {
 					cellRenderer: AssetIconCellRenders,
 				},
 				{
+					field: "volumeUsd",
+					headerName: "Volume (USD)",
+					type: "numericColumn",
+					cellRenderer: FlowCellRenders,
+				},
+				{
 					field: "volume",
 					headerName: "Volume (Asset)",
 					type: "numericColumn",
@@ -65,7 +72,7 @@ export function setupAssetsGrid(element) {
 					type: "numericColumn",
 					field: "percentage",
 					valueFormatter: ({ value }) => {
-						return Number(value).toFixed(2) + "%";
+						return `${Number(value).toFixed(2)}%`;
 					},
 				},
 				{
@@ -93,7 +100,7 @@ export function setupAssetsGrid(element) {
 
 	install();
 
-	window.addEventListener("timeChanged", function (e) {
+	window.addEventListener("timeChanged", (e) => {
 		update(e.detail);
 	});
 
@@ -101,7 +108,7 @@ export function setupAssetsGrid(element) {
 		window.innerWidth ||
 		document.documentElement.clientWidth ||
 		document.body.clientWidth;
-	window.addEventListener("resize", function () {
+	window.addEventListener("resize", () => {
 		const nw =
 			window.innerWidth ||
 			document.documentElement.clientWidth ||

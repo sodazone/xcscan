@@ -1,10 +1,10 @@
 import { createStewardAgent } from "@sodazone/ocelloids-client";
 
-import { httpUrl, apiKey } from "./env.js";
+import { apiKey, httpUrl } from "./env.js";
 
 const BASE_CDN =
 	"https://cdn.jsdelivr.net/gh/sodazone/intergalactic-asset-metadata";
-const BASE_ASSETS_URL = BASE_CDN + "/v2";
+const BASE_ASSETS_URL = `${BASE_CDN}/v2`;
 
 const cacheAssetIcons = {};
 const cacheChainIcons = {};
@@ -55,6 +55,7 @@ async function fetchNetworkInfos() {
 		for (const ethChain of EthereumChains) {
 			networkMap[ethChain.urn] = ethChain;
 		}
+		console.log(networkMap);
 		return networkMap;
 	}
 
@@ -63,11 +64,11 @@ async function fetchNetworkInfos() {
 
 export async function loadExtraInfos() {
 	const fetchAssetsExtra = async () => {
-		const response = await fetch(BASE_CDN + "/assets-v2.json");
+		const response = await fetch(`${BASE_CDN}/assets-v2.json`);
 		return await response.json();
 	};
 	const fetchNetworksExtra = async () => {
-		const response = await fetch(BASE_CDN + "/chains-v2.json");
+		const response = await fetch(`${BASE_CDN}/chains-v2.json`);
 		return await response.json();
 	};
 	const [assetsExtras, chainsExtras, networkInfos] = await Promise.all([

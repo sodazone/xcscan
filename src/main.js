@@ -1,13 +1,13 @@
 import "./style.css";
 
 import {
+	CellStyleModule,
+	ClientSideRowModelModule,
+	ColumnAutoSizeModule,
 	ModuleRegistry,
+	PaginationModule,
 	PinnedRowModule,
 	RowAutoHeightModule,
-	PaginationModule,
-	ClientSideRowModelModule,
-	CellStyleModule,
-	ColumnAutoSizeModule,
 } from "ag-grid-community";
 
 ModuleRegistry.registerModules([
@@ -21,14 +21,16 @@ ModuleRegistry.registerModules([
 
 import { setupSeriesChart } from "./chart.js";
 import { setupAssetsGrid } from "./grid/assets.js";
-import { setupTimeSelector } from "./time-selector.js";
-import { setupCounters } from "./indicators.js";
 import { setupChannelsGrid } from "./grid/channels.js";
+import { setupNetworksGrid } from "./grid/networks.js";
+import { setupCounters } from "./indicators.js";
+import { setupTimeSelector } from "./time-selector.js";
 
-window.onload = function () {
+window.onload = () => {
 	setupSeriesChart(document.querySelector("#chart"));
 	setupAssetsGrid(document.querySelector("#grid-assets"));
 	setupChannelsGrid(document.querySelector("#grid-channels"));
+	setupNetworksGrid(document.querySelector("#grid-networks"));
 	setupCounters();
 	setupTimeSelector(document.querySelector("#select-time"), "daily");
 };

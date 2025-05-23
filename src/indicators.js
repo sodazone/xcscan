@@ -1,7 +1,13 @@
 import { getTransfersTotal } from "./analytics.js";
-import { formatAccounts, formatRoundtrip, formatTxs } from "./formats.js";
+import {
+	formatAccounts,
+	formatAssetVolume,
+	formatRoundtrip,
+	formatTxs,
+} from "./formats.js";
 
 export function setupCounters() {
+	const vol = document.querySelector("#volume-counter");
 	const txn = document.querySelector("#tx-counter");
 	const rtt = document.querySelector("#roundtrip-counter");
 	const acc = document.querySelector("#accounts-counter");
@@ -29,7 +35,7 @@ export function setupCounters() {
         </div>
         <div class="flex items-center justify-between">
           <span class="text-xs text-white/50">Previous ${format ? format(previous) : previous} ${unit}</span>
-          <span class="text-xs text-white/50">(${diff > 0 ? "+" : ""}${format(diff)}${unit ? " " + unit : ""})</span>
+          <span class="text-xs text-white/50">(${diff > 0 ? "+" : ""}${format(diff)}${unit ? ` ${unit}` : ""})</span>
         </div>
       </div>
       `;
@@ -39,6 +45,15 @@ export function setupCounters() {
 		getTransfersTotal(period)
 			.then((result) => {
 				const counters = result.items[0];
+				render({
+					title: "Volume",
+					element: vol,
+					current: counters.volumeUsd.current,
+					previous: counters.volumeUsd.previous,
+					diff: counters.volumeUsd.diff,
+					unit: "usd",
+					format: formatAssetVolume,
+				});
 				render({
 					title: "Transfers",
 					element: txn,
@@ -73,7 +88,7 @@ export function setupCounters() {
 			.catch(console.error);
 	}
 
-	window.addEventListener("timeChanged", function (e) {
+	window.addEventListener("timeChanged", (e) => {
 		update(e.detail);
 	});
 }

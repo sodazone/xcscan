@@ -1,4 +1,4 @@
-import { httpUrl, apiKey } from "./env.js";
+import { apiKey, httpUrl } from "./env.js";
 
 const queryUrl = `${httpUrl}/query/xcm`;
 const headers = Object.assign(
@@ -169,6 +169,22 @@ export async function getTransfersByChannel(period) {
 			...item,
 			series: fill(item.series, criteria),
 		}));
+	} catch (error) {
+		console.error(error.message);
+	}
+}
+
+export async function getTransfersByNetwork(period) {
+	try {
+		const opts = TIME_PERIODS[period];
+		const criteria = opts.trend ? opts.trend : opts;
+
+		return (
+			await _fetch({
+				op: "transfers_by_network",
+				criteria,
+			})
+		).items;
 	} catch (error) {
 		console.error(error.message);
 	}
