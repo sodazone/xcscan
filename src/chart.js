@@ -120,7 +120,7 @@ export function setupSeriesChart(element) {
 	function update(period) {
 		getTransfersCount(period)
 			.then((newData) => {
-				data = newData;
+				data = newData.slice(0, -1);
 				series.setData(data);
 				chart.timeScale().fitContent();
 			})
