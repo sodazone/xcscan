@@ -68,12 +68,21 @@ export function setupAssetsGrid(element) {
 					valueFormatter: ({ value }) => formatTxs(value),
 				},
 				{
-					headerName: "Share %",
+					headerName: "Tx Share %",
 					type: "numericColumn",
-					field: "percentage",
+					field: "percentageTx",
 					valueFormatter: ({ value }) => {
 						return `${Number(value).toFixed(2)}%`;
 					},
+				},
+				{
+					headerName: "Vol Share %",
+					type: "numericColumn",
+					field: "percentageVol",
+					valueFormatter: ({ value }) => {
+						return `${Number(value).toFixed(2)}%`;
+					},
+					sort: "desc",
 				},
 				{
 					headerName: "Trend",

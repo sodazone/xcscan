@@ -69,6 +69,7 @@ export function setupNetworksGrid(element) {
 					headerName: "Volume (USD)",
 					type: "numericColumn",
 					cellRenderer: FlowCellRenders,
+          sort: "desc",
 				},
 				{
 					field: "volumeIn",

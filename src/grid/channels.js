@@ -2,7 +2,7 @@ import { createGrid } from "ag-grid-community";
 
 import { getTransfersByChannel } from "../analytics.js";
 import { resolveNetworkIcon, resolveNetworkName } from "../extras.js";
-import { formatAssetVolume, formatTxs } from "../formats.js";
+import { formatTxs } from "../formats.js";
 import {
 	FlowCellRenders,
 	SparklineCellRenderer,
@@ -78,12 +78,21 @@ export function setupChannelsGrid(element) {
 					valueFormatter: ({ value }) => formatTxs(value),
 				},
 				{
-					headerName: "Share %",
+					headerName: "Tx Share %",
 					type: "numericColumn",
-					field: "percentage",
+					field: "percentageTx",
 					valueFormatter: ({ value }) => {
 						return `${Number(value).toFixed(2)}%`;
 					},
+				},
+				{
+					headerName: "Vol Share %",
+					type: "numericColumn",
+					field: "percentageVol",
+					valueFormatter: ({ value }) => {
+						return `${Number(value).toFixed(2)}%`;
+					},
+					sort: "desc",
 				},
 				{
 					headerName: "Trend",
