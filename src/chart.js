@@ -57,6 +57,13 @@ export function setupSeriesChart(element) {
 				type: "price",
 				precision: 0,
 			},
+			autoscaleInfoProvider: original => {
+				const res = original();
+        if (res !== null) {
+					res.priceRange.minValue = 0;
+				}
+				return res;
+			},
 		});
 
 		chart.timeScale().applyOptions({
