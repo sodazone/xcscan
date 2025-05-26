@@ -55,7 +55,6 @@ async function fetchNetworkInfos() {
 		for (const ethChain of EthereumChains) {
 			networkMap[ethChain.urn] = ethChain;
 		}
-		console.log(networkMap);
 		return networkMap;
 	}
 

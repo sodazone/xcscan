@@ -66,6 +66,13 @@ export function setupSeriesChart(element) {
 			},
 		});
 
+		series.priceScale().applyOptions({
+			scaleMargins: {
+				top: 0.2,
+				bottom: 0.05,
+			},
+		});
+
 		chart.timeScale().applyOptions({
 			borderColor: "transparent",
 			timeVisible: true,
