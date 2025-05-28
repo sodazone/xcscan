@@ -122,5 +122,8 @@ export function resolveAssetIcon(key) {
 	});
 
 	cacheAssetIcons[key] = icon ? `${BASE_ASSETS_URL}/${icon}` : undefined;
-	return cacheAssetIcons[key];
+	return {
+		assetIconUrl: cacheAssetIcons[key],
+		chainIconUrl: assetId.startsWith('native') ? undefined: resolveNetworkIcon(chainId)
+	};
 }
