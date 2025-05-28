@@ -104,15 +104,18 @@ export function resolveNetworkName(networkUrn) {
 }
 
 export function resolveAssetIcon(key) {
-	if (cacheAssetIcons[key]) {
-		return cacheAssetIcons[key];
-	}
-
 	if (key.indexOf("|") < 0) {
 		return;
 	}
 
 	const [chainId, assetId] = key.split("|");
+	if (cacheAssetIcons[key]) {
+		return {
+			assetIconUrl: cacheAssetIcons[key],
+			chainIconUrl: assetId.startsWith('native') ? undefined: resolveNetworkIcon(chainId)
+		};
+	}
+
 	const assetPath = assetId === "" ? "native" : assetId.split(":").join("/");
 	const path =
 		`${chainId.substring(8).split(":").join("/")}/assets/${assetPath}`.toLowerCase();
