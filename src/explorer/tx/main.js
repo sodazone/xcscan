@@ -1,4 +1,5 @@
 import { resolveNetworkName } from "../../extras";
+import { getJourneyById } from "../api.js";
 import {
 	decodeWellKnownAddress,
 	formatAction,
@@ -153,18 +154,16 @@ function formatJourneyStop(stop, index) {
 
 async function loadTransactionDetail() {
 	try {
-		const res = await fetch("/sample-1.json");
 		const selectId = window.location.hash.substring(1);
-		const txs = await res.json();
-		const entry = txs.find((tx) => tx.correlationId === selectId);
+		const { items } = await getJourneyById(selectId);
 
-		if (!entry) {
-			throw new Error(`entry not found: ${selectId}`);
+		if (items == null || items.length === 0) {
+			throw new Error(`journey not found: ${selectId}`);
 		}
 
+		const journey = items[0];
 		const container = document.querySelector(".transaction-detail");
-
-		const amounts = entry.assets
+		const amounts = journey.assets
 			.map((a) =>
 				a.decimals == null
 					? ""
@@ -172,8 +171,8 @@ async function loadTransactionDetail() {
 			)
 			.join("");
 
-		const sentTime = entry.sentAt;
-		const receivedTime = entry.recvAt;
+		const sentTime = journey.sentAt;
+		const receivedTime = journey.recvAt;
 
 		let timeDetails = "";
 		if (sentTime) {
@@ -207,15 +206,15 @@ async function loadTransactionDetail() {
     `;
 		}
 
-		const fromAddress = entry.from.startsWith("urn")
+		const fromAddress = journey.from.startsWith("urn")
 			? null
-			: shortenAddress(entry.fromFormatted ?? entry.from);
-		const toAddress = entry.to.startsWith("urn")
+			: shortenAddress(journey.fromFormatted ?? journey.from);
+		const toAddress = journey.to.startsWith("urn")
 			? null
-			: (decodeWellKnownAddress(entry.to) ??
-				shortenAddress(entry.toFormatted ?? entry.to));
+			: (decodeWellKnownAddress(journey.to) ??
+				shortenAddress(journey.toFormatted ?? journey.to));
 
-		const actionFormatted = formatAction(entry);
+		const actionFormatted = formatAction(journey);
 
 		const summary = document.createElement("div");
 		summary.className = "bg-white/5 rounded-xl p-4 space-y-2";
@@ -223,10 +222,10 @@ async function loadTransactionDetail() {
 		summary.innerHTML = `
   <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 text-sm text-white/80 pt-2">
     <div class="text-right text-white/50">ID</div>
-    <div class="truncate" title="${entry.correlationId}">${entry.correlationId}</div>
+    <div class="truncate" title="${journey.correlationId}">${journey.correlationId}</div>
 
     <div class="text-right text-white/50">Status</div>
-    <div>${formatStatus(entry.status)}</div>
+    <div>${formatStatus(journey.status)}</div>
 
     <div class="text-right text-white/50">Action</div>
     <div class="truncate break-all">${actionFormatted}</div>
@@ -235,13 +234,13 @@ async function loadTransactionDetail() {
 
     <div class="text-right text-white/50">From</div>
     <div class="flex flex-col space-y-1">
-       ${formatNetworkWithIcon(entry.origin)}
+       ${formatNetworkWithIcon(journey.origin)}
        ${fromAddress == null ? "" : `<div class="break-all">${fromAddress}</div>`}
     </div>
 
     <div class="text-right text-white/50">To</div>
         <div class="flex flex-col space-y-1">
-       ${formatNetworkWithIcon(entry.destination)}
+       ${formatNetworkWithIcon(journey.destination)}
        ${toAddress == null ? "" : `<div class="break-all">${toAddress}</div>`}
     </div>
 
@@ -254,7 +253,7 @@ async function loadTransactionDetail() {
   </div>
 `;
 
-		const stopsHtml = entry.stops
+		const stopsHtml = journey.stops
 			.map((stop, i) => formatJourneyStop(stop, i))
 			.join("");
 		const stopsContainer = document.createElement("div");
@@ -264,7 +263,7 @@ async function loadTransactionDetail() {
         ${stopsHtml}
         `;
 
-		const program = createXcmProgramViewer(entry);
+		const program = createXcmProgramViewer(journey);
 
 		const breadcrumbs = document.createElement("div");
 		breadcrumbs.className =

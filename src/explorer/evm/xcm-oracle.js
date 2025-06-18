@@ -247,7 +247,6 @@ export function decodeXcmOracleData(data) {
 
 	if (functionName === "setTokenAmount") {
 		const currencyId = args[0];
-		console.log(args);
 		const currency = currencies[currencyId];
 		const vCurrency = currencies[currencyId.replace("0x08", "0x09")];
 		const amount = args[1] / currency.mill;

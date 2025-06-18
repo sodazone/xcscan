@@ -1,4 +1,5 @@
 import { debounce } from "../utils.js";
+import { listJourneys } from "./api.js";
 import {
 	decodeWellKnownAddress,
 	formatAssetAmount,
@@ -11,11 +12,7 @@ import { loadSearch } from "./search.js";
 
 const pageCursors = [null];
 let currentPage = 0;
-
-// Dummy
-let allData = [];
-let filteredData = [];
-const nextCursor = null;
+const pageSize = 10;
 
 const filters = {
 	currentSearchTerm: "",
@@ -42,7 +39,7 @@ function formatTimestamp(timestamp) {
   `;
 }
 
-function renderPaginationFooter(hasNextPage) {
+function renderPaginationFooter({ hasNextPage, endCursor }) {
 	const paginationFooter = document.querySelector("#pagination-footer");
 
 	if (!paginationFooter) return;
@@ -51,6 +48,8 @@ function renderPaginationFooter(hasNextPage) {
 	const nextButton = paginationFooter.querySelector("#next-button");
 	const pageIndicator = paginationFooter.querySelector("#page-indicator");
 
+	pageCursors.push(endCursor);
+
 	prevButton.disabled = currentPage === 0;
 	nextButton.disabled = !hasNextPage;
 	pageIndicator.textContent = `Page ${currentPage + 1}`;
@@ -58,27 +57,39 @@ function renderPaginationFooter(hasNextPage) {
 	prevButton.onclick = () => {
 		if (currentPage > 0) {
 			currentPage--;
-			renderCurrentPage();
+			renderCurrentPage(pageCursors[currentPage]);
 		}
 	};
 
 	nextButton.onclick = () => {
-		const pageSize = 10;
-		const maxPages = Math.ceil(filteredData.length / pageSize);
-		if (currentPage < maxPages - 1) {
+		if (hasNextPage) {
 			currentPage++;
-			renderCurrentPage();
+			renderCurrentPage(pageCursors[currentPage]);
 		}
 	};
 }
 
-function renderTransactionsTable(data, pagination) {
+function renderCurrentPage(cursor) {
+	listJourneys({
+		filters,
+		pagination: {
+			limit: pageSize,
+			cursor,
+		},
+	})
+		.then((results) => {
+			renderTransactionsTable(results);
+		})
+		.catch(console.log);
+}
+
+function renderTransactionsTable({ items, pageInfo }) {
 	const container = document.querySelector(
 		".transaction-table .transaction-table-body",
 	);
 	container.innerHTML = "";
 
-	if (data.length === 0) {
+	if (items.length === 0) {
 		container.innerHTML = `
             <div class="text-center text-white/50 py-10 text-sm opacity-0 transition-opacity duration-500" id="no-results">
                 No results found.
@@ -86,31 +97,32 @@ function renderTransactionsTable(data, pagination) {
 		requestAnimationFrame(() => {
 			document.querySelector("#no-results")?.classList.add("opacity-100");
 		});
+		return;
 	}
 
-	for (const entry of data) {
-		const fromChain = entry.origin;
-		const toChain = entry.destination;
-		const fromAddress = entry.from.startsWith("urn")
+	for (const item of items) {
+		const fromChain = item.origin;
+		const toChain = item.destination;
+		const fromAddress = item.from.startsWith("urn")
 			? null
-			: shortenAddress(entry.fromFormatted ?? entry.from);
-		const toAddress = entry.to.startsWith("urn")
+			: shortenAddress(item.fromFormatted ?? item.from);
+		const toAddress = item.to.startsWith("urn")
 			? null
-			: (decodeWellKnownAddress(entry.to) ??
-				shortenAddress(entry.toFormatted ?? entry.to));
-		const time = formatTimestamp(entry.sentAt);
+			: (decodeWellKnownAddress(item.to) ??
+				shortenAddress(item.toFormatted ?? item.to));
+		const time = formatTimestamp(item.sentAt);
 
 		const action = {
-			type: entry.type,
+			type: item.type,
 		};
-		if (entry.type === "transact" && entry.transactCalls?.length) {
-			const call = entry.transactCalls[0];
+		if (item.type === "transact" && item.transactCalls?.length) {
+			const call = item.transactCalls[0];
 			action.module = call.module;
 			action.method = prettify(call.method);
 		}
 
 		const row = document.createElement("a");
-		row.href = `/tx/index.html#${entry.correlationId}`;
+		row.href = `/tx/index.html#${item.correlationId}`;
 		row.tabIndex = 0;
 		row.className = "transaction-row";
 
@@ -144,12 +156,12 @@ function renderTransactionsTable(data, pagination) {
             ${toAddress == null ? "" : `<div>${toAddress}</div>`}
             </div>
         </div>
-        <div class="cell flex md:items-center ${Array.isArray(entry.assets) && entry.assets.length === 0 ? "sm-hidden" : ""}"
+        <div class="cell flex md:items-center ${Array.isArray(item.assets) && item.assets.length === 0 ? "sm-hidden" : ""}"
              data-label="Assets">
             <div class="flex flex-col space-y-1">
             ${
-							Array.isArray(entry.assets) && entry.assets.length > 0
-								? entry.assets
+							Array.isArray(item.assets) && item.assets.length > 0
+								? item.assets
 										.map((asset) => {
 											if (asset.decimals !== null) {
 												return `<div>${formatAssetAmount(asset)}</div>`;
@@ -161,10 +173,10 @@ function renderTransactionsTable(data, pagination) {
 						}
             </div>
         </div>
-        <div class="cell flex md:justify-center md:items-center" data-label="Status" title="${entry.status}">
+        <div class="cell flex md:justify-center md:items-center" data-label="Status" title="${item.status}">
           <div class="flex space-x-2 items-center">
-            <img class="table-status ${entry.status.toLowerCase()} size-4" src="/icons/${entry.status.toLowerCase()}.svg" alt="${entry.status.toLowerCase()}" />
-            <span class="md:hidden capitalize text-white/60">${entry.status}</span>
+            <img class="table-status ${item.status.toLowerCase()} size-4" src="/icons/${item.status.toLowerCase()}.svg" alt="${item.status.toLowerCase()}" />
+            <span class="md:hidden capitalize text-white/60">${item.status}</span>
           </div>
         </div>
       `;
@@ -175,71 +187,23 @@ function renderTransactionsTable(data, pagination) {
 		});
 	}
 
-	renderPaginationFooter(pagination.hasNextPage);
+	renderPaginationFooter(pageInfo);
 }
 
 function applyFiltersAndRender() {
-	const {
-		currentSearchTerm,
-		selectedDestinations,
-		selectedOrigins,
-		selectedStatus,
-	} = filters;
+	listJourneys({
+		filters,
+		pagination: {
+			limit: pageSize,
+		},
+	})
+		.then((results) => {
+			currentPage = 0;
+			pageCursors.length = 1;
 
-	const searchTerm = currentSearchTerm.toLowerCase();
-
-	filteredData = allData.filter((entry) => {
-		if (selectedOrigins.length && !selectedOrigins.includes(entry.origin))
-			return false;
-
-		if (
-			selectedDestinations.length &&
-			!selectedDestinations.includes(entry.destination)
-		)
-			return false;
-
-		if (
-			selectedStatus.length &&
-			!selectedStatus.includes(entry.status.toLowerCase())
-		)
-			return false;
-
-		if (searchTerm) {
-			const matchStr = `${entry.correlationId} ${entry.fromFormatted ?? entry.from} ${entry.toFormatted ?? entry.to}`;
-			if (!matchStr.toLowerCase().includes(searchTerm)) return false;
-		}
-
-		return true;
-	});
-
-	currentPage = 0;
-	pageCursors.length = 1;
-	renderCurrentPage();
-}
-
-function renderCurrentPage() {
-	const pageSize = 10;
-	const start = currentPage * pageSize;
-	const end = start + pageSize;
-
-	const paginatedData = filteredData.slice(start, end);
-	const hasNextPage = end < filteredData.length;
-
-	renderTransactionsTable(paginatedData, {
-		hasNextPage,
-		cursor: currentPage + 1,
-	});
-}
-
-async function loadTransactions() {
-	try {
-		const response = await fetch("/sample-1.json");
-		allData = await response.json();
-
-		applyFiltersAndRender();
-	} catch (error) {
-		console.error("Failed to load dummy data sample.json:", error);
-	}
+			renderTransactionsTable(results);
+		})
+		.catch(console.log);
 }
 
 export function loadToggles() {
@@ -264,5 +228,6 @@ window.onload = async () => {
 		filters,
 		update: debounce(applyFiltersAndRender, 300),
 	});
-	await loadTransactions();
+
+	applyFiltersAndRender();
 };
