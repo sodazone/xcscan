@@ -57,9 +57,9 @@ export function setupSeriesChart(element) {
 				type: "price",
 				precision: 0,
 			},
-			autoscaleInfoProvider: original => {
+			autoscaleInfoProvider: (original) => {
 				const res = original();
-        if (res !== null) {
+				if (res !== null) {
 					res.priceRange.minValue = 0;
 				}
 				return res;

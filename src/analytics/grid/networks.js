@@ -1,8 +1,8 @@
 import { createGrid } from "ag-grid-community";
 
 import { getTransfersByNetwork } from "../analytics.js";
-import { resolveNetworkIcon, resolveNetworkName } from "../extras.js";
-import { formatAssetVolume } from "../formats.js";
+import { resolveNetworkIcon, resolveNetworkName } from "../../extras.js";
+import { formatAssetVolume } from "../../formats.js";
 import {
 	FlowCellRenders,
 	isMobile,
@@ -69,7 +69,7 @@ export function setupNetworksGrid(element) {
 					headerName: "Volume (USD)",
 					type: "numericColumn",
 					cellRenderer: FlowCellRenders,
-          sort: "desc",
+					sort: "desc",
 				},
 				{
 					field: "volumeIn",

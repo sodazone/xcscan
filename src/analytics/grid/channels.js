@@ -1,8 +1,8 @@
 import { createGrid } from "ag-grid-community";
 
 import { getTransfersByChannel } from "../analytics.js";
-import { resolveNetworkIcon, resolveNetworkName } from "../extras.js";
-import { formatTxs } from "../formats.js";
+import { resolveNetworkIcon, resolveNetworkName } from "../../extras.js";
+import { formatTxs } from "../../formats.js";
 import {
 	FlowCellRenders,
 	SparklineCellRenderer,

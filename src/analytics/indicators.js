@@ -4,7 +4,7 @@ import {
 	formatAssetVolume,
 	formatRoundtrip,
 	formatTxs,
-} from "./formats.js";
+} from "../formats.js";
 
 export function setupCounters() {
 	const vol = document.querySelector("#volume-counter");

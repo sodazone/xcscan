@@ -1,8 +1,8 @@
 import { createGrid } from "ag-grid-community";
 
 import { getTransfersVolumeByAsset } from "../analytics.js";
-import { resolveAssetIcon } from "../extras.js";
-import { formatAssetVolume, formatTxs } from "../formats.js";
+import { resolveAssetIcon } from "../../extras.js";
+import { formatAssetVolume, formatTxs } from "../../formats.js";
 import {
 	FlowCellRenders,
 	SparklineCellRenderer,
@@ -20,7 +20,7 @@ function AssetIconCellRenders(params) {
 
 	const chainImg = chainIconUrl
 		? `<img src="${chainIconUrl}" class="absolute -top-1 -left-1 h-4 w-4 rounded-full border border-white bg-white" />`
-		: '';
+		: "";
 
 	const imgWrapper = `<div class="relative h-6 w-6">${assetImg}${chainImg}</div>`;
 

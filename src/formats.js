@@ -1,4 +1,4 @@
-function humanizeNumber(
+export function humanizeNumber(
 	value,
 	maximumFractionDigits = 2,
 	siSeparator = " ",

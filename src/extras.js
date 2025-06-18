@@ -11,7 +11,8 @@ const cacheChainIcons = {};
 
 let AssetIcons;
 let ChainIcons;
-let NetworkInfos;
+
+export let NetworkInfos;
 
 const EthereumChains = [
 	{
@@ -94,7 +95,7 @@ export function resolveNetworkIcon(networkUrn) {
 		return p.substring(0, p.lastIndexOf("/")) === path;
 	});
 
-	cacheChainIcons[networkUrn] = icon ? `${BASE_ASSETS_URL}/${icon}` : "#";
+	cacheChainIcons[networkUrn] = icon ? `${BASE_ASSETS_URL}/${icon}` : null;
 
 	return cacheChainIcons[networkUrn];
 }
@@ -112,7 +113,9 @@ export function resolveAssetIcon(key) {
 	if (cacheAssetIcons[key]) {
 		return {
 			assetIconUrl: cacheAssetIcons[key],
-			chainIconUrl: assetId.startsWith('native') ? undefined: resolveNetworkIcon(chainId)
+			chainIconUrl: assetId.startsWith("native")
+				? undefined
+				: resolveNetworkIcon(chainId),
 		};
 	}
 
@@ -127,6 +130,8 @@ export function resolveAssetIcon(key) {
 	cacheAssetIcons[key] = icon ? `${BASE_ASSETS_URL}/${icon}` : undefined;
 	return {
 		assetIconUrl: cacheAssetIcons[key],
-		chainIconUrl: assetId.startsWith('native') ? undefined: resolveNetworkIcon(chainId)
+		chainIconUrl: assetId.startsWith("native")
+			? undefined
+			: resolveNetworkIcon(chainId),
 	};
 }

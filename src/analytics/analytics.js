@@ -1,4 +1,4 @@
-import { apiKey, httpUrl } from "./env.js";
+import { apiKey, httpUrl } from "../env.js";
 
 const queryUrl = `${httpUrl}/query/xcm`;
 const headers = Object.assign(
