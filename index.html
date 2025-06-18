@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-  <%- head %>
+  <%- include('/head.html') %>
 </head>
 
 <body>
-  <%- header %>
+    <%- include('/header.html', { currentPage: 'home' }) %>
     <main class="w-full pt-start">
       <section>
         <div id="search" class="mx-auto flex w-full max-w-screen-xl flex-col items-center gap-10 p-4">
@@ -144,7 +144,9 @@
       </section>
 
     </main>
-    <%- footer %>
+    
+    <%- include('/footer.html') %>
+
     <script type="module" src="/src/explorer/main.js"></script>
 </body>
 

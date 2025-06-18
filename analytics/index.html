@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <%- head %>
+    <%- include('/head.html') %>
   </head>
   <body>
-    <%- header %>
+    <%- include('/header.html', { currentPage: 'analytics' }) %>
     <main class="w-full pt-start">
         <section>
           <div class="flex mx-auto w-full max-w-screen-xl justify-end items-end px-4 mb-4">
@@ -114,7 +114,7 @@
           </div>
         </section>
       </main>
-      <%- footer %>
+      <%- include('/footer.html') %>
     <script type="module" src="/src/analytics/main.js"></script>
   </body>
 </html>
