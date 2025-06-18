@@ -1,7 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
-import { viteEjsPlugin } from "./vite.ejs";
+import { viteEjsPlugin } from "./vite.ejs.js";
 
 export default defineConfig({
 	plugins: [viteEjsPlugin(), tailwindcss()],

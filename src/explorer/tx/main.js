@@ -1,11 +1,11 @@
-import { resolveNetworkName } from "../extras";
+import { resolveNetworkName } from "../../extras";
 import {
 	decodeWellKnownAddress,
 	formatAction,
 	formatNetworkWithIcon,
 	loadResources,
 	shortenAddress,
-} from "./common.js";
+} from "../common.js";
 import { createXcmProgramViewer } from "./json.js";
 
 function formatTimestamp(ts) {
