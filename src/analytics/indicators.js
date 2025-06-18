@@ -4,7 +4,7 @@ import {
 	formatRoundtrip,
 	formatTxs,
 } from "../formats.js";
-import { getTransfersTotal } from "./analytics.js";
+import { getTransfersTotal } from "./api.js";
 
 export function setupCounters() {
 	const vol = document.querySelector("#volume-counter");

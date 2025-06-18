@@ -1,4 +1,4 @@
-import { TIME_PERIODS } from "./analytics";
+import { TIME_PERIODS } from "./api.js";
 
 export function setupTimeSelector(element, initial = "daily") {
 	let selected = initial;

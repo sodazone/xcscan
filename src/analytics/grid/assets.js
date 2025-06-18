@@ -2,7 +2,7 @@ import { createGrid } from "ag-grid-community";
 
 import { resolveAssetIcon } from "../../extras.js";
 import { formatAssetVolume, formatTxs } from "../../formats.js";
-import { getTransfersVolumeByAsset } from "../analytics.js";
+import { getTransfersVolumeByAsset } from "../api.js";
 import {
 	FlowCellRenders,
 	SparklineCellRenderer,

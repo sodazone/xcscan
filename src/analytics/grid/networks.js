@@ -2,7 +2,7 @@ import { createGrid } from "ag-grid-community";
 
 import { resolveNetworkIcon, resolveNetworkName } from "../../extras.js";
 import { formatAssetVolume } from "../../formats.js";
-import { getTransfersByNetwork } from "../analytics.js";
+import { getTransfersByNetwork } from "../api.js";
 import {
 	FlowCellRenders,
 	isMobile,

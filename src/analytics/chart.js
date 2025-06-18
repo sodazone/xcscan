@@ -1,6 +1,6 @@
 import { AreaSeries, createChart } from "lightweight-charts";
 
-import { getTransfersCount } from "./analytics.js";
+import { getTransfersCount } from "./api.js";
 
 export function setupSeriesChart(element) {
 	let chart;

@@ -2,7 +2,7 @@ import { createGrid } from "ag-grid-community";
 
 import { resolveNetworkIcon, resolveNetworkName } from "../../extras.js";
 import { formatTxs } from "../../formats.js";
-import { getTransfersByChannel } from "../analytics.js";
+import { getTransfersByChannel } from "../api.js";
 import {
 	FlowCellRenders,
 	SparklineCellRenderer,
