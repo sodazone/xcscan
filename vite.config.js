@@ -4,10 +4,7 @@ import { defineConfig } from "vite";
 import { viteEjsPlugin } from "./vite.ejs";
 
 export default defineConfig({
-	plugins: [
-		viteEjsPlugin(),
-		tailwindcss(),
-	],
+	plugins: [viteEjsPlugin(), tailwindcss()],
 	build: {
 		sourcemap: true,
 		emptyOutDir: true,
@@ -19,5 +16,5 @@ export default defineConfig({
 				tx: "tx/index.html",
 			},
 		},
-	}
+	},
 });
