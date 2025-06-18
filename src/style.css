@@ -146,6 +146,15 @@ body {
 	@apply truncate;
 }
 
+/* Dropdown */
+.dropdown-toggle svg {
+	transition: transform 0.3s ease;
+}
+
+.dropdown.open .dropdown-toggle svg {
+	transform: rotate(180deg);
+}
+
 /* Status */
 .status {
 	@apply inline-flex items-center justify-center gap-1.5 pl-2 pr-3 py-1 text-xs font-medium rounded-full capitalize whitespace-nowrap leading-tight select-none;

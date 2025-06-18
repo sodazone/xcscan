@@ -1,10 +1,10 @@
-import { getTransfersTotal } from "./analytics.js";
 import {
 	formatAccounts,
 	formatAssetVolume,
 	formatRoundtrip,
 	formatTxs,
 } from "../formats.js";
+import { getTransfersTotal } from "./analytics.js";
 
 export function setupCounters() {
 	const vol = document.querySelector("#volume-counter");

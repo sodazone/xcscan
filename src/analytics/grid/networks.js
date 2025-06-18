@@ -1,8 +1,8 @@
 import { createGrid } from "ag-grid-community";
 
-import { getTransfersByNetwork } from "../analytics.js";
 import { resolveNetworkIcon, resolveNetworkName } from "../../extras.js";
 import { formatAssetVolume } from "../../formats.js";
+import { getTransfersByNetwork } from "../analytics.js";
 import {
 	FlowCellRenders,
 	isMobile,

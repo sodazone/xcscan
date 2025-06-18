@@ -270,14 +270,14 @@ async function loadTransactionDetail() {
 		breadcrumbs.className =
 			"flex space-x-2 text-sm mb-4 items-center text-white/60";
 		breadcrumbs.innerHTML = `
-      <div class="rounded-full bg-white/10 p-1 text-black/90">
-        <a href="/">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-        </a>
-      </div>
-      <a href="/" class="">Transactions</a>
+	  <a class="group flex space-x-2 items-center" href="/">	
+		<div class="rounded-full bg-white/10 p-1 text-black/90 group-hover:bg-white/30">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+			</svg>
+		</div>
+		<span class="group-hover:text-white">Transactions</span>
+	  </a>
     `;
 
 		container.appendChild(breadcrumbs);

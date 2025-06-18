@@ -129,7 +129,7 @@ export function createXcmProgramViewer(entry) {
 	const instructionsToggleBtn = document.createElement("button");
 	instructionsToggleBtn.innerHTML = buttonHTML(false);
 	instructionsToggleBtn.className =
-		"json-toggle-btn flex w-fit justify-between items-center px-2 py-1 text-sm rounded-lg border border-white/5 text-white/70 hover:border-teal-300/10 hover:bg-teal-300/10 focus:outline-none";
+		"json-toggle-btn flex w-fit justify-between items-center text-sm text-white/70 hover:text-white";
 	instructionsToggleBtn.style.cursor = "pointer";
 	instructionsToggleBtn.style.userSelect = "none";
 
