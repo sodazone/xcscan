@@ -374,10 +374,6 @@ function createJourneyLeg(stop, index) {
 }
 
 function createJourneyLegs(journey) {
-  const hasReceived = journey.stops.some(
-    (stop) => stop.to?.status === 'received'
-  )
-
   const container = document.createElement('div')
   container.className = 'my-8 space-y-6'
 
@@ -385,11 +381,13 @@ function createJourneyLegs(journey) {
   title.textContent = 'Legs'
   container.appendChild(title)
 
+  const isReceived =
+    journey.stops[journey.stops.length - 1].to?.status !== undefined
   journey.stops.forEach((stop, index) => {
-    // Skip "in_progress" if final "received" exists
-    if (hasReceived && stop.to?.status === 'in_progress') return
+    if (isReceived && stop.relay?.status === undefined) {
+      stop.relay = null
+    }
 
-    // Skip completely empty stops
     if (!stop.from && !stop.relay && !stop.to) return
 
     const leg = createJourneyLeg(stop, index)
