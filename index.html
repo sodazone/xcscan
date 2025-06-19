@@ -1,73 +1,130 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <%- include('/head.html') %>
+  </head>
 
-<head>
-  <%- include('/head.html') %>
-</head>
-
-<body>
+  <body>
     <%- include('/header.html', { currentPage: 'home' }) %>
     <main class="w-full pt-start">
       <section>
-        <div id="search" class="mx-auto flex w-full max-w-screen-xl flex-col items-center gap-10 p-4">
-
+        <div
+          id="search"
+          class="mx-auto flex w-full max-w-screen-xl flex-col items-center gap-10 p-4"
+        >
           <!-- Search -->
           <div class="w-full relative group">
             <form id="search" action="#" class="relative">
-              <input name="query" type="text" placeholder="Search by Address or Tx Hash" autocomplete="off"
+              <input
+                name="query"
+                type="text"
+                placeholder="Search by Address or Tx Hash"
+                autocomplete="off"
                 spellcheck="false"
-                class="peer w-full pr-10 pl-3 py-3 rounded-lg bg-white/5 text-white placeholder-white/40 focus:outline-none focus:bg-teal-300/10 focus:border-teal-300/20 transition duration-200" />
-              <button type="submit"
-                class="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white focus:text-white focus:outline-none active:scale-95 transition-transform duration-150">
-                <svg class="size-5 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z" />
+                class="peer w-full pr-10 pl-3 py-3 rounded-lg bg-white/5 text-white placeholder-white/40 focus:outline-none focus:bg-teal-300/10 focus:border-teal-300/20 transition duration-200"
+              />
+              <button
+                type="submit"
+                class="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white focus:text-white focus:outline-none active:scale-95 transition-transform duration-150"
+              >
+                <svg
+                  class="size-5 pointer-events-none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </button>
             </form>
           </div>
 
           <div
-            class="flex w-full flex-col space-y-4 md:space-y-0 md:flex-row px-2 py-1 md:justify-between md:align-bottom md:border-b md:border-white/5">
+            class="flex w-full flex-col space-y-4 md:space-y-0 md:flex-row px-2 py-1 md:justify-between md:align-bottom md:border-b md:border-white/5"
+          >
             <div class="flex w-full md:w-fit justify-between items-center">
-              <div class="flex items-center space-x-2 text-white/80 whitespace-nowrap">
+              <div
+                class="flex items-center space-x-2 text-white/80 whitespace-nowrap"
+              >
                 <span class="relative flex h-2 w-2 items-center justify-center">
                   <span
-                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+                  ></span>
+                  <span
+                    class="relative inline-flex rounded-full h-2 w-2 bg-green-500"
+                  ></span>
                 </span>
                 <span>Live Transactions</span>
               </div>
-              <div id="filters-button" data-toggle data-target="filters"
-                class="md:hidden flex items-center space-x-2 text-sm text-white/50 cursor-pointer">
+              <div
+                id="filters-button"
+                data-toggle
+                data-target="filters"
+                class="md:hidden flex items-center space-x-2 text-sm text-white/50 cursor-pointer"
+              >
                 <div>Filters</div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  class="size-5"
+                >
                   <path
-                    d="M17 2.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5ZM17 15.75a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 1.5 0v-1.5ZM3.75 15a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM4.5 2.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5ZM10 11a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5A.75.75 0 0 1 10 11ZM10.75 2.75a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 1.5 0v-1.5ZM10 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM3.75 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM16.25 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
+                    d="M17 2.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5ZM17 15.75a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 1.5 0v-1.5ZM3.75 15a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM4.5 2.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5ZM10 11a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5A.75.75 0 0 1 10 11ZM10.75 2.75a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 1.5 0v-1.5ZM10 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM3.75 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM16.25 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"
+                  />
                 </svg>
               </div>
             </div>
 
-            <div id="filters" class="hidden md:flex flex-wrap ml-auto items-center gap-3">
+            <div
+              id="filters"
+              class="hidden md:flex flex-wrap ml-auto items-center gap-3"
+            >
               <div class="relative dropdown">
                 <button
-                  class="flex cursor-pointer justify-between items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle transition">
-                  <div>Chains: <span class="text-white">All</span></div>
+                  class="flex cursor-pointer justify-between items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle transition"
+                >
+                  <div>
+                    Chains:
+                    <span id="filter-chains-selected" class="text-white"
+                      >All</span
+                    >
+                  </div>
 
-                  <svg class="w-4 h-4 text-white/40 ml-2" fill="none" stroke="currentColor" stroke-width="2"
-                    viewBox="0 0 24 24">
+                  <svg
+                    class="w-4 h-4 text-white/40 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
-                <div id="filter-chains"
-                  class="dropdown-menu hidden fixed md:absolute md:-right-20 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur py-4 pl-4 pr-1 md:mt-2 w-screen md:max-w-2xl md:rounded-lg md:shadow flex flex-col">
+                <div
+                  id="filter-chains"
+                  class="dropdown-menu hidden fixed md:absolute md:-right-20 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur py-4 pl-4 pr-1 md:mt-2 w-screen md:max-w-2xl md:rounded-lg md:shadow flex flex-col"
+                >
                   <div class="flex space-x-4 items-center justify-end mb-4">
-                    <button id="clear-filter-chains"
-                      class="cursor-pointer text-white/40 hover:text-white text-sm">Clear</button>
-                    <button data-close class="md:hidden text-white/40 hover:text-white text-sm"
-                      id="close-filter-chains">Close ✕</button>
+                    <button
+                      id="clear-filter-chains"
+                      class="cursor-pointer text-white/40 hover:text-white text-sm"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      data-close
+                      class="md:hidden text-white/40 hover:text-white text-sm"
+                      id="close-filter-chains"
+                    >
+                      Close ✕
+                    </button>
                   </div>
                   <div id="filter-chains-content" class="grid gap-3"></div>
                 </div>
@@ -76,27 +133,44 @@
               <!-- Status Filter -->
               <div class="relative dropdown">
                 <button
-                  class="flex cursor-pointer justify-between items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle">
-                  <div>Status: <span class="text-white">All</span></div>
+                  class="flex cursor-pointer justify-between items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
+                >
+                  <div>
+                    Status:
+                    <span id="filter-status-selected" class="text-white"
+                      >All</span
+                    >
+                  </div>
 
-                  <svg class="w-4 h-4 text-white/40 ml-2" fill="none" stroke="currentColor" stroke-width="2"
-                    viewBox="0 0 24 24">
+                  <svg
+                    class="w-4 h-4 text-white/40 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
-                <div id="filter-status"
-                  class="dropdown-menu hidden fixed md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur p-4 md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow flex flex-col">
+                <div
+                  id="filter-status"
+                  class="dropdown-menu hidden fixed md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur p-4 md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow flex flex-col"
+                >
                   <div class="flex md:hidden justify-end">
-                    <button data-close class="text-white/40 hover:text-white text-sm mb-4"
-                      id="close-filter-status">Close ✕</button>
+                    <button
+                      data-close
+                      class="text-white/40 hover:text-white text-sm mb-4"
+                      id="close-filter-status"
+                    >
+                      Close ✕
+                    </button>
                   </div>
                   <div id="filter-status-content" class="grid gap-3"></div>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -114,40 +188,63 @@
           <!-- TODO: skeleton -->
         </div>
         <!-- pagination footer -->
-        <div class="flex items-center justify-end gap-2 mt-4" id="pagination-footer">
-          <button id="prev-button"
+        <div
+          class="flex items-center justify-end gap-2 mt-4"
+          id="pagination-footer"
+        >
+          <button
+            id="prev-button"
             class="group flex space-x-2 items-center cursor-pointer px-3 py-1 text-sm text-white/40 disabled:opacity-50 disabled:cursor-default"
-            disabled>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-              class="size-5 text-white/60 group-hover:text-white group-disabled:text-white/60">
-              <path fill-rule="evenodd"
+            disabled
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="size-5 text-white/60 group-hover:text-white group-disabled:text-white/60"
+            >
+              <path
+                fill-rule="evenodd"
                 d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
-                clip-rule="evenodd" />
+                clip-rule="evenodd"
+              />
             </svg>
-            <span class="text-white/60 group-hover:text-white group-disabled:text-white/60">Prev</span>
+            <span
+              class="text-white/60 group-hover:text-white group-disabled:text-white/60"
+              >Prev</span
+            >
           </button>
 
           <span id="page-indicator" class="text-white/40 text-sm">Page 1</span>
 
-          <button id="next-button"
+          <button
+            id="next-button"
             class="group flex space-x-2 items-center cursor-pointer px-3 py-1 text-sm text-white/40 disabled:opacity-50 disabled:cursor-default"
-            disabled>
-            <span class="text-white/60 group-hover:text-white group-disabled:text-white/60">Next</span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-              class="size-5 text-white/60 group-hover:text-white group-disabled:text-white/60">
-              <path fill-rule="evenodd"
+            disabled
+          >
+            <span
+              class="text-white/60 group-hover:text-white group-disabled:text-white/60"
+              >Next</span
+            >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="size-5 text-white/60 group-hover:text-white group-disabled:text-white/60"
+            >
+              <path
+                fill-rule="evenodd"
                 d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
-                clip-rule="evenodd" />
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
         </div>
       </section>
-
     </main>
-    
+
     <%- include('/footer.html') %>
 
     <script type="module" src="/src/explorer/main.js"></script>
-</body>
-
+  </body>
 </html>

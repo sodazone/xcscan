@@ -7,12 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "lint": "prettier . --write",
     "publish:pages": "vite build && env $(cat .env.production | xargs) npx wrangler pages deploy"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@tailwindcss/vite": "^4.0.14",
-    "sonda": "^0.7.1",
+    "prettier": "3.5.3",
     "tailwindcss": "^4.0.14",
     "vite": "^6.2.0",
     "wrangler": "^4.6.0"
