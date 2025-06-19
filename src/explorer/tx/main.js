@@ -143,7 +143,7 @@ function createLegStopHTML(stop) {
   const metaHTML = createLegStopMetaHTML(stop) || ''
 
   return `
-    <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full${opacityClass}">
+    <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full ${opacityClass}">
       ${headerHTML}
       ${bodyHTML}
       ${timestampHTML}
