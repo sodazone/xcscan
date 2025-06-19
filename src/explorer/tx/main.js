@@ -153,6 +153,11 @@ function createLegStopHTML(stop) {
 }
 
 function createLegStop(stop) {
+  if (stop == null) {
+    const empty = document.createElement('div')
+    empty.classList = 'hidden'
+    return empty
+  }
   return htmlToElement(createLegStopHTML(stop))
 }
 
@@ -309,7 +314,7 @@ function createJourneyLeg(stop, index) {
     const deltaSec = Math.floor((timeEnd - timeStart) / 1000)
     const minutes = Math.floor(deltaSec / 60)
     const seconds = deltaSec % 60
-    elapsedText = `+${minutes}m ${seconds}s`
+    elapsedText = `(+${minutes}m ${seconds}s)`
   }
 
   const container = document.createElement('div')
@@ -349,7 +354,7 @@ function createJourneyLeg(stop, index) {
 
   if (elapsedText) {
     const elapsed = document.createElement('span')
-    elapsed.className = 'text-white/40 text-xs ml-auto'
+    elapsed.className = 'font-normal text-white/40 text-xs ml-2'
     elapsed.textContent = elapsedText
     header.appendChild(elapsed)
   }
@@ -397,14 +402,27 @@ async function loadTransactionDetail() {
   try {
     const selectId = window.location.hash.substring(1)
     const { items } = await getJourneyById(selectId)
+    const container = document.querySelector('.transaction-detail')
+
+    container.innerHTML = ''
 
     if (items == null || items.length === 0) {
-      throw new Error(`journey not found: ${selectId}`)
+      const breadcrumbs = createBreadcrumbs()
+      container.appendChild(breadcrumbs)
+      container.appendChild(
+        htmlToElement(`
+  <div class="my-8 p-4 mx-auto text-lg text-white/80">
+    <p>Sorry, we couldn't find that journey.</p>
+    <p class="mt-2">
+      Please <a href="/" class="text-blue-400 underline hover:text-blue-600">go back to transactions</a> and try again.
+    </p>
+  </div>
+`)
+      )
+      return
     }
 
     const journey = items[0]
-    const container = document.querySelector('.transaction-detail')
-
     const summary = createJourneySummary(journey)
     const legs = createJourneyLegs(journey)
     const program = createXcmProgramViewer(journey)
@@ -416,7 +434,9 @@ async function loadTransactionDetail() {
     container.appendChild(legs)
     container.appendChild(program)
 
-    function onUpdateJourney(journey) {}
+    function onUpdateJourney(journey) {
+      // TODO
+    }
 
     subscribeToJourney(journey.correlationId, {
       onUpdateJourney,
