@@ -1,5 +1,4 @@
 import { NetworkInfos, resolveNetworkName } from '../extras.js'
-import { html } from '../tags.js'
 
 let filterDirty = false
 
