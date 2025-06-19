@@ -127,9 +127,7 @@ function renderTransactionsTable({ items, pageInfo }) {
     row.className = 'transaction-row'
 
     row.innerHTML = `
-            <div class="cell flex md:items-center" data-label="Time">
-             ${time}
-            </div>
+<div class="cell flex md:items-center" data-label="Time">${time}</div>
 <div class="cell flex md:items-center" data-label="Action">
   ${
     action.module !== undefined

@@ -83,15 +83,15 @@
 
             <div
               id="filters"
-              class="hidden md:flex flex-wrap ml-auto items-center gap-3"
+              class="hidden gap-3 flex-col md:flex md:flex-row md:ml-auto md:items-center"
             >
               <div class="relative dropdown">
                 <button
-                  class="flex cursor-pointer justify-between items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle transition"
+                  class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle transition"
                 >
-                  <div>
-                    Chains:
-                    <span id="filter-chains-selected" class="text-white"
+                  <div class="flex items-start gap-2">
+                    <span>Chains:</span>
+                    <span data-dropdown-labels class="text-white text-left"
                       >All</span
                     >
                   </div>
@@ -111,7 +111,7 @@
                   id="filter-chains"
                   class="dropdown-menu hidden fixed md:absolute md:-right-20 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur py-4 pl-4 pr-1 md:mt-2 w-screen md:max-w-2xl md:rounded-lg md:shadow flex flex-col"
                 >
-                  <div class="flex space-x-4 items-center justify-end mb-4">
+                  <div class="flex space-x-4 items-center justify-end mb-4 border-b border-white/5">
                     <button
                       id="clear-filter-chains"
                       class="cursor-pointer text-white/40 hover:text-white text-sm"
@@ -119,7 +119,7 @@
                       Clear
                     </button>
                     <button
-                      data-close
+                      data-dropdown-close
                       class="md:hidden text-white/40 hover:text-white text-sm"
                       id="close-filter-chains"
                     >
@@ -133,11 +133,11 @@
               <!-- Status Filter -->
               <div class="relative dropdown">
                 <button
-                  class="flex cursor-pointer justify-between items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
+                  class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
                 >
-                  <div>
-                    Status:
-                    <span id="filter-status-selected" class="text-white"
+                  <div class="flex items-start gap-2">
+                    <span>Status:</span>
+                    <span data-dropdown-labels class="text-white text-left"
                       >All</span
                     >
                   </div>
@@ -157,9 +157,9 @@
                   id="filter-status"
                   class="dropdown-menu hidden fixed md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur p-4 md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow flex flex-col"
                 >
-                  <div class="flex md:hidden justify-end">
+                  <div class="flex md:hidden justify-end border-b border-white/5">
                     <button
-                      data-close
+                      data-dropdown-close
                       class="text-white/40 hover:text-white text-sm mb-4"
                       id="close-filter-status"
                     >

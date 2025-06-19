@@ -12,7 +12,33 @@ function applyIfDirty(update) {
 }
 
 function collectionUpdater(filter, resolveCollection, update) {
-  const checkboxes = filter.querySelectorAll('input[type=checkbox]')
+  const checkboxes = Array.from(filter.querySelectorAll('input[type=checkbox]'))
+  const labels = filter
+    .closest('.dropdown')
+    .querySelector('[data-dropdown-labels]')
+
+  function updateLabels() {
+    if (filterDirty) {
+      const checked = checkboxes.filter((c) => c.checked)
+      const labelsList = checked.map((c) => c.parentElement.textContent.trim())
+      const maxVisible = 2
+
+      let display = ''
+
+      if (labelsList.length === 0) {
+        display = 'All'
+      } else if (labelsList.length <= maxVisible) {
+        display = labelsList.join(', ')
+      } else {
+        const visible = labelsList.slice(0, maxVisible).join(', ')
+        const remaining = labelsList.length - maxVisible
+        display = `${visible}, +${remaining}`
+      }
+
+      labels.textContent = display
+    }
+  }
+
   for (const checkbox of checkboxes) {
     checkbox.addEventListener('change', ({ currentTarget }) => {
       const collection = resolveCollection(currentTarget)
@@ -28,15 +54,20 @@ function collectionUpdater(filter, resolveCollection, update) {
         filterDirty = true
       }
 
+      updateLabels()
       applyIfDirty(update)
     })
+  }
+
+  return {
+    updateLabels,
   }
 }
 
 function loadStatusFilter(ctx) {
   const status = [
     {
-      label: 'Sent',
+      label: 'In Flight',
       value: 'sent',
     },
     {
@@ -95,7 +126,7 @@ function loadChainsFilter(ctx) {
         </div>
     </div>`
 
-  collectionUpdater(
+  const { updateLabels } = collectionUpdater(
     filter,
     (currentTarget) =>
       currentTarget.dataset.filter === 'origin'
@@ -111,8 +142,12 @@ function loadChainsFilter(ctx) {
       ctx.filters.selectedDestinations.length = 0
       const checkboxes = filter.querySelectorAll('input[type=checkbox]')
       for (const checkbox of checkboxes) {
+        if (checkbox.checked) {
+          filterDirty = true
+        }
         checkbox.checked = false
       }
+      updateLabels()
       applyIfDirty(ctx.update)
     })
 }
@@ -156,11 +191,10 @@ function setupToggles() {
     }
   })
 
-  const dataCloseBtns = document.querySelectorAll('[data-close]')
+  const dataCloseBtns = document.querySelectorAll('[data-dropdown-close]')
   for (const button of dataCloseBtns) {
     button.addEventListener('click', () => {
-      const menu = button.closest('.dropdown-menu')
-      if (menu) menu.classList.add('hidden')
+      hideAll()
     })
   }
 }
