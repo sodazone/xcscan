@@ -178,6 +178,13 @@ function createBreadcrumbs() {
   return breadcrumbs
 }
 
+function getElapsedText(start, end) {
+  const deltaSec = Math.floor((end - start) / 1000)
+  const minutes = Math.floor(deltaSec / 60)
+  const seconds = deltaSec % 60
+  return `(+${minutes}m ${seconds}s)`
+}
+
 function getTimeDetails({ sentAt, recvAt }) {
   let timeDetails = ''
   if (sentAt) {
@@ -190,10 +197,7 @@ function getTimeDetails({ sentAt, recvAt }) {
 
     if (receivedDate) {
       formattedReceived = `${receivedDate.toISOString().split('T').join(' ').split('.')[0]} UTC`
-      const deltaSec = Math.floor((receivedDate - sentDate) / 1000)
-      const min = Math.floor(deltaSec / 60)
-      const sec = deltaSec % 60
-      elapsed = `(+${min}m ${sec}s)`
+      elapsed = getElapsedText(sentAt, recvAt)
     }
 
     timeDetails = `
@@ -311,10 +315,7 @@ function createJourneyLeg(stop, index) {
   let elapsedText = ''
 
   if (timeStart && timeEnd) {
-    const deltaSec = Math.floor((timeEnd - timeStart) / 1000)
-    const minutes = Math.floor(deltaSec / 60)
-    const seconds = deltaSec % 60
-    elapsedText = `(+${minutes}m ${seconds}s)`
+    elapsedText = getElapsedText(timeStart, timeEnd)
   }
 
   const container = document.createElement('div')
