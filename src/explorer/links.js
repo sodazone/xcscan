@@ -1,0 +1,31 @@
+const SUBSCAN = {
+  'urn:ocn:polkadot:0': 'https://polkadot.subscan.io',
+  'urn:ocn:polkadot:1000': 'https://assethub-polkadot.subscan.io',
+  'urn:ocn:polkadot:2000': 'https://acala.subscan.io',
+  'urn:ocn:polkadot:2004': 'https://moonbeam.subscan.io',
+  'urn:ocn:polkadot:2006': 'https://astar.subscan.io',
+  'urn:ocn:polkadot:2030': 'https://bifrost.subscan.io',
+  'urn:ocn:polkadot:2031': 'https://centrifuge.subscan.io',
+  'urn:ocn:polkadot:2032': 'https://interlay.subscan.io',
+  'urn:ocn:polkadot:2034': 'https://hydration.subscan.io',
+}
+
+function resolveURL(chainId, path, param) {
+  const base = SUBSCAN[chainId]
+  if (base) {
+    return `${base}/${path}/${param}`
+  }
+  return null
+}
+
+export function getSubscanExtrinsicLink(chainId, hash) {
+  return resolveURL(chainId, 'extrinsic', hash)
+}
+
+export function getSubscanBlockLink(chainId, blockNumber) {
+  return resolveURL(chainId, 'block', blockNumber)
+}
+
+export function getSubscanAddressLink(chainId, address) {
+  return resolveURL(chainId, 'address', address)
+}

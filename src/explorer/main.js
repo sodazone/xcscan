@@ -1,9 +1,9 @@
 import { debounce } from '../utils.js'
-import { listJourneys } from './api.js'
+import { listJourneys, subscribeToJourneys } from './api.js'
 import {
-  decodeWellKnownAddress,
+  decodeWellKnownAddressHTML,
   formatAssetAmount,
-  formatNetworkWithIcon,
+  formatNetworkWithIconHTML,
   loadResources,
   prettify,
   shortenAddress,
@@ -14,6 +14,7 @@ const pageCursors = [null]
 let currentPage = 0
 const pageSize = 10
 
+let closeSubscription
 const filters = {
   currentSearchTerm: '',
   selectedDestinations: [],
@@ -83,50 +84,34 @@ function renderCurrentPage(cursor) {
     .catch(console.log)
 }
 
-function renderTransactionsTable({ items, pageInfo }) {
-  const container = document.querySelector(
-    '.transaction-table .transaction-table-body'
-  )
-  container.innerHTML = ''
+function createJourneyRow(item) {
+  const fromChain = item.origin
+  const toChain = item.destination
+  const fromAddress = item.from.startsWith('urn')
+    ? null
+    : shortenAddress(item.fromFormatted ?? item.from)
+  const toAddress = item.to.startsWith('urn')
+    ? null
+    : (decodeWellKnownAddressHTML(item.to) ??
+      shortenAddress(item.toFormatted ?? item.to))
+  const time = formatTimestamp(item.sentAt)
 
-  if (items.length === 0) {
-    container.innerHTML = `
-            <div class="text-center text-white/50 py-10 text-sm opacity-0 transition-opacity duration-500" id="no-results">
-                No results found.
-            </div>`
-    requestAnimationFrame(() => {
-      document.querySelector('#no-results')?.classList.add('opacity-100')
-    })
-    return
+  const action = {
+    type: item.type,
+  }
+  if (item.type === 'transact' && item.transactCalls?.length) {
+    const call = item.transactCalls[0]
+    action.module = call.module
+    action.method = prettify(call.method)
   }
 
-  for (const item of items) {
-    const fromChain = item.origin
-    const toChain = item.destination
-    const fromAddress = item.from.startsWith('urn')
-      ? null
-      : shortenAddress(item.fromFormatted ?? item.from)
-    const toAddress = item.to.startsWith('urn')
-      ? null
-      : (decodeWellKnownAddress(item.to) ??
-        shortenAddress(item.toFormatted ?? item.to))
-    const time = formatTimestamp(item.sentAt)
+  const row = document.createElement('a')
+  row.href = `/tx/index.html#${item.correlationId}`
+  row.tabIndex = 0
+  row.id = item.correlationId
+  row.className = 'transaction-row'
 
-    const action = {
-      type: item.type,
-    }
-    if (item.type === 'transact' && item.transactCalls?.length) {
-      const call = item.transactCalls[0]
-      action.module = call.module
-      action.method = prettify(call.method)
-    }
-
-    const row = document.createElement('a')
-    row.href = `/tx/index.html#${item.correlationId}`
-    row.tabIndex = 0
-    row.className = 'transaction-row'
-
-    row.innerHTML = `
+  row.innerHTML = `
 <div class="cell flex md:items-center" data-label="Time">${time}</div>
 <div class="cell flex md:items-center" data-label="Action">
   ${
@@ -144,13 +129,13 @@ function renderTransactionsTable({ items, pageInfo }) {
 </div>
         <div class="cell flex md:items-center" data-label="From">
           <div class="flex flex-col space-y-1">
-            ${formatNetworkWithIcon(fromChain)}
+            ${formatNetworkWithIconHTML(fromChain)}
             ${fromAddress == null ? '' : `<div>${fromAddress}</div>`}
           </div>
         </div>
         <div class="cell flex md:items-center" data-label="To">
             <div class="flex flex-col space-y-1">
-            ${formatNetworkWithIcon(toChain)}
+            ${formatNetworkWithIconHTML(toChain)}
             ${toAddress == null ? '' : `<div>${toAddress}</div>`}
             </div>
         </div>
@@ -178,14 +163,103 @@ function renderTransactionsTable({ items, pageInfo }) {
           </div>
         </div>
       `
+  return row
+}
 
-    container.appendChild(row)
+function renderTransactionsTable({ items, pageInfo }) {
+  if (closeSubscription) {
+    closeSubscription()
+  }
+
+  const table = document.querySelector(
+    '.transaction-table .transaction-table-body'
+  )
+  table.innerHTML = ''
+
+  if (items.length === 0) {
+    table.innerHTML = `
+            <div class="text-center text-white/50 py-10 text-sm opacity-0 transition-opacity duration-500" id="no-results">
+                No results found.
+            </div>`
+    requestAnimationFrame(() => {
+      document.querySelector('#no-results')?.classList.add('opacity-100')
+    })
+    return
+  }
+
+  for (const item of items) {
+    const row = createJourneyRow(item)
+
+    table.appendChild(row)
     requestAnimationFrame(() => {
       row.classList.add('fade-in')
     })
   }
 
   renderPaginationFooter(pageInfo)
+
+  function onUpdateJourney(journey) {
+    const existing = items?.find((item) => item.id === journey.id)
+    if (existing) {
+      if (existing.status === 'sent') {
+        existing.status = journey.status
+
+        const row = document.getElementById(journey.correlationId)
+        if (!row) {
+          console.warn('Row not found for', journey.correlationId)
+          return
+        }
+
+        const statusCell = row.querySelector('[data-label="Status"]')
+        if (!statusCell) return
+
+        statusCell.setAttribute('title', journey.status)
+
+        const img = statusCell.querySelector('img.table-status')
+        if (img) {
+          img.className = `table-status ${journey.status.toLowerCase()} size-4`
+          img.src = `/icons/${journey.status.toLowerCase()}.svg`
+          img.alt = journey.status.toLowerCase()
+        }
+
+        const text = statusCell.querySelector('span')
+        if (text) {
+          text.textContent = journey.status
+        }
+      }
+    } else {
+      console.log('Journey not found')
+    }
+  }
+
+  function onNewJourney(journey) {
+    if (currentPage === 0) {
+      const row = createJourneyRow(journey)
+      table.prepend(row)
+      requestAnimationFrame(() => row.classList.add('fade-in'))
+
+      items.unshift(journey)
+
+      if (items.length > pageSize) {
+        items.pop()
+
+        // update pagination cursor
+        const lastItem = items[items.length - 1]
+        pageCursors.length = 1
+        pageCursors.push(btoa(lastItem.sentAt.toString()))
+
+        const lastRow = table.lastElementChild
+        if (lastRow) {
+          lastRow.remove()
+        }
+      }
+    }
+  }
+
+  closeSubscription = subscribeToJourneys(filters, {
+    onNewJourney,
+    onUpdateJourney,
+  })
 }
 
 function applyFiltersAndRender() {

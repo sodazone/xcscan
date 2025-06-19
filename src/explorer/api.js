@@ -1,5 +1,6 @@
 import { apiKey, httpUrl } from '../env.js'
 
+const sseUrl = `${httpUrl}/agents/xcm/sse`
 const queryUrl = `${httpUrl}/query/xcm`
 const headers = Object.assign(
   {
@@ -39,8 +40,8 @@ function asCriteria(filters) {
   if (selectedOrigins && selectedOrigins.length > 0) {
     criteria.origins = [...selectedOrigins]
   }
-  if (selectedStatus != null) {
-    criteria.status = selectedStatus
+  if (selectedStatus && selectedStatus.length > 0) {
+    criteria.status = [...selectedStatus]
   }
   if (currentSearchTerm != null) {
     const trimed = currentSearchTerm.trim()
@@ -81,10 +82,65 @@ export async function getJourneyById(id) {
     return await _fetch({
       op: 'journeys.by_id',
       criteria: {
-        id: 1,
+        id,
       },
     })
   } catch (error) {
     console.error(error.message)
+  }
+}
+
+export function subscribeToJourney(
+  id,
+  { onUpdateJourney, onOpen = () => {}, onError = () => {} }
+) {
+  const source = new EventSource(`${sseUrl}?id=${id}`)
+
+  source.onopen = onOpen
+
+  source.addEventListener('update_journey', (e) =>
+    onUpdateJourney(JSON.parse(e.data))
+  )
+
+  source.onerror = (error) => {
+    console.error('SSE error:', error)
+    onError(error)
+
+    if (source.readyState === EventSource.CLOSED) {
+      // TODO: exponential retry
+      console.warn('SSE connection closed by server.')
+    }
+  }
+}
+
+export function subscribeToJourneys(
+  filters,
+  { onUpdateJourney, onNewJourney, onOpen = () => {}, onError = () => {} }
+) {
+  const params = new URLSearchParams(asCriteria(filters)).toString()
+  const source = new EventSource(`${sseUrl}?${params}`)
+
+  source.onopen = onOpen
+
+  source.addEventListener('update_journey', (e) =>
+    onUpdateJourney(JSON.parse(e.data))
+  )
+  source.addEventListener('new_journey', (e) =>
+    onNewJourney(JSON.parse(e.data))
+  )
+
+  source.onerror = (error) => {
+    console.error('SSE error:', error)
+    onError(error)
+
+    if (source.readyState === EventSource.CLOSED) {
+      // TODO: exponential retry
+      console.warn('SSE connection closed by server.')
+    }
+  }
+
+  return () => {
+    console.log('Closing SSE connection')
+    source.close()
   }
 }

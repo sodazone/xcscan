@@ -90,7 +90,7 @@
                   class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle transition"
                 >
                   <div class="flex items-start gap-2">
-                    <span>Chains:</span>
+                    <span>Chains</span>
                     <span data-dropdown-labels class="text-white text-left"
                       >All</span
                     >
@@ -109,24 +109,32 @@
 
                 <div
                   id="filter-chains"
-                  class="dropdown-menu hidden fixed md:absolute md:-right-20 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur py-4 pl-4 pr-1 md:mt-2 w-screen md:max-w-2xl md:rounded-lg md:shadow flex flex-col"
+                  class="dropdown-menu hidden fixed flex flex-col gap-y-4 md:absolute md:-right-20 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:max-w-2xl md:rounded-lg md:shadow"
                 >
-                  <div class="flex space-x-4 items-center justify-end mb-4 border-b border-white/5">
-                    <button
-                      id="clear-filter-chains"
-                      class="cursor-pointer text-white/40 hover:text-white text-sm"
-                    >
-                      Clear
-                    </button>
-                    <button
-                      data-dropdown-close
-                      class="md:hidden text-white/40 hover:text-white text-sm"
-                      id="close-filter-chains"
-                    >
-                      Close ✕
-                    </button>
+                  <div
+                    class="flex space-x-4 items-center justify-end border-b border-white/5 p-4"
+                  >
+                    <span class="text-sm text-white/80">Select Chains</span>
+                    <div class="ml-auto flex space-x-4">
+                      <button
+                        id="clear-filter-chains"
+                        class="cursor-pointer text-white/40 hover:text-white text-sm"
+                      >
+                        Clear
+                      </button>
+                      <button
+                        data-dropdown-close
+                        class="md:hidden text-white/40 hover:text-white text-sm"
+                        id="close-filter-chains"
+                      >
+                        Close ✕
+                      </button>
+                    </div>
                   </div>
-                  <div id="filter-chains-content" class="grid gap-3"></div>
+                  <div
+                    id="filter-chains-content"
+                    class="grid gap-3 pl-4 pr-1 pb-4"
+                  ></div>
                 </div>
               </div>
 
@@ -136,7 +144,7 @@
                   class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
                 >
                   <div class="flex items-start gap-2">
-                    <span>Status:</span>
+                    <span>Status</span>
                     <span data-dropdown-labels class="text-white text-left"
                       >All</span
                     >
@@ -155,18 +163,24 @@
 
                 <div
                   id="filter-status"
-                  class="dropdown-menu hidden fixed md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur p-4 md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow flex flex-col"
+                  class="dropdown-menu hidden fixed flex flex-col gap-y-4 md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow"
                 >
-                  <div class="flex md:hidden justify-end border-b border-white/5">
+                  <div
+                    class="flex items-center md:hidden border-b border-white/5 p-4"
+                  >
+                    <span class="text-sm text-white/80">Select Status</span>
                     <button
                       data-dropdown-close
-                      class="text-white/40 hover:text-white text-sm mb-4"
+                      class="text-white/40 hover:text-white text-sm ml-auto"
                       id="close-filter-status"
                     >
                       Close ✕
                     </button>
                   </div>
-                  <div id="filter-status-content" class="grid gap-3"></div>
+                  <div
+                    id="filter-status-content"
+                    class="grid gap-3 px-4 md:py-4"
+                  ></div>
                 </div>
               </div>
             </div>

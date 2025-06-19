@@ -1,15 +1,42 @@
 import { resolveNetworkName } from '../../extras'
-import { getJourneyById } from '../api.js'
+import { htmlToElement } from '../../utils.js'
+import { getJourneyById, subscribeToJourney } from '../api.js'
 import {
-  decodeWellKnownAddress,
+  decodeWellKnownAddressHTML,
   formatAction,
-  formatNetworkWithIcon,
+  formatNetworkWithIconHTML,
   loadResources,
   shortenAddress,
 } from '../common.js'
+import {
+  getSubscanAddressLink,
+  getSubscanBlockLink,
+  getSubscanExtrinsicLink,
+} from '../links.js'
+import { createCopyLinkHTML, installCopyEventListener } from './copy-link.js'
 import { createXcmProgramViewer } from './json.js'
 
-function formatTimestamp(ts) {
+function createAnimatedEllipsisSVGHTML() {
+  const offsets = [15, 60, 105]
+  const delays = [0, 0.2, 0.4]
+
+  const circles = offsets
+    .map(
+      (cx, i) => `
+      <circle cx="${cx}" cy="15" r="10">
+        <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" begin="${delays[i]}s" />
+      </circle>`
+    )
+    .join('')
+
+  return `
+    <svg viewBox="0 0 120 30" fill="currentColor" class="inline w-5 h-5 text-white/60">
+      ${circles}
+    </svg>
+  `
+}
+
+function formatTimestampHTML(ts) {
   const date = new Date(ts)
 
   const hours = date.getUTCHours()
@@ -37,78 +64,234 @@ function formatTimestamp(ts) {
     </div>`
 }
 
-function formatStatusIcon(status) {
+function formatStatusIconHTML(status) {
   const cls = status.toLowerCase()
   return `<img class="${cls} size-3" src="/icons/${cls}.svg" alt="${cls}" title="${status}" />`
 }
 
-function formatStatus(status) {
+function formatStatusHTML(status) {
   const cls = status.toLowerCase()
   return `<div class="status status-${cls}"><span class="status-bullet"></span><span class="status-label">${cls}</span></div>`
 }
 
-function formatExtrinsic(ex) {
-  if (!ex || !ex.module) return ''
-  return `<div class="text-xs text-white/70">
-    Extrinsic: <span class="font-medium">${ex.module}.${ex.method}</span>
-  </div>`
-}
+function createLegStopMetaHTML({ extrinsic, event, chainId }) {
+  const extrinsicHTML = extrinsic?.module
+    ? `
+    <div class="flex items-center space-x-2">
+      <span class="text-white/50 text-xs">Tx Hash</span>
+      ${createCopyLinkHTML({ text: extrinsic.hash, display: shortenAddress(extrinsic.hash), url: getSubscanExtrinsicLink(chainId, extrinsic.hash) })}
+    </div>
+    <div class="flex items-center space-x-2">
+      <span class="text-white/50 text-xs">Extrinsic</span>
+      <span class="text-xs font-medium text-white/80 truncate">${extrinsic.module}.${extrinsic.method}</span>
+    </div>
+    `
+    : ''
 
-function formatEvent(ev) {
-  if (!ev || !ev.module) return ''
-  return `<div class="text-xs text-white/70">
-    Event: <span class="font-medium">${ev.module}.${ev.name}</span>
-  </div>`
-}
+  const eventHTML = event?.module
+    ? `
+    <div class="flex items-center space-x-2">
+      <span class="text-white/50 text-xs">Event</span>
+      <span class="text-xs font-medium text-white/80 truncate">${event.module}.${event.name}</span>
+    </div>
+    `
+    : ''
 
-function formatStopPart(part) {
-  if (part == null) {
-    return ''
-  }
-
-  const block = part.blockNumber ? `Block #${part.blockNumber}` : ''
-  const time = part.timestamp ? formatTimestamp(part.timestamp) : ''
-  const extrinsic = formatExtrinsic(part.extrinsic)
-  const event = formatEvent(part.event)
-  const statusIcon = part.status ? formatStatusIcon(part.status) : ''
   return `
-    <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full ${block === '' ? 'opacity-60' : ''}">
-      <div class="flex items-center justify-between text-sm text-white/70">
-        ${formatNetworkWithIcon(part.chainId)}
-        ${statusIcon}
-      </div>
-      ${
-        block === ''
-          ? `
-<div class="flex items-center space-x-2 text-sm text-white/60">
-  <span>in transit</span>
-<svg class="inline w-5 h-5 text-white/60" viewBox="0 0 120 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="15" cy="15" r="10">
-    <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" begin="0s"/>
-  </circle>
-  <circle cx="60" cy="15" r="10">
-    <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" begin="0.2s"/>
-  </circle>
-  <circle cx="105" cy="15" r="10">
-    <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" begin="0.4s"/>
-  </circle>
-</svg>
-</div>
-`
-          : `<div class="text-white font-mono text-sm">${block}</div>`
-      }
-      ${time}
-      <div class="flex flex-col space-y-1">
-      ${extrinsic}
-      ${event}
-      </div>
-    </div>`
+    <div class="text-sm space-y-2">
+      ${extrinsicHTML}
+      ${eventHTML}
+    </div>
+  `
 }
 
-function formatJourneyStop(stop, index) {
-  const relay = formatStopPart(stop.relay)
-  const from = formatStopPart(stop.from)
-  const to = formatStopPart(stop.to)
+function createLegStopHTML(stop) {
+  if (stop == null) return null
+
+  const opacityClass = stop.blockNumber ? '' : ' opacity-60'
+
+  const networkHTML = formatNetworkWithIconHTML(stop.chainId)
+  const statusIconHTML = stop.status
+    ? formatStatusIconHTML(stop.status) || ''
+    : ''
+
+  const headerHTML = `
+    <div class="flex items-center justify-between text-sm text-white/70">
+      ${networkHTML}
+      ${statusIconHTML}
+    </div>
+  `
+
+  const bodyHTML = stop.blockNumber
+    ? `<div class="flex space-x-2 font-mono text-sm"><span class="text-white/50">Block</span> ${createCopyLinkHTML(
+        {
+          text: stop.blockNumber,
+          url: getSubscanBlockLink(stop.chainId, stop.blockNumber),
+        }
+      )}</div>`
+    : `
+      <div class="flex items-center space-x-2 text-sm text-white/60">
+        <span>in transit</span>
+        ${createAnimatedEllipsisSVGHTML()}
+      </div>
+    `
+
+  const timestampHTML = stop.timestamp
+    ? `<div class="text-white/40 text-xs">${formatTimestampHTML(stop.timestamp)}</div>`
+    : ''
+
+  const metaHTML = createLegStopMetaHTML(stop) || ''
+
+  return `
+    <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full${opacityClass}">
+      ${headerHTML}
+      ${bodyHTML}
+      ${timestampHTML}
+      ${metaHTML}
+    </div>
+  `
+}
+
+function createLegStop(stop) {
+  return htmlToElement(createLegStopHTML(stop))
+}
+
+function createBreadcrumbs() {
+  const breadcrumbs = document.createElement('div')
+  breadcrumbs.className =
+    'flex space-x-2 text-sm mb-4 items-center text-white/60'
+  breadcrumbs.innerHTML = `
+	  <a class="group flex space-x-2 items-center" href="/">	
+		<div class="rounded-full bg-white/10 p-1 text-black/90 group-hover:bg-white/30">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+			</svg>
+		</div>
+		<span class="group-hover:text-white">Transactions</span>
+	  </a>
+    `
+  return breadcrumbs
+}
+
+function getTimeDetails({ sentAt, recvAt }) {
+  let timeDetails = ''
+  if (sentAt) {
+    const sentDate = new Date(sentAt)
+    const receivedDate = recvAt ? new Date(recvAt) : null
+
+    const formattedSent = `${sentDate.toISOString().split('T').join(' ').split('.')[0]} UTC`
+    let formattedReceived = ''
+    let elapsed = ''
+
+    if (receivedDate) {
+      formattedReceived = `${receivedDate.toISOString().split('T').join(' ').split('.')[0]} UTC`
+      const deltaSec = Math.floor((receivedDate - sentDate) / 1000)
+      const min = Math.floor(deltaSec / 60)
+      const sec = deltaSec % 60
+      elapsed = `(+${min}m ${sec}s)`
+    }
+
+    timeDetails = `
+      <div class="text-right text-white/50">Sent</div>
+      <div>${formattedSent}</div>
+
+      ${
+        receivedDate
+          ? `
+      <div class="text-right text-white/50">Received</div>
+      <div>${formattedReceived} <span class="text-white/40">${elapsed}</span></div>
+      `
+          : ''
+      }
+    `
+  }
+  return timeDetails
+}
+
+function getAmounts({ assets }) {
+  return Array.isArray(assets)
+    ? assets
+        .map((a) =>
+          a.decimals == null
+            ? ''
+            : `<div>${a.amount / 10 ** a.decimals} ${a.symbol}</div>`
+        )
+        .join('')
+    : ''
+}
+
+function createJourneySummary(journey) {
+  const amounts = getAmounts(journey)
+  const timeDetails = getTimeDetails(journey)
+  const fromAddress = journey.from.startsWith('urn')
+    ? null
+    : shortenAddress(journey.fromFormatted ?? journey.from)
+  const toAddress = journey.to.startsWith('urn')
+    ? null
+    : (decodeWellKnownAddressHTML(journey.to) ??
+      shortenAddress(journey.toFormatted ?? journey.to))
+
+  const actionFormatted = formatAction(journey)
+
+  const summary = document.createElement('div')
+  summary.className = 'bg-white/5 rounded-xl p-4 space-y-2'
+
+  summary.innerHTML = `
+  <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 text-sm text-white/80 pt-2">
+    <div class="text-right text-white/50">ID</div>
+    <div class="truncate" title="${journey.correlationId}">${journey.correlationId}</div>
+
+    <div class="text-right text-white/50">Status</div>
+    <div>${formatStatusHTML(journey.status)}</div>
+
+    <div class="text-right text-white/50">Action</div>
+    <div class="truncate break-all">${actionFormatted}</div>
+
+    ${timeDetails}
+
+    <div class="text-right text-white/50">From</div>
+    <div class="flex flex-col space-y-1">
+       ${formatNetworkWithIconHTML(journey.origin)}
+       ${
+         fromAddress == null
+           ? ''
+           : `<div class="break-all">${createCopyLinkHTML({
+               text: journey.from,
+               display: fromAddress,
+               url: getSubscanAddressLink(journey.origin, journey.from),
+             })}</div>`
+       }
+    </div>
+
+    <div class="text-right text-white/50">To</div>
+        <div class="flex flex-col space-y-1">
+       ${formatNetworkWithIconHTML(journey.destination)}
+	   ${
+       toAddress == null
+         ? ''
+         : `<div class="break-all">${createCopyLinkHTML({
+             text: journey.to,
+             display: toAddress,
+             url: getSubscanAddressLink(journey.destination, journey.to),
+           })}</div>`
+     }
+    </div>
+
+    ${
+      amounts === ''
+        ? ''
+        : `<div class="text-right text-white/50">Assets</div>
+    <div class="flex flex-col space-y-1">${amounts}</div>`
+    }
+  </div>
+`
+  return summary
+}
+
+function createJourneyLeg(stop, index) {
+  const from = createLegStop(stop.from)
+  const relay = createLegStop(stop.relay)
+  const to = createLegStop(stop.to)
 
   const fromName = stop.from?.chainId
     ? resolveNetworkName(stop.from.chainId)
@@ -118,15 +301,6 @@ function formatJourneyStop(stop, index) {
     ? resolveNetworkName(stop.relay.chainId)
     : null
 
-  const arrow = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-white/20">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>`
-  const legLabel =
-    [fromName, relayName, toName]
-      .filter(Boolean)
-      .map((l) => `<span>${l}</span>`)
-      .join(arrow) || `Leg ${index + 1}`
-
   const timeStart = stop.from?.timestamp ?? stop.relay?.timestamp
   const timeEnd = stop.to?.timestamp
   let elapsedText = ''
@@ -135,21 +309,88 @@ function formatJourneyStop(stop, index) {
     const deltaSec = Math.floor((timeEnd - timeStart) / 1000)
     const minutes = Math.floor(deltaSec / 60)
     const seconds = deltaSec % 60
-    elapsedText = ` <span class="text-white/40 text-xs ml-auto">+${minutes}m ${seconds}s</span>`
+    elapsedText = `+${minutes}m ${seconds}s`
   }
 
-  return `
-    <div class="space-y-3">
-      <div class="text-sm text-white/70 flex flex-wrap items-center space-x-2 font-semibold">
-        <div class="flex space-x-2 items-center truncate">${legLabel}</div>
-        ${elapsedText}
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
-        ${from}
-        ${relay}
-        ${to}
-      </div>
-    </div>`
+  const container = document.createElement('div')
+  container.className = 'space-y-3'
+
+  const header = document.createElement('div')
+  header.className =
+    'text-sm text-white/50 flex flex-wrap items-center space-x-2 font-semibold'
+
+  const labelContainer = document.createElement('div')
+  labelContainer.className = 'flex space-x-2 items-center truncate'
+
+  const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  arrow.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+  arrow.setAttribute('fill', 'none')
+  arrow.setAttribute('viewBox', '0 0 24 24')
+  arrow.setAttribute('stroke-width', '1.5')
+  arrow.setAttribute('stroke', 'currentColor')
+  arrow.setAttribute('class', 'size-4 text-white/20')
+  arrow.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />`
+
+  const names = [fromName, relayName, toName].filter(Boolean)
+  if (names.length) {
+    names.forEach((name, i) => {
+      const span = document.createElement('span')
+      span.textContent = name
+      labelContainer.appendChild(span)
+      if (i < names.length - 1) {
+        labelContainer.appendChild(arrow.cloneNode(true))
+      }
+    })
+  } else {
+    labelContainer.textContent = `Leg ${index + 1}`
+  }
+
+  header.appendChild(labelContainer)
+
+  if (elapsedText) {
+    const elapsed = document.createElement('span')
+    elapsed.className = 'text-white/40 text-xs ml-auto'
+    elapsed.textContent = elapsedText
+    header.appendChild(elapsed)
+  }
+
+  const stopsContainer = document.createElement('div')
+  stopsContainer.className = 'grid grid-cols-1 md:grid-cols-3 gap-3 items-start'
+
+  if (from) stopsContainer.appendChild(from)
+  if (relay) stopsContainer.appendChild(relay)
+  if (to) stopsContainer.appendChild(to)
+
+  container.appendChild(header)
+  container.appendChild(stopsContainer)
+
+  return container
+}
+
+function createJourneyLegs(journey) {
+  const hasReceived = journey.stops.some(
+    (stop) => stop.to?.status === 'received'
+  )
+
+  const container = document.createElement('div')
+  container.className = 'my-8 space-y-6'
+
+  const title = document.createElement('h2')
+  title.textContent = 'Legs'
+  container.appendChild(title)
+
+  journey.stops.forEach((stop, index) => {
+    // Skip "in_progress" if final "received" exists
+    if (hasReceived && stop.to?.status === 'in_progress') return
+
+    // Skip completely empty stops
+    if (!stop.from && !stop.relay && !stop.to) return
+
+    const leg = createJourneyLeg(stop, index)
+    container.appendChild(leg)
+  })
+
+  return container
 }
 
 async function loadTransactionDetail() {
@@ -163,132 +404,31 @@ async function loadTransactionDetail() {
 
     const journey = items[0]
     const container = document.querySelector('.transaction-detail')
-    const amounts = journey.assets
-      .map((a) =>
-        a.decimals == null
-          ? ''
-          : `<div>${a.amount / 10 ** a.decimals} ${a.symbol}</div>`
-      )
-      .join('')
 
-    const sentTime = journey.sentAt
-    const receivedTime = journey.recvAt
-
-    let timeDetails = ''
-    if (sentTime) {
-      const sentDate = new Date(sentTime)
-      const receivedDate = receivedTime ? new Date(receivedTime) : null
-
-      const formattedSent = `${sentDate.toISOString().split('T').join(' ').split('.')[0]} UTC`
-      let formattedReceived = ''
-      let elapsed = ''
-
-      if (receivedDate) {
-        formattedReceived = `${receivedDate.toISOString().split('T').join(' ').split('.')[0]} UTC`
-        const deltaSec = Math.floor((receivedDate - sentDate) / 1000)
-        const min = Math.floor(deltaSec / 60)
-        const sec = deltaSec % 60
-        elapsed = `(+${min}m ${sec}s)`
-      }
-
-      timeDetails = `
-      <div class="text-right text-white/50">Sent</div>
-      <div>${formattedSent}</div>
-
-      ${
-        receivedDate
-          ? `
-      <div class="text-right text-white/50">Received</div>
-      <div>${formattedReceived} <span class="text-white/40">${elapsed}</span></div>
-      `
-          : ''
-      }
-    `
-    }
-
-    const fromAddress = journey.from.startsWith('urn')
-      ? null
-      : shortenAddress(journey.fromFormatted ?? journey.from)
-    const toAddress = journey.to.startsWith('urn')
-      ? null
-      : (decodeWellKnownAddress(journey.to) ??
-        shortenAddress(journey.toFormatted ?? journey.to))
-
-    const actionFormatted = formatAction(journey)
-
-    const summary = document.createElement('div')
-    summary.className = 'bg-white/5 rounded-xl p-4 space-y-2'
-
-    summary.innerHTML = `
-  <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 text-sm text-white/80 pt-2">
-    <div class="text-right text-white/50">ID</div>
-    <div class="truncate" title="${journey.correlationId}">${journey.correlationId}</div>
-
-    <div class="text-right text-white/50">Status</div>
-    <div>${formatStatus(journey.status)}</div>
-
-    <div class="text-right text-white/50">Action</div>
-    <div class="truncate break-all">${actionFormatted}</div>
-
-    ${timeDetails}
-
-    <div class="text-right text-white/50">From</div>
-    <div class="flex flex-col space-y-1">
-       ${formatNetworkWithIcon(journey.origin)}
-       ${fromAddress == null ? '' : `<div class="break-all">${fromAddress}</div>`}
-    </div>
-
-    <div class="text-right text-white/50">To</div>
-        <div class="flex flex-col space-y-1">
-       ${formatNetworkWithIcon(journey.destination)}
-       ${toAddress == null ? '' : `<div class="break-all">${toAddress}</div>`}
-    </div>
-
-    ${
-      amounts === ''
-        ? ''
-        : `<div class="text-right text-white/50">Assets</div>
-    <div class="flex flex-col space-y-1">${amounts}</div>`
-    }
-  </div>
-`
-
-    const stopsHtml = journey.stops
-      .map((stop, i) => formatJourneyStop(stop, i))
-      .join('')
-    const stopsContainer = document.createElement('div')
-    stopsContainer.className = 'my-8 space-y-6'
-    stopsContainer.innerHTML = `
-        <h2>Legs</h2>
-        ${stopsHtml}
-        `
-
+    const summary = createJourneySummary(journey)
+    const legs = createJourneyLegs(journey)
     const program = createXcmProgramViewer(journey)
 
-    const breadcrumbs = document.createElement('div')
-    breadcrumbs.className =
-      'flex space-x-2 text-sm mb-4 items-center text-white/60'
-    breadcrumbs.innerHTML = `
-	  <a class="group flex space-x-2 items-center" href="/">	
-		<div class="rounded-full bg-white/10 p-1 text-black/90 group-hover:bg-white/30">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-			</svg>
-		</div>
-		<span class="group-hover:text-white">Transactions</span>
-	  </a>
-    `
+    const breadcrumbs = createBreadcrumbs()
 
     container.appendChild(breadcrumbs)
     container.appendChild(summary)
-    container.appendChild(stopsContainer)
+    container.appendChild(legs)
     container.appendChild(program)
+
+    function onUpdateJourney(journey) {}
+
+    subscribeToJourney(journey.correlationId, {
+      onUpdateJourney,
+    })
   } catch (err) {
     console.error('Error loading transaction:', err)
   }
 }
 
 window.onload = async () => {
+  installCopyEventListener()
+
   await loadResources()
   await loadTransactionDetail()
 }

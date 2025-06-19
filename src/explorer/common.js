@@ -44,7 +44,7 @@ function getParaIdFromBytes(data) {
   return (data[4] + (data[5] << 8) + (data[6] << 16) + (data[7] << 24)) >>> 0
 }
 
-export function formatNetworkWithIcon(networkId) {
+export function formatNetworkWithIconHTML(networkId) {
   const name = resolveNetworkName(networkId)
   const iconUrl = resolveNetworkIcon(networkId)
 
@@ -65,7 +65,7 @@ function resolvePara(address) {
   return resolveNetworkName(`urn:ocn:polkadot:${paraId}`) ?? paraId
 }
 
-export function decodeWellKnownAddress(address) {
+export function decodeWellKnownAddressHTML(address) {
   const para = '0x70617261'
   const sibl = '0x7369626c'
 
