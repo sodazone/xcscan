@@ -153,23 +153,6 @@ function createLegStop(stop) {
   return htmlToElement(createLegStopHTML(stop))
 }
 
-function createBreadcrumbs() {
-  const breadcrumbs = document.createElement('div')
-  breadcrumbs.className =
-    'flex space-x-2 text-sm mb-4 items-center text-white/60'
-  breadcrumbs.innerHTML = `
-	  <a class="group flex space-x-2 items-center" href="/">	
-		<div class="rounded-full bg-white/10 p-1 text-black/90 group-hover:bg-white/30">
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-			</svg>
-		</div>
-		<span class="group-hover:text-white">Transactions</span>
-	  </a>
-    `
-  return breadcrumbs
-}
-
 function getElapsedText(start, end) {
   const deltaSec = Math.floor((end - start) / 1000)
   const minutes = Math.floor(deltaSec / 60)
@@ -400,8 +383,6 @@ async function loadTransactionDetail() {
     container.innerHTML = ''
 
     if (items == null || items.length === 0) {
-      const breadcrumbs = createBreadcrumbs()
-      container.appendChild(breadcrumbs)
       container.appendChild(
         htmlToElement(`
   <div class="my-8 p-4 mx-auto text-lg text-white/80">
@@ -420,9 +401,6 @@ async function loadTransactionDetail() {
     const legs = createJourneyLegs(journey)
     const program = createXcmProgramViewer(journey)
 
-    const breadcrumbs = createBreadcrumbs()
-
-    container.appendChild(breadcrumbs)
     container.appendChild(summary)
     container.appendChild(legs)
     container.appendChild(program)

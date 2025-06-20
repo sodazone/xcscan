@@ -8,6 +8,29 @@
     <%- include('/header.html', { currentPage: 'tx' }) %>
     <main class="w-full pt-start">
       <section class="mx-auto max-w-screen-xl px-4 py-6">
+        <div class="flex space-x-2 text-sm mb-4 items-center text-white/60">
+          <a class="group flex space-x-2 items-center" href="/">
+            <div
+              class="rounded-full bg-white/10 p-1 text-black/90 group-hover:bg-white/30"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 19.5 8.25 12l7.5-7.5"
+                />
+              </svg>
+            </div>
+            <span class="group-hover:text-white">Transactions</span>
+          </a>
+        </div>
         <div class="transaction-detail">
           <div
             class="flex animate-pulse rounded-lg space-x-4 h-50 bg-linear-to-r from-white/10 to-transparent"
