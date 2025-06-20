@@ -309,12 +309,14 @@ function renderTransactionsTable({ items, pageInfo }) {
   })
 }
 
-function updateSearchIndicator() {
-  const searchIndicator = document.getElementById('search-indicator')
+const searchIndicator = document.getElementById('search-indicator')
+const searchIndicatorText = searchIndicator.querySelector(
+  '#search-indicator-text'
+)
 
+function updateSearchIndicator() {
   if (filters.currentSearchTerm) {
-    searchIndicator.querySelector('#search-indicator-text').textContent =
-      filters.currentSearchTerm
+    searchIndicatorText.textContent = filters.currentSearchTerm
     searchIndicator.classList.remove('hidden')
   } else {
     searchIndicator.classList.add('hidden')
