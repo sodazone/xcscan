@@ -51,7 +51,9 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
   const nextButton = paginationFooter.querySelector('#next-button')
   const pageIndicator = paginationFooter.querySelector('#page-indicator')
 
-  pageCursors.push(endCursor)
+  if(currentPage > pageCursors.length) {
+    pageCursors.push(endCursor)
+  }
 
   prevButton.disabled = currentPage === 0
   nextButton.disabled = !hasNextPage
