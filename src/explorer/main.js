@@ -1,9 +1,11 @@
 import { debounce } from '../utils.js'
 import { listJourneys, subscribeToJourneys } from './api.js'
 import {
+  asClassName,
   decodeWellKnownAddressHTML,
   formatAssetAmount,
   formatNetworkWithIconHTML,
+  getStatusLabel,
   loadResources,
   prettify,
   shortenAddress,
@@ -68,6 +70,19 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
       renderCurrentPage(pageCursors[currentPage])
     }
   }
+}
+
+function createStatusHTML({ status }) {
+  const label = getStatusLabel(status)
+  const cls = asClassName(label)
+  return `
+  <div class="cell flex md:justify-center md:items-center" data-label="Status" title="${label}">
+          <div class="flex space-x-2 items-center">
+            <img class="table-status ${cls} size-4" src="/icons/${cls}.svg" alt="${label}" />
+            <span class="md:hidden capitalize text-white/60">${label}</span>
+          </div>
+        </div>
+  `
 }
 
 function renderCurrentPage(cursor) {
@@ -156,12 +171,7 @@ function createJourneyRow(item) {
             }
             </div>
         </div>
-        <div class="cell flex md:justify-center md:items-center" data-label="Status" title="${item.status}">
-          <div class="flex space-x-2 items-center">
-            <img class="table-status ${item.status.toLowerCase()} size-4" src="/icons/${item.status.toLowerCase()}.svg" alt="${item.status.toLowerCase()}" />
-            <span class="md:hidden capitalize text-white/60">${item.status}</span>
-          </div>
-        </div>
+        ${createStatusHTML(item)}
       `
   return row
 }
@@ -213,22 +223,25 @@ function renderTransactionsTable({ items, pageInfo }) {
         const statusCell = row.querySelector('[data-label="Status"]')
         if (!statusCell) return
 
-        statusCell.setAttribute('title', journey.status)
+        const statusLabel = getStatusLabel(journey)
+        const statusCls = asClassName(statusLabel)
+
+        statusCell.setAttribute('title', statusLabel)
 
         const img = statusCell.querySelector('img.table-status')
         if (img) {
-          img.className = `table-status ${journey.status.toLowerCase()} size-4`
-          img.src = `/icons/${journey.status.toLowerCase()}.svg`
-          img.alt = journey.status.toLowerCase()
+          img.className = `table-status ${statusCls} size-4`
+          img.src = `/icons/${statusCls}.svg`
+          img.alt = statusLabel
         }
 
         const text = statusCell.querySelector('span')
         if (text) {
-          text.textContent = journey.status
+          text.textContent = label
         }
       }
     } else {
-      console.log('Journey not found')
+      console.warn('Journey not found')
     }
   }
 
@@ -256,9 +269,43 @@ function renderTransactionsTable({ items, pageInfo }) {
     }
   }
 
+  function liveStatus() {
+    const connectedIco = document.getElementById('sse-live-icon-connected')
+    const disconnectedIco = document.getElementById(
+      'sse-live-icon-disconnected'
+    )
+    const errorIco = document.getElementById('sse-live-icon-error')
+    const onOpen = () => {
+      if (!disconnectedIco.classList.contains('hidden')) {
+        disconnectedIco.classList.toggle('hidden')
+      }
+      if (connectedIco.classList.contains('hidden')) {
+        connectedIco.classList.toggle('hidden')
+      }
+    }
+    const onError = (_error) => {
+      if (!disconnectedIco.classList.contains('hidden')) {
+        disconnectedIco.classList.toggle('hidden')
+      }
+      if (!connectedIco.classList.contains('hidden')) {
+        connectedIco.classList.toggle('hidden')
+      }
+      if (errorIco.classList.contains('hidden')) {
+        errorIco.classList.toggle('hidden')
+      }
+    }
+    return {
+      onError,
+      onOpen,
+    }
+  }
+
+  const { onError, onOpen } = liveStatus()
   closeSubscription = subscribeToJourneys(filters, {
     onNewJourney,
     onUpdateJourney,
+    onOpen,
+    onError,
   })
 }
 

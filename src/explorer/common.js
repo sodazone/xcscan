@@ -122,3 +122,21 @@ export function prettify(str) {
 export function formatAssetAmount(asset) {
   return `${humanizeNumber(asset.amount / 10 ** asset.decimals)} ${asset.symbol}`
 }
+
+export const selectableStatus = ['sent', 'received', 'failed']
+const statusLabels = {
+  sent: 'In Progress',
+  received: 'Completed',
+  success: 'Completed',
+  fail: 'Failed',
+  failed: 'Failed',
+  timeout: 'Timeout',
+}
+
+export function getStatusLabel(status) {
+  return statusLabels[status.toLowerCase()] ?? 'unknown'
+}
+
+export function asClassName(label) {
+  return label.replace(' ', '_').toLowerCase()
+}

@@ -52,7 +52,26 @@
               <div
                 class="flex items-center space-x-2 text-white/80 whitespace-nowrap"
               >
-                <span class="relative flex h-2 w-2 items-center justify-center">
+                <span
+                  id="sse-live-icon-disconnected"
+                  class="relative flex h-2 w-2 items-center justify-center"
+                >
+                  <span
+                    class="relative inline-flex rounded-full h-2 w-2 bg-white/10"
+                  ></span>
+                </span>
+                <span
+                  id="sse-live-icon-error"
+                  class="hidden relative flex h-2 w-2 items-center justify-center"
+                >
+                  <span
+                    class="relative inline-flex rounded-full h-2 w-2 bg-orange-400"
+                  ></span>
+                </span>
+                <span
+                  id="sse-live-icon-connected"
+                  class="hidden relative flex h-2 w-2 items-center justify-center"
+                >
                   <span
                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
                   ></span>
@@ -114,7 +133,9 @@
                   <div
                     class="flex space-x-4 items-center justify-end border-b border-white/5 p-4"
                   >
-                    <span class="text-sm text-white/80">Select Chains</span>
+                    <span class="text-xs text-white/80 uppercase"
+                      >Select Chains</span
+                    >
                     <div class="ml-auto flex space-x-4">
                       <button
                         id="clear-filter-chains"
@@ -168,7 +189,9 @@
                   <div
                     class="flex items-center md:hidden border-b border-white/5 p-4"
                   >
-                    <span class="text-sm text-white/80">Select Status</span>
+                    <span class="text-xs text-white/80 uppercase"
+                      >Select Status</span
+                    >
                     <button
                       data-dropdown-close
                       class="text-white/40 hover:text-white text-sm ml-auto"
@@ -189,7 +212,7 @@
       </section>
 
       <section class="mx-auto max-w-screen-xl px-4 pb-6">
-        <div class="transaction-table">
+        <div class="transaction-table md:min-h-100">
           <div class="transaction-table-header">
             <div>Time</div>
             <div>Action</div>
@@ -198,8 +221,11 @@
             <div>Assets</div>
             <div>Status</div>
           </div>
-          <div class="transaction-table-body"></div>
-          <!-- TODO: skeleton -->
+          <div class="transaction-table-body">
+            <div
+              class="flex animate-pulse rounded-lg space-x-4 h-50 md:h-18 bg-linear-to-r from-white/10 to-transparent"
+            ></div>
+          </div>
         </div>
         <!-- pagination footer -->
         <div

@@ -2,9 +2,11 @@ import { resolveNetworkName } from '../../extras'
 import { htmlToElement } from '../../utils.js'
 import { getJourneyById, subscribeToJourney } from '../api.js'
 import {
+  asClassName,
   decodeWellKnownAddressHTML,
   formatAction,
   formatNetworkWithIconHTML,
+  getStatusLabel,
   loadResources,
   shortenAddress,
 } from '../common.js'
@@ -15,26 +17,6 @@ import {
 } from '../links.js'
 import { createCopyLinkHTML, installCopyEventListener } from './copy-link.js'
 import { createXcmProgramViewer } from './json.js'
-
-function createAnimatedEllipsisSVGHTML() {
-  const offsets = [15, 60, 105]
-  const delays = [0, 0.2, 0.4]
-
-  const circles = offsets
-    .map(
-      (cx, i) => `
-      <circle cx="${cx}" cy="15" r="10">
-        <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" begin="${delays[i]}s" />
-      </circle>`
-    )
-    .join('')
-
-  return `
-    <svg viewBox="0 0 120 30" fill="currentColor" class="inline w-5 h-5 text-white/60">
-      ${circles}
-    </svg>
-  `
-}
 
 function formatTimestampHTML(ts) {
   const date = new Date(ts)
@@ -65,13 +47,15 @@ function formatTimestampHTML(ts) {
 }
 
 function formatStatusIconHTML(status) {
-  const cls = status.toLowerCase()
-  return `<img class="${cls} size-3" src="/icons/${cls}.svg" alt="${cls}" title="${status}" />`
+  const label = getStatusLabel(status)
+  const cls = asClassName(label)
+  return `<img class="${cls} size-3" src="/icons/${cls}.svg" alt="${cls}" title="${label}" />`
 }
 
 function formatStatusHTML(status) {
-  const cls = status.toLowerCase()
-  return `<div class="status status-${cls}"><span class="status-bullet"></span><span class="status-label">${cls}</span></div>`
+  const label = getStatusLabel(status)
+  const cls = asClassName(label)
+  return `<div class="status status-${cls}"><span class="status-bullet"></span><span class="status-label">${label}</span></div>`
 }
 
 function createLegStopMetaHTML({ extrinsic, event, chainId }) {
@@ -81,9 +65,19 @@ function createLegStopMetaHTML({ extrinsic, event, chainId }) {
       <span class="text-white/50 text-xs">Tx Hash</span>
       ${createCopyLinkHTML({ text: extrinsic.hash, display: shortenAddress(extrinsic.hash), url: getSubscanExtrinsicLink(chainId, extrinsic.hash) })}
     </div>
+    ${
+      extrinsic.evmTxHash
+        ? `
+      <div class="flex items-center space-x-2">
+        <span class="text-white/50 text-xs">EVM Tx Hash</span>
+        ${createCopyLinkHTML({ text: extrinsic.evmTxHash, display: shortenAddress(extrinsic.evmTxHash), url: getSubscanExtrinsicLink(chainId, extrinsic.evmTxHash) })}
+      </div>
+      `
+        : ''
+    }
     <div class="flex items-center space-x-2">
       <span class="text-white/50 text-xs">Extrinsic</span>
-      <span class="text-xs font-medium text-white/80 truncate">${extrinsic.module}.${extrinsic.method}</span>
+      <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/80 truncate">${extrinsic.module}.${extrinsic.method}</span>
     </div>
     `
     : ''
@@ -92,7 +86,7 @@ function createLegStopMetaHTML({ extrinsic, event, chainId }) {
     ? `
     <div class="flex items-center space-x-2">
       <span class="text-white/50 text-xs">Event</span>
-      <span class="text-xs font-medium text-white/80 truncate">${event.module}.${event.name}</span>
+      <span title="${event.module}.${event.name}" class="text-xs font-medium text-white/80 truncate">${event.module}.${event.name}</span>
     </div>
     `
     : ''
@@ -131,8 +125,6 @@ function createLegStopHTML(stop) {
       )}</div>`
     : `
       <div class="flex items-center space-x-2 text-sm text-white/60">
-        <span>in transit</span>
-        ${createAnimatedEllipsisSVGHTML()}
       </div>
     `
 
@@ -243,6 +235,7 @@ function createJourneySummary(journey) {
   const actionFormatted = formatAction(journey)
 
   const summary = document.createElement('div')
+  summary.id = 'journey-summary'
   summary.className = 'bg-white/5 rounded-xl p-4 space-y-2'
 
   summary.innerHTML = `
@@ -265,7 +258,7 @@ function createJourneySummary(journey) {
          fromAddress == null
            ? ''
            : `<div class="break-all">${createCopyLinkHTML({
-               text: journey.from,
+               text: journey.fromFormatted ?? journey.from,
                display: fromAddress,
                url: getSubscanAddressLink(journey.origin, journey.from),
              })}</div>`
@@ -279,7 +272,7 @@ function createJourneySummary(journey) {
        toAddress == null
          ? ''
          : `<div class="break-all">${createCopyLinkHTML({
-             text: journey.to,
+             text: journey.toFormatted ?? journey.to,
              display: toAddress,
              url: getSubscanAddressLink(journey.destination, journey.to),
            })}</div>`
@@ -376,6 +369,7 @@ function createJourneyLeg(stop, index) {
 function createJourneyLegs(journey) {
   const container = document.createElement('div')
   container.className = 'my-8 space-y-6'
+  container.id = 'journey-legs'
 
   const title = document.createElement('h2')
   title.textContent = 'Legs'
@@ -433,13 +427,29 @@ async function loadTransactionDetail() {
     container.appendChild(legs)
     container.appendChild(program)
 
-    function onUpdateJourney(journey) {
-      // TODO
+    function onUpdateJourney(updatedJourney) {
+      const oldSummary = document.getElementById('journey-summary')
+      const oldLegs = document.getElementById('journey-legs')
+
+      if (oldSummary) {
+        const newSummary = createJourneySummary(updatedJourney)
+        oldSummary.replaceWith(newSummary)
+      }
+      if (oldLegs) {
+        const newLegs = createJourneyLegs(updatedJourney)
+        oldLegs.replaceWith(newLegs)
+      }
     }
 
-    subscribeToJourney(journey.correlationId, {
-      onUpdateJourney,
-    })
+    if (journey.status === 'sent') {
+      subscribeToJourney(journey.correlationId, {
+        onUpdateJourney,
+        onOpen: () => {
+          console.log('opn', journey.correlationId)
+        },
+        onError: console.error,
+      })
+    }
   } catch (err) {
     console.error('Error loading transaction:', err)
   }

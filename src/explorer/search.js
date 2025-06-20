@@ -1,4 +1,5 @@
 import { NetworkInfos, resolveNetworkName } from '../extras.js'
+import { getStatusLabel, selectableStatus } from './common.js'
 
 let filterDirty = false
 
@@ -65,30 +66,15 @@ function collectionUpdater(filter, resolveCollection, update) {
 }
 
 function loadStatusFilter(ctx) {
-  const status = [
-    {
-      label: 'In Flight',
-      value: 'sent',
-    },
-    {
-      label: 'Received',
-      value: 'received',
-    },
-    {
-      label: 'Failed',
-      value: 'failed',
-    },
-  ]
-
   const filter = document.getElementById('filter-status-content')
   filter.innerHTML = `<div
     class="flex flex-col gap-2 text-sm text-white/80"
   >
-    ${status
+    ${selectableStatus
       .map((s) => {
-        return `<label class="grow" for="status-filter-${s.value}">
-                    <input id="status-filter-${s.value}" value="${s.value}" type="checkbox" class="mr-2" />
-                    ${s.label}
+        return `<label class="grow p-2" for="status-filter-${s}">
+                    <input id="status-filter-${s}" value="${s}" type="checkbox" class="mr-2" />
+                    ${getStatusLabel(s)}
                 </label>`
       })
       .join('')}
@@ -106,7 +92,7 @@ function loadChainsFilter(ctx) {
             <span class="text-white/50 text-xs font-semibold">Origin</span>
             ${chains
               .map((chain) => {
-                return `<label class="grow" for="o-${chain.urn}">
+                return `<label class="grow p-2" for="o-${chain.urn}">
                     <input id="o-${chain.urn}" data-filter="origin" value="${chain.urn}" type="checkbox" class="mr-2" />
                     ${resolveNetworkName(chain.urn) ?? chain.urn}
                 </label>`
@@ -117,7 +103,7 @@ function loadChainsFilter(ctx) {
             <span class="text-white/50 text-xs font-semibold">Destination</span>
             ${chains
               .map((chain) => {
-                return `<label for="d-${chain.urn}">
+                return `<label class="grow p-2" for="d-${chain.urn}">
                     <input id="d-${chain.urn}" data-filter="destination" value="${chain.urn}" type="checkbox" class="mr-2" />
                     ${resolveNetworkName(chain.urn) ?? chain.urn}
                 </label>`

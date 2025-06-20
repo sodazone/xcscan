@@ -171,7 +171,8 @@ body {
 
 /* Status variants */
 .status-success,
-.status-received {
+.status-received,
+.status-completed {
   @apply bg-green-500/10 text-green-500;
 }
 
@@ -180,9 +181,16 @@ body {
   @apply bg-red-500/10 text-red-500;
 }
 
+.status-in_progress,
 .status-pending,
 .status-sent {
   @apply bg-yellow-500/10 text-yellow-500;
+}
+
+.status-in_progress .status-bullet,
+.status-pending .status-bullet,
+.status-sent .status-bullet {
+  @apply animate-pulse;
 }
 
 .status-warning {
@@ -197,10 +205,13 @@ body {
   @apply bg-white/5 text-zinc-400;
 }
 
-img.table-status.sent {
+img.table-status.in_progress {
   @apply animate-spin z-0;
 }
 
+/*
+ JSON Viewer
+*/
 .json-key {
   color: #9cdcfe; /* light blue */
 }
