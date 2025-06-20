@@ -43,6 +43,26 @@
                 </svg>
               </button>
             </form>
+            <div
+              id="search-input-error"
+              class="hidden italic text-white/70 px-2 my-2"
+            >
+              Please, enter a valid tx hash or address
+            </div>
+          </div>
+
+          <div
+            id="search-indicator"
+            class="text-sm text-white/60 mb-2 flex space-x-2 hidden mr-auto items-center max-w-full"
+          >
+            <span class="text-white/40">Showing results for</span
+            ><span class="italic truncate" id="search-indicator-text"></span>
+            <a
+              href="/"
+              class="size-4 flex items-center justify-center p-2 rounded-full bg-white/10 text-black/90 text-lg font-semibold hover:bg-white/20"
+            >
+              <span>&times;</span>
+            </a>
           </div>
 
           <div

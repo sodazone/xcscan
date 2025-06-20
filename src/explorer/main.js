@@ -309,6 +309,18 @@ function renderTransactionsTable({ items, pageInfo }) {
   })
 }
 
+function updateSearchIndicator() {
+  const searchIndicator = document.getElementById('search-indicator')
+
+  if (filters.currentSearchTerm) {
+    searchIndicator.querySelector('#search-indicator-text').textContent =
+      filters.currentSearchTerm
+    searchIndicator.classList.remove('hidden')
+  } else {
+    searchIndicator.classList.add('hidden')
+  }
+}
+
 function applyFiltersAndRender() {
   listJourneys({
     filters,
@@ -323,6 +335,8 @@ function applyFiltersAndRender() {
       renderTransactionsTable(results)
     })
     .catch(console.log)
+
+  updateSearchIndicator()
 }
 
 export function loadToggles() {
@@ -348,5 +362,36 @@ window.onload = async () => {
     update: debounce(applyFiltersAndRender, 300),
   })
 
-  applyFiltersAndRender()
+  const urlParams = new URLSearchParams(window.location.search)
+  const deepSearch = urlParams.get('search')
+
+  if (deepSearch) {
+    filters.currentSearchTerm = deepSearch
+
+    listJourneys({
+      filters,
+      pagination: {
+        limit: pageSize,
+      },
+    })
+      .then((results) => {
+        if (results.items.length === 1) {
+          window.location.href = `/tx/index.html#${results.items[0].correlationId}`
+        } else {
+          currentPage = 0
+          pageCursors.length = 1
+          renderTransactionsTable(results)
+        }
+      })
+      .catch(console.error)
+
+    updateSearchIndicator()
+  } else {
+    applyFiltersAndRender()
+  }
+
+  if (window.history.replaceState) {
+    const cleanUrl = window.location.origin + window.location.pathname
+    window.history.replaceState(null, '', cleanUrl)
+  }
 }

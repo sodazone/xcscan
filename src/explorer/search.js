@@ -12,6 +12,21 @@ function applyIfDirty(update) {
   update()
 }
 
+function isValidQuery(value) {
+  const trimmed = value.trim()
+
+  // EVM address (0x-prefixed, 40 hex chars)
+  const isEvmAddress = /^0x[a-fA-F0-9]{40}$/.test(trimmed)
+
+  // SS58 address (47-48 chars typical, base58)
+  const isSs58Address = /^[1-9A-HJ-NP-Za-km-z]{38,60}$/.test(trimmed)
+
+  // Tx hash (usually 0x + 64 hex chars)
+  const isTxHash = /^0x[a-fA-F0-9]{64}$/.test(trimmed)
+
+  return isEvmAddress || isSs58Address || isTxHash
+}
+
 function collectionUpdater(filter, resolveCollection, update) {
   const checkboxes = Array.from(filter.querySelectorAll('input[type=checkbox]'))
   const labels = filter
@@ -187,12 +202,30 @@ function setupToggles() {
 
 export function loadSearch(ctx) {
   const searchForm = document.getElementById('search')
+  const inputError = document.getElementById('search-input-error')
+  const input = searchForm.querySelector('input[name="query"]')
+
   if (searchForm) {
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault()
+
       const data = new FormData(e.target)
       const dataObject = Object.fromEntries(data.entries())
-      ctx.filters.currentSearchTerm = (dataObject.query ?? '').trim()
+      const query = (dataObject.query ?? '').trim()
+
+      if (isValidQuery(query)) {
+        inputError.classList.add('hidden')
+        input.classList.remove('border-[#b34d4d]', 'ring-1', 'ring-[#b34d4d')
+        input.removeAttribute('aria-invalid')
+      } else {
+        inputError.classList.remove('hidden')
+        input.classList.add('border-[#b34d4d]', 'ring-1', 'ring-[#b34d4d]')
+        input.setAttribute('aria-invalid', 'true')
+        input.value = ''
+        return
+      }
+
+      ctx.filters.currentSearchTerm = query
       ctx.update()
     })
   }
