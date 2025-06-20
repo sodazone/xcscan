@@ -427,6 +427,8 @@ async function loadTransactionDetail() {
     container.appendChild(legs)
     container.appendChild(program)
 
+    let disconnect
+
     function onUpdateJourney(updatedJourney) {
       const oldSummary = document.getElementById('journey-summary')
       const oldLegs = document.getElementById('journey-legs')
@@ -439,10 +441,14 @@ async function loadTransactionDetail() {
         const newLegs = createJourneyLegs(updatedJourney)
         oldLegs.replaceWith(newLegs)
       }
+
+      if (disconnect != null && updatedJourney.status !== 'sent') {
+        disconnect()
+      }
     }
 
     if (journey.status === 'sent') {
-      subscribeToJourney(journey.correlationId, {
+      disconnect = subscribeToJourney(journey.correlationId, {
         onUpdateJourney,
         onOpen: () => {
           console.log('opn', journey.correlationId)

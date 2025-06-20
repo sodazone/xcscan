@@ -111,6 +111,10 @@ export function subscribeToJourney(
       console.warn('SSE connection closed by server.')
     }
   }
+
+  return () => {
+    source.close()
+  }
 }
 
 export function subscribeToJourneys(
@@ -140,7 +144,6 @@ export function subscribeToJourneys(
   }
 
   return () => {
-    console.log('Closing SSE connection')
     source.close()
   }
 }
