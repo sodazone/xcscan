@@ -51,7 +51,7 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
   const nextButton = paginationFooter.querySelector('#next-button')
   const pageIndicator = paginationFooter.querySelector('#page-indicator')
 
-  if(currentPage > pageCursors.length) {
+  if (currentPage > pageCursors.length) {
     pageCursors.push(endCursor)
   }
 

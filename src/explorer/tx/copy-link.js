@@ -13,7 +13,7 @@ const okSVG = `
 export function createCopyLink({ text, display = null, url = null }) {
   const container = document.createElement('div')
   container.className =
-    'inline-flex items-center space-x-1 group text-sm text-white/80'
+    'flex w-fit items-center space-x-1 group text-sm text-white/80'
 
   let copyText
   if (url) {
@@ -35,7 +35,7 @@ export function createCopyLink({ text, display = null, url = null }) {
 
   const copyBtn = document.createElement('button')
   copyBtn.className =
-    'cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-[#777777] hover:text-white'
+    'cursor-pointer md:opacity-0 md:group-hover:opacity-100 md:transition-opacity md:duration-200 text-[#777777] hover:text-white'
   copyBtn.title = 'Copy'
   copyBtn.type = 'button'
   copyBtn.innerHTML = clipboardSVG
