@@ -14,7 +14,7 @@ import { loadSearch } from './search.js'
 
 const pageCursors = [null]
 let currentPage = 0
-const pageSize = 10
+const pageSize = 15
 
 let closeSubscription
 const filters = {
