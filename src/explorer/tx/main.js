@@ -450,9 +450,6 @@ async function loadTransactionDetail() {
     if (journey.status === 'sent') {
       disconnect = subscribeToJourney(journey.correlationId, {
         onUpdateJourney,
-        onOpen: () => {
-          console.log('opn', journey.correlationId)
-        },
         onError: console.error,
       })
     }

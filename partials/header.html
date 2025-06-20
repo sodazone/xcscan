@@ -1,5 +1,5 @@
 <header
-  class="mx-auto mb-6 flex w-full max-w-screen-xl md:items-center space-x-12 px-4 py-4"
+  class="relative mx-auto mb-6 flex w-full max-w-screen-xl md:items-center md:space-x-12 px-4 py-4"
 >
   <a href="/">
     <div class="flex gap-2 items-center">
@@ -39,16 +39,60 @@
       </div>
     </div>
   </a>
+
+  <!-- Desktop Nav -->
   <nav class="hidden md:flex gap-4 text-xs text-white/40">
     <a
       class="<%= currentPage === 'home' || currentPage === 'tx' ? 'text-white/80' : 'hover:text-white/80' %>"
       href="/"
-      >TRANSACTIONS</a
     >
+      TRANSACTIONS
+    </a>
     <a
       class="<%= currentPage === 'analytics' ? 'text-white/80' : 'hover:text-white/80' %>"
       href="/analytics/index.html"
-      >ANALYTICS</a
     >
+      ANALYTICS
+    </a>
   </nav>
+
+  <!-- Burger Icon -->
+  <button
+    id="mobile-menu-burger"
+    class="md:hidden flex flex-col space-y-1.5 ml-auto justify-center items-end"
+  >
+    <span
+      class="block w-6 h-0.5 bg-white/80 rounded-sm transition-all duration-200"
+    ></span>
+    <span
+      class="block w-4 h-0.5 bg-white/80 rounded-sm transition-all duration-200"
+    ></span>
+  </button>
+
+  <!-- Fullscreen Mobile Menu -->
+  <div
+    id="mobile-menu-overlay"
+    class="fixed z-50 inset-0 bg-black/60 text-white/80 backdrop-blur-lg transform translate-x-full transition-transform duration-300 ease-in-out md:hidden"
+  >
+    <button
+      id="mobile-menu-close"
+      class="absolute top-4 right-4 text-4xl text-white/60 focus:text-white focus:outline-none"
+    >
+      &times;
+    </button>
+    <div
+      id="mobile-menu"
+      class="flex flex-col items-center space-y-8 mt-24 px-6 text-xl"
+    >
+      <a href="/" class="focus:text-white menu-link" onclick="toggleMenu()"
+        >Transactions</a
+      >
+      <a
+        href="/analytics/index.html"
+        class="focus:text-white menu-link"
+        onclick="toggleMenu()"
+        >Analytics</a
+      >
+    </div>
+  </div>
 </header>

@@ -223,7 +223,7 @@ function renderTransactionsTable({ items, pageInfo }) {
         const statusCell = row.querySelector('[data-label="Status"]')
         if (!statusCell) return
 
-        const statusLabel = getStatusLabel(journey)
+        const statusLabel = getStatusLabel(journey.status)
         const statusCls = asClassName(statusLabel)
 
         statusCell.setAttribute('title', statusLabel)
@@ -237,7 +237,7 @@ function renderTransactionsTable({ items, pageInfo }) {
 
         const text = statusCell.querySelector('span')
         if (text) {
-          text.textContent = label
+          text.textContent = statusLabel
         }
       }
     } else {

@@ -23,3 +23,47 @@
     </div>
   </div>
 </footer>
+
+<script>
+  const burger = document.getElementById('mobile-menu-burger')
+  const overlay = document.getElementById('mobile-menu-overlay')
+  //const closeBtn = document.getElementById('mobile-menu-close')
+  const mobileMenu = document.getElementById('mobile-menu')
+  const menuLinks = mobileMenu.querySelectorAll('.menu-link')
+
+  function toggleMenu() {
+    overlay.classList.toggle('translate-x-full')
+    overlay.classList.toggle('translate-x-0')
+    document.body.classList.toggle('overflow-hidden')
+  }
+
+  burger.addEventListener('click', toggleMenu)
+  // closeBtn.addEventListener('click', toggleMenu)
+
+  overlay.addEventListener('click', (e) => {
+    console.log(e)
+    const clickedMenuItem = e.target.closest('.menu-link')
+    const clickedInsideMenu = mobileMenu.contains(e.target)
+
+    if (!clickedInsideMenu || (clickedInsideMenu && !clickedMenuItem)) {
+      toggleMenu()
+    }
+  })
+
+  menuLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault()
+      const targetUrl = link.getAttribute('href')
+
+      toggleMenu()
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            window.location.href = targetUrl
+          }, 300)
+        })
+      })
+    })
+  })
+</script>
