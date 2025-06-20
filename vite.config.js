@@ -1,16 +1,20 @@
-import { defineConfig } from "vite";
-import tailwindcss from "@tailwindcss/vite";
-//import Sonda from "sonda/vite";
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite'
+
+import { viteEjsPlugin } from './vite.ejs.js'
 
 export default defineConfig({
-	build: {
-		sourcemap: true,
-		rollupOptions: {
-			treeshake: "recommended",
-		},
-	},
-	plugins: [
-		tailwindcss(),
-		//Sonda()
-	],
-});
+  plugins: [viteEjsPlugin(), tailwindcss()],
+  build: {
+    sourcemap: true,
+    emptyOutDir: true,
+    rollupOptions: {
+      treeshake: 'recommended',
+      input: {
+        home: 'index.html',
+        analytics: 'analytics/index.html',
+        tx: 'tx/index.html',
+      },
+    },
+  },
+})

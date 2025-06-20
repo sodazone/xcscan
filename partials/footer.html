@@ -1,0 +1,69 @@
+<footer class="py-16">
+  <div
+    class="mx-auto flex flex-col gap-4 w-full max-w-screen-xl pt-16 px-4 border-t border-white/10"
+  >
+    <div class="flex gap-2 flex-wrap">
+      <a href="https://ocelloids.net" class="flex gap-2">
+        <img src="/oc_text.svg" class="h-6" />
+        <span>Crosschain Explorer</span>
+      </a>
+      <span class="hidden md:block">-</span>
+      <a
+        class="underline decoration-white/20 decoration-2 underline-offset-3 hover:decoration-cyan-200"
+        href="https://ocelloids.net"
+        >https://ocelloids.net</a
+      >
+    </div>
+    <div class="text-sm">
+      <span class="text-white/70">by</span>
+      <a href="https://soda.zone" class="mt-4 hover:text-cyan-200"
+        >SO/DA zone</a
+      >
+      <span class="text-white/70"> for the tech.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const burger = document.getElementById('mobile-menu-burger')
+  const overlay = document.getElementById('mobile-menu-overlay')
+  //const closeBtn = document.getElementById('mobile-menu-close')
+  const mobileMenu = document.getElementById('mobile-menu')
+  const menuLinks = mobileMenu.querySelectorAll('.menu-link')
+
+  function toggleMenu() {
+    overlay.classList.toggle('translate-x-full')
+    overlay.classList.toggle('translate-x-0')
+    document.body.classList.toggle('overflow-hidden')
+  }
+
+  burger.addEventListener('click', toggleMenu)
+  // closeBtn.addEventListener('click', toggleMenu)
+
+  overlay.addEventListener('click', (e) => {
+    console.log(e)
+    const clickedMenuItem = e.target.closest('.menu-link')
+    const clickedInsideMenu = mobileMenu.contains(e.target)
+
+    if (!clickedInsideMenu || (clickedInsideMenu && !clickedMenuItem)) {
+      toggleMenu()
+    }
+  })
+
+  menuLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault()
+      const targetUrl = link.getAttribute('href')
+
+      toggleMenu()
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            window.location.href = targetUrl
+          }, 300)
+        })
+      })
+    })
+  })
+</script>
