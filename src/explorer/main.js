@@ -51,10 +51,6 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
   const nextButton = paginationFooter.querySelector('#next-button')
   const pageIndicator = paginationFooter.querySelector('#page-indicator')
 
-  if (currentPage > pageCursors.length) {
-    pageCursors.push(endCursor)
-  }
-
   prevButton.disabled = currentPage === 0
   nextButton.disabled = !hasNextPage
   pageIndicator.textContent = `Page ${currentPage + 1}`
@@ -68,7 +64,11 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
 
   nextButton.onclick = () => {
     if (hasNextPage) {
-      currentPage++
+      const nextPageIndex = currentPage + 1
+      if (!pageCursors[nextPageIndex]) {
+        pageCursors[nextPageIndex] = endCursor
+      }
+      currentPage = nextPageIndex
       renderCurrentPage(pageCursors[currentPage])
     }
   }
@@ -384,6 +384,7 @@ window.onload = async () => {
         } else {
           currentPage = 0
           pageCursors.length = 1
+
           renderTransactionsTable(results)
         }
       })
