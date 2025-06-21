@@ -281,6 +281,9 @@ function renderTransactionsTable({ items, pageInfo }) {
       if (!disconnectedIco.classList.contains('hidden')) {
         disconnectedIco.classList.toggle('hidden')
       }
+      if (!errorIco.classList.contains('hidden')) {
+        errorIco.classList.toggle('hidden')
+      }
       if (connectedIco.classList.contains('hidden')) {
         connectedIco.classList.toggle('hidden')
       }
