@@ -27,6 +27,27 @@ export function isValidQuery(value) {
   return isEvmAddress || isSs58Address || isTxHash
 }
 
+function renderCheckbox({ id, value, label, type = '', disabled = false }) {
+  return `
+    <label for="${id}" class="group flex items-center gap-2 p-2 rounded cursor-pointer transition-colors text-white/80 
+      hover:bg-white/5 
+      has-[:checked]:bg-white/10 
+      has-[:checked]:text-white 
+      has-[:disabled]:opacity-40 
+      has-[:disabled]:cursor-not-allowed">
+      
+      <input
+        id="${id}"
+        ${type ? `data-filter="${type}"` : ''}
+        value="${value}"
+        type="checkbox"
+        class="accent-white"
+        ${disabled ? 'disabled' : ''}
+      />
+      <span>${label}</span>
+    </label>`
+}
+
 function collectionUpdater(filter, resolveCollection, update) {
   const checkboxes = Array.from(filter.querySelectorAll('input[type=checkbox]'))
   const labels = filter
@@ -86,12 +107,13 @@ function loadStatusFilter(ctx) {
     class="flex flex-col gap-2 text-sm text-white/80"
   >
     ${selectableStatus
-      .map((s) => {
-        return `<label class="grow p-2" for="status-filter-${s}">
-                    <input id="status-filter-${s}" value="${s}" type="checkbox" class="mr-2" />
-                    ${getStatusLabel(s)}
-                </label>`
-      })
+      .map((s) =>
+        renderCheckbox({
+          id: `status-filter-${s}`,
+          value: s,
+          label: getStatusLabel(s),
+        })
+      )
       .join('')}
   </div>`
 
@@ -99,33 +121,40 @@ function loadStatusFilter(ctx) {
 }
 
 function loadChainsFilter(ctx) {
-  const chains = Object.values(NetworkInfos)
+  const resolvedChains = Object.values(NetworkInfos).map((chain) => ({
+    ...chain,
+    label: resolveNetworkName(chain.urn) ?? chain.urn,
+  }))
+
+  resolvedChains.sort((a, b) => a.label.localeCompare(b.label))
+
+  const buildCheckboxes = (chains, type) => {
+    return chains
+      .map((chain) =>
+        renderCheckbox({
+          id: `${type}-${chain.urn}`,
+          value: chain.urn,
+          label: chain.label,
+          type,
+        })
+      )
+      .join('')
+  }
+
   const filter = document.getElementById('filter-chains-content')
 
-  filter.innerHTML = `<div class="flex gap-x-6 text-sm text-white/80 overflow-y-auto max-h-screen md:max-h-80 w-full">
-        <div class="flex flex-col gap-2 grow">
-            <span class="text-white/50 text-xs font-semibold">Origin</span>
-            ${chains
-              .map((chain) => {
-                return `<label class="grow p-2" for="o-${chain.urn}">
-                    <input id="o-${chain.urn}" data-filter="origin" value="${chain.urn}" type="checkbox" class="mr-2" />
-                    ${resolveNetworkName(chain.urn) ?? chain.urn}
-                </label>`
-              })
-              .join('')}
-        </div>
-        <div class="flex flex-col gap-2 grow">
-            <span class="text-white/50 text-xs font-semibold">Destination</span>
-            ${chains
-              .map((chain) => {
-                return `<label class="grow p-2" for="d-${chain.urn}">
-                    <input id="d-${chain.urn}" data-filter="destination" value="${chain.urn}" type="checkbox" class="mr-2" />
-                    ${resolveNetworkName(chain.urn) ?? chain.urn}
-                </label>`
-              })
-              .join('')}
-        </div>
-    </div>`
+  filter.innerHTML = `
+  <div class="flex gap-x-6 text-sm text-white/80 overflow-y-auto max-h-screen md:max-h-80 w-full">
+    <div class="flex flex-col gap-2 grow">
+      <span class="text-white/50 text-xs font-semibold">Origin</span>
+      ${buildCheckboxes(resolvedChains, 'origin')}
+    </div>
+    <div class="flex flex-col gap-2 grow">
+      <span class="text-white/50 text-xs font-semibold">Destination</span>
+      ${buildCheckboxes(resolvedChains, 'destination')}
+    </div>
+  </div>
+`
 
   const { updateLabels } = collectionUpdater(
     filter,
@@ -135,6 +164,34 @@ function loadChainsFilter(ctx) {
         : ctx.filters.selectedDestinations,
     ctx.update
   )
+
+  const syncDisabledStates = () => {
+    const originChecked = Array.from(
+      filter.querySelectorAll('input[data-filter="origin"]:checked')
+    ).map((el) => el.value)
+
+    const destChecked = Array.from(
+      filter.querySelectorAll('input[data-filter="destination"]:checked')
+    ).map((el) => el.value)
+
+    for (const input of filter.querySelectorAll(
+      'input[data-filter="origin"]'
+    )) {
+      input.disabled = destChecked.includes(input.value)
+    }
+
+    for (const input of filter.querySelectorAll(
+      'input[data-filter="destination"]'
+    )) {
+      input.disabled = originChecked.includes(input.value)
+    }
+  }
+
+  filter.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="checkbox"][data-filter]')) {
+      syncDisabledStates()
+    }
+  })
 
   document
     .getElementById('clear-filter-chains')

@@ -186,19 +186,35 @@
                     <span class="text-xs text-white/80 uppercase"
                       >Select Chains</span
                     >
-                    <div class="ml-auto flex items-center space-x-4">
+                    <div class="ml-auto flex items-center gap-x-6">
                       <button
                         id="clear-filter-chains"
                         class="cursor-pointer text-white/40 hover:text-white text-sm"
                       >
-                        Clear
+                        Clear All
                       </button>
                       <button
                         data-dropdown-close
-                        class="md:hidden text-white/40 hover:text-white text-sm flex space-x-1"
+                        class="md:hidden"
                         id="close-filter-chains"
                       >
-                        <span>Close</span><span class="text-lg">&times;</span>
+                        <div
+                          class="flex items-center justify-center size-6 rounded-full bg-white/20 hover:bg-white/30"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#121212"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-3.5 h-3.5"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -244,10 +260,26 @@
                     >
                     <button
                       data-dropdown-close
-                      class="text-white/40 hover:text-white text-sm ml-auto flex space-x-1"
+                      class="flex items-center ml-auto flex space-x-1"
                       id="close-filter-status"
                     >
-                      <span>Close</span><span class="text-lg">&times;</span>
+                      <div
+                        class="flex items-center justify-center size-6 rounded-full bg-white/20 hover:bg-white/30"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#121212"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="w-3.5 h-3.5"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </div>
                     </button>
                   </div>
                   <div
