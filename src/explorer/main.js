@@ -328,7 +328,7 @@ function updateSearchIndicator() {
 }
 
 function applyFiltersAndRender() {
-  listJourneys({
+  const promise = listJourneys({
     filters,
     pagination: {
       limit: pageSize,
@@ -343,6 +343,8 @@ function applyFiltersAndRender() {
     .catch(console.log)
 
   updateSearchIndicator()
+
+  return promise
 }
 
 export function loadToggles() {

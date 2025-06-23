@@ -206,8 +206,14 @@ export function loadSearch(ctx) {
   const input = searchForm.querySelector('input[name="query"]')
 
   if (searchForm) {
+    const submitButton = searchForm.querySelector('button[type="submit"]')
+
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault()
+
+      if (submitButton.disabled) {
+        return
+      }
 
       const data = new FormData(e.target)
       const dataObject = Object.fromEntries(data.entries())
@@ -225,8 +231,12 @@ export function loadSearch(ctx) {
         return
       }
 
+      submitButton.disabled = true
+
       ctx.filters.currentSearchTerm = query
-      ctx.update()
+      ctx.update().finally(() => {
+        submitButton.disabled = false
+      })
     })
   }
 

@@ -25,10 +25,11 @@
               />
               <button
                 type="submit"
-                class="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white focus:text-white focus:outline-none active:scale-95 transition-transform duration-150"
+                class="absolute cursor-pointer right-2 md:right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white focus:text-white focus:outline-none active:scale-95 transition-transform duration-150"
               >
+                <!-- Search icon -->
                 <svg
-                  class="size-5 pointer-events-none"
+                  class="size-5 pointer-events-none transition-opacity duration-200"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -39,6 +40,35 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+
+                <!-- Spinner -->
+                <svg
+                  class="w-4 h-4 pointer-events-none absolute inset-0 m-auto animate-spin text-white opacity-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-dasharray="15.7 47.1"
+                    stroke-dashoffset="0"
+                    class="opacity-75"
+                    fill="none"
                   />
                 </svg>
               </button>

@@ -1,8 +1,15 @@
 export function debounce(func, delay = 300) {
   let timer
+
   return (...args) => {
     clearTimeout(timer)
-    timer = setTimeout(() => func(...args), delay)
+    return new Promise((resolve, reject) => {
+      timer = setTimeout(() => {
+        Promise.resolve(func(...args))
+          .then(resolve)
+          .catch(reject)
+      }, delay)
+    })
   }
 }
 

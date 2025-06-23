@@ -210,7 +210,7 @@ img.table-status.in_progress {
 }
 
 /*
-Btn
+Loading btns
 */
 
 .btn-label {
@@ -245,6 +245,13 @@ button.loading .btn-label::after {
   to {
     transform: rotate(360deg);
   }
+}
+
+#search button:disabled > svg:first-child {
+  @apply opacity-0;
+}
+#search button:disabled > svg:last-child {
+  @apply opacity-100;
 }
 
 /*
