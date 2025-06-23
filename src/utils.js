@@ -1,13 +1,11 @@
 export function debounce(func, delay = 300) {
   let timer
 
-  return (...args) => {
+  return (args) => {
     clearTimeout(timer)
     return new Promise((resolve, reject) => {
       timer = setTimeout(() => {
-        Promise.resolve(func(...args))
-          .then(resolve)
-          .catch(reject)
+        Promise.resolve(func(args)).then(resolve).catch(reject)
       }, delay)
     })
   }
