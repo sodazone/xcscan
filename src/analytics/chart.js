@@ -1,11 +1,14 @@
 import { AreaSeries, createChart } from 'lightweight-charts'
 
-import { getTransfersCount } from './api.js'
+import { getTransfersCount, getTransfersVolume } from './api.js'
+import { formatAssetVolume } from '../formats.js'
 
 export function setupSeriesChart(element) {
   let chart
   let series
   let data
+  let currentTimeFrame
+  let currentType = 'volume'
 
   function install() {
     const chartOptions = {
@@ -41,7 +44,8 @@ export function setupSeriesChart(element) {
         borderVisible: false,
       },
       localization: {
-        priceFormatter: (p) => p.toFixed(0),
+        priceFormatter: (p) =>
+          currentType === 'volume' ? formatAssetVolume(p) : p.toFixed(0),
       },
     }
     chart = createChart(element, chartOptions)
@@ -107,8 +111,8 @@ export function setupSeriesChart(element) {
         toolTip.innerHTML = `
 		  <div class="flex flex-col gap-2">
 			<div class="flex gap-1 items-end">
-			  <span class="text-white/80 text-xl font-medium">${Number(price).toFixed(0)}</span>
-			  <span class="text-white/50 text-sm">tx</span>
+			  <span class="text-white/80 text-xl font-medium">${currentType === 'volume' ? formatAssetVolume(price) : Number(price).toFixed(0)}</span>
+			  <span class="text-white/50 text-sm">${currentType === 'volume' ? 'usd' : 'tx'}</span>
 			</div>
 			<div class="text-white/50 text-xs">
 			  ${dateStr}
@@ -131,20 +135,36 @@ export function setupSeriesChart(element) {
     })
   }
 
-  function update(period) {
-    getTransfersCount(period)
-      .then((newData) => {
-        data = newData.slice(0, -1)
-        series.setData(data)
-        chart.timeScale().fitContent()
-      })
-      .catch(console.error)
+  function update(period, type = 'volume') {
+    currentType = type
+    currentTimeFrame = period
+    if (type === 'volume') {
+      getTransfersVolume(period)
+        .then((newData) => {
+          data = newData.slice(0, -1)
+          series.setData(data)
+          chart.timeScale().fitContent()
+        })
+        .catch(console.error)
+    } else {
+      getTransfersCount(period)
+        .then((newData) => {
+          data = newData.slice(0, -1)
+          series.setData(data)
+          chart.timeScale().fitContent()
+        })
+        .catch(console.error)
+    }
   }
 
   install()
 
   window.addEventListener('timeChanged', (e) => {
-    update(e.detail)
+    update(e.detail, currentType)
+  })
+
+  window.addEventListener('seriesTypeChanged', (e) => {
+    update(currentTimeFrame, e.detail)
   })
 
   let w =

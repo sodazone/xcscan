@@ -25,6 +25,7 @@ import { setupChannelsGrid } from './grid/channels.js'
 import { setupNetworksGrid } from './grid/networks.js'
 import { setupCounters } from './indicators.js'
 import { setupTimeSelector } from './time-selector.js'
+import { setupSeriesSelector } from './series-selector.js'
 
 window.onload = () => {
   setupSeriesChart(document.querySelector('#chart'))
@@ -33,4 +34,5 @@ window.onload = () => {
   setupNetworksGrid(document.querySelector('#grid-networks'))
   setupCounters()
   setupTimeSelector(document.querySelector('#select-time'), 'daily')
+  setupSeriesSelector(document.querySelector('#select-series-type'), 'volume')
 }

@@ -136,6 +136,20 @@ export async function getTransfersCount(period) {
   }
 }
 
+export async function getTransfersVolume(period) {
+  try {
+    const criteria = TIME_PERIODS[period]
+    const r = await _fetch({
+      op: 'transfers_count_series',
+      criteria,
+    })
+    const volSeries = r.items.map((i) => ({ time: i.time, value: i.volumeUsd }))
+    return fill(volSeries, criteria)
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
 export async function getTransfersVolumeByAsset(period) {
   try {
     const opts = TIME_PERIODS[period]
