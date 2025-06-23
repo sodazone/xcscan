@@ -11,7 +11,7 @@ import {
   prettify,
   shortenAddress,
 } from './common.js'
-import { loadSearch } from './search.js'
+import { isValidQuery, loadSearch } from './search.js'
 
 const pageCursors = [null]
 let currentPage = 0
@@ -371,7 +371,7 @@ window.onload = async () => {
   const urlParams = new URLSearchParams(window.location.search)
   const deepSearch = urlParams.get('search')
 
-  if (deepSearch) {
+  if (deepSearch && isValidQuery(deepSearch)) {
     filters.currentSearchTerm = deepSearch
 
     listJourneys({

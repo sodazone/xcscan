@@ -12,7 +12,7 @@ function applyIfDirty(update) {
   update()
 }
 
-function isValidQuery(value) {
+export function isValidQuery(value) {
   const trimmed = value.trim()
 
   // EVM address (0x-prefixed, 40 hex chars)
