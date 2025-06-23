@@ -175,6 +175,9 @@ function createJourneyRow(item) {
             </div>
         </div>
         ${createStatusHTML(item)}
+        <div class="md:hidden w-full flex items-center px-4">
+           <span class="rounded-lg text-xs text-white/80 w-full border border-[#121212] px-4 py-2 text-center">Show Details</span>
+        </div>
       `
   return row
 }
@@ -278,32 +281,27 @@ function renderTransactionsTable({ items, pageInfo }) {
       'sse-live-icon-disconnected'
     )
     const errorIco = document.getElementById('sse-live-icon-error')
+
+    function showIcon(showIconEl, ...hideIcons) {
+      hideIcons.forEach((icon) => {
+        if (!icon.classList.contains('hidden')) {
+          icon.classList.add('hidden')
+        }
+      })
+      if (showIconEl.classList.contains('hidden')) {
+        showIconEl.classList.remove('hidden')
+      }
+    }
+
     const onOpen = () => {
-      if (!disconnectedIco.classList.contains('hidden')) {
-        disconnectedIco.classList.toggle('hidden')
-      }
-      if (!errorIco.classList.contains('hidden')) {
-        errorIco.classList.toggle('hidden')
-      }
-      if (connectedIco.classList.contains('hidden')) {
-        connectedIco.classList.toggle('hidden')
-      }
+      showIcon(connectedIco, disconnectedIco, errorIco)
     }
-    const onError = (_error) => {
-      if (!disconnectedIco.classList.contains('hidden')) {
-        disconnectedIco.classList.toggle('hidden')
-      }
-      if (!connectedIco.classList.contains('hidden')) {
-        connectedIco.classList.toggle('hidden')
-      }
-      if (errorIco.classList.contains('hidden')) {
-        errorIco.classList.toggle('hidden')
-      }
+
+    const onError = () => {
+      showIcon(errorIco, disconnectedIco, connectedIco)
     }
-    return {
-      onError,
-      onOpen,
-    }
+
+    return { onError, onOpen }
   }
 
   const { onError, onOpen } = liveStatus()
