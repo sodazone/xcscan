@@ -299,7 +299,7 @@ function createJourneyLeg(stop, index) {
 
   const header = document.createElement('div')
   header.className =
-    'text-sm text-white/50 flex flex-wrap items-center space-x-2 font-semibold'
+    'text-sm text-white/50 flex flex-col md:flex-row md:items-center space-x-2 font-semibold'
 
   const labelContainer = document.createElement('div')
   labelContainer.className = 'flex space-x-2 items-center truncate'
@@ -331,7 +331,7 @@ function createJourneyLeg(stop, index) {
 
   if (elapsedText) {
     const elapsed = document.createElement('span')
-    elapsed.className = 'font-normal text-white/40 text-xs ml-2'
+    elapsed.className = 'font-normal text-white/40 text-xs'
     elapsed.textContent = elapsedText
     header.appendChild(elapsed)
   }
