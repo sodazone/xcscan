@@ -6,7 +6,6 @@ import {
   resolveNetworkName,
 } from '../extras.js'
 import { humanizeNumber } from '../formats.js'
-import { decodeXcmOracleData } from './evm/xcm-oracle.js'
 
 let loaded = false
 
@@ -98,15 +97,6 @@ export function shortenAddress(address) {
 export function formatAction(entry) {
   if (entry.type === 'transact' && entry.transactCalls?.length) {
     const call = entry.transactCalls[0]
-
-    if (
-      call.module === 'EthereumXcm' &&
-      call.args?.xcmTransaction?.value?.action?.value ===
-        '0xef81930aa8ed07c17948b2e26b7bfaf20144ef2a'
-    ) {
-      return decodeXcmOracleData(call.args.xcmTransaction.value.input)
-    }
-
     return `${prettify(call.module)} · ${prettify(call.method)}`
   }
 
@@ -139,4 +129,19 @@ export function getStatusLabel(status) {
 
 export function asClassName(label) {
   return label.replace(' ', '_').toLowerCase()
+}
+
+export function makeGuardedClickHandler(button, update) {
+  let loading = false
+  button.onclick = () => {
+    if (button.disabled || loading) return
+
+    loading = true
+    button.classList.add('loading')
+
+    update().finally(() => {
+      loading = false
+      button.classList.remove('loading')
+    })
+  }
 }

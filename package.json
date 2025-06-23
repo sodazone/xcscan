@@ -21,7 +21,6 @@
   "dependencies": {
     "@sodazone/ocelloids-client": "^2.4.5",
     "ag-grid-community": "^33.2.1",
-    "lightweight-charts": "^5.0.5",
-    "viem": "^2.31.2"
+    "lightweight-charts": "^5.0.5"
   }
 }

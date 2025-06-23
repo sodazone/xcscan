@@ -210,6 +210,44 @@ img.table-status.in_progress {
 }
 
 /*
+Btn
+*/
+
+.btn-label {
+  position: relative;
+  display: inline-block;
+  min-width: 3ch;
+  text-align: center;
+}
+
+button.loading .btn-label {
+  visibility: hidden;
+}
+
+button.loading .btn-label::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px; /* Half width */
+  margin-top: -8px; /* Half height */
+  border: 2px solid transparent;
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  opacity: 0.6;
+  visibility: visible;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
  JSON Viewer
 */
 .json-key {

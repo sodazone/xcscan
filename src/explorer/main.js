@@ -7,6 +7,7 @@ import {
   formatNetworkWithIconHTML,
   getStatusLabel,
   loadResources,
+  makeGuardedClickHandler,
   prettify,
   shortenAddress,
 } from './common.js'
@@ -55,23 +56,23 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
   nextButton.disabled = !hasNextPage
   pageIndicator.textContent = `Page ${currentPage + 1}`
 
-  prevButton.onclick = () => {
-    if (currentPage > 0) {
-      currentPage--
-      renderCurrentPage(pageCursors[currentPage])
-    }
-  }
+  makeGuardedClickHandler(prevButton, () => {
+    if (currentPage === 0) return Promise.resolve()
 
-  nextButton.onclick = () => {
-    if (hasNextPage) {
-      const nextPageIndex = currentPage + 1
-      if (!pageCursors[nextPageIndex]) {
-        pageCursors[nextPageIndex] = endCursor
-      }
-      currentPage = nextPageIndex
-      renderCurrentPage(pageCursors[currentPage])
+    currentPage--
+    return renderCurrentPage(pageCursors[currentPage])
+  })
+
+  makeGuardedClickHandler(nextButton, () => {
+    if (!hasNextPage) return Promise.resolve()
+
+    const nextPageIndex = currentPage + 1
+    if (!pageCursors[nextPageIndex]) {
+      pageCursors[nextPageIndex] = endCursor
     }
-  }
+    currentPage = nextPageIndex
+    return renderCurrentPage(pageCursors[currentPage])
+  })
 }
 
 function createStatusHTML({ status }) {
@@ -88,7 +89,7 @@ function createStatusHTML({ status }) {
 }
 
 function renderCurrentPage(cursor) {
-  listJourneys({
+  return listJourneys({
     filters,
     pagination: {
       limit: pageSize,
