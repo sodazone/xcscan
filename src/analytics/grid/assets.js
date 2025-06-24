@@ -24,7 +24,7 @@ function AssetIconCellRenders(params) {
 
   const imgWrapper = `<div class="relative h-6 w-6">${assetImg}${chainImg}</div>`
 
-  return `<div class="flex gap-2 items-center">${imgWrapper}<span>${params.value}</span></div>`
+  return `<div class="flex gap-2 items-center ${params.valueFormatted === 'N/A' ? 'text-white/30' : ''}">${imgWrapper}<span>${params.valueFormatted}</span></div>`
 }
 
 export function setupAssetsGrid(element) {
@@ -54,7 +54,7 @@ export function setupAssetsGrid(element) {
           headerName: 'Asset',
           pinned: 'left',
           suppressMovable: true,
-          valueFormatter: ({ value }) => value,
+          valueFormatter: ({ value }) => (value === '' ? 'N/A' : value),
           cellRenderer: AssetIconCellRenders,
         },
         {
