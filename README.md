@@ -1,4 +1,4 @@
-# XCM Explorer UI
+# Polkadot Crosschain Explorer UI
 
 A fast, lightweight, and feature-rich frontend built with Vanilla JavaScript for the [Ocelloids](https://ocelloids.net) XCM Explorer and analytics APIs.
 
