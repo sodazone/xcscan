@@ -1,6 +1,6 @@
 # XCM Explorer UI
 
-Vanilla JavaScript frontend for the XCM Explorer and [Ocelloids](https://ocelloids.net) analytics APIs.
+A fast, lightweight, and feature-rich frontend built with Vanilla JavaScript for the [Ocelloids](https://ocelloids.net) XCM Explorer and analytics APIs.
 
 ## Commands
 
