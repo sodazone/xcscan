@@ -68,6 +68,11 @@ export function MultiCheckboxDropdown({
     container.querySelectorAll('input[type=checkbox]')
   )
 
+  checkboxes.forEach((checkbox) => {
+    const collection = resolveCollection(checkbox)
+    checkbox.checked = collection.includes(checkbox.value)
+  })
+
   function updateLabels() {
     const checked = checkboxes.filter((c) => c.checked)
     const labelsList = checked.map((c) => c.parentElement.textContent.trim())
@@ -81,6 +86,8 @@ export function MultiCheckboxDropdown({
     }
     labelsEl.textContent = display
   }
+
+  updateLabels()
 
   for (const checkbox of checkboxes) {
     checkbox.addEventListener('change', ({ currentTarget }) => {

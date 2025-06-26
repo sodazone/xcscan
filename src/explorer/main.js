@@ -12,6 +12,7 @@ import {
   shortenAddress,
 } from './common.js'
 import { isValidQuery, loadSearch } from './search.js'
+import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
 
 const pageCursors = [null]
 let currentPage = 0
@@ -329,6 +330,8 @@ function updateSearchIndicator() {
 }
 
 function applyFiltersAndRender() {
+  saveFiltersToSession(filters)
+
   const promise = listJourneys({
     filters,
     pagination: {
@@ -365,6 +368,11 @@ export function loadToggles() {
 window.onload = async () => {
   await loadResources()
 
+  const savedFilters = loadFiltersFromSession()
+  if (savedFilters) {
+    Object.assign(filters, savedFilters)
+  }
+
   loadToggles()
   loadSearch({
     filters,
@@ -389,6 +397,8 @@ window.onload = async () => {
         } else {
           currentPage = 0
           pageCursors.length = 1
+
+          saveFiltersToSession(filters)
 
           renderTransactionsTable(results)
         }
