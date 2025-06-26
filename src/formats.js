@@ -29,7 +29,7 @@ export function humanizeNumber(
   if (absValue > 10000) {
     return formatter.format(Math.round(absValue))
   }
-  if (absValue > 10) {
+  if (absValue > 0.01) {
     return formatter.format(value)
   }
 
