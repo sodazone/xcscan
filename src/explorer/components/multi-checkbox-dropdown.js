@@ -3,7 +3,7 @@ export function MultiCheckboxDropdown({
   items,
   type = '',
   labelResolver = (item) => item.label ?? item,
-  valueResolver = (item) => item.valye ?? item,
+  valueResolver = (item) => item.value ?? item,
   resolveCollection,
   onUpdate,
   maxVisible = 2,
