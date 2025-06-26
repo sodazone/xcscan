@@ -37,34 +37,38 @@ function asCriteria(filters) {
 
   const criteria = {}
 
-  if (selectedDestinations && selectedDestinations.length > 0) {
+  // Text search, overrides other filters
+  if (currentSearchTerm != null) {
+    const trimmed = currentSearchTerm.trim()
+    if (trimmed.length > 2 && trimmed.length < 100) {
+      if (trimmed.startsWith('0x')) {
+        const len = (trimmed.length - 2) / 2
+        if (len === 20) {
+          criteria.address = trimmed
+        } else if (len === 32) {
+          criteria.txHash = trimmed.toLowerCase()
+        }
+      } else {
+        criteria.address = trimmed
+      }
+      return criteria
+    }
+  }
+
+  // Structured filters, only apply when no text search
+  if (selectedDestinations?.length) {
     criteria.destinations = [...selectedDestinations]
   }
-  if (selectedOrigins && selectedOrigins.length > 0) {
+  if (selectedOrigins?.length) {
     criteria.origins = [...selectedOrigins]
   }
-  if (selectedStatus && selectedStatus.length > 0) {
+  if (selectedStatus?.length) {
     criteria.status = [...selectedStatus]
   }
-  if (selectedActions && selectedActions.length > 0) {
+  if (selectedActions?.length) {
     criteria.actions = [...actionsToQueryValues(selectedActions)]
   }
 
-  if (currentSearchTerm != null) {
-    const trimed = currentSearchTerm.trim()
-    if (currentSearchTerm.length > 2 && currentSearchTerm.length < 100) {
-      if (trimed.startsWith('0x')) {
-        const len = (trimed.length - 2) / 2
-        if (len === 20) {
-          criteria.address = trimed
-        } else if (len === 32) {
-          criteria.txHash = trimed.toLowerCase()
-        }
-      } else {
-        criteria.address = trimed
-      }
-    }
-  }
   return criteria
 }
 

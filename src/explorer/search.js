@@ -166,6 +166,12 @@ export function loadSearch(ctx) {
   const searchForm = document.getElementById('search')
   const inputError = document.getElementById('search-input-error')
   const input = searchForm.querySelector('input[name="query"]')
+  const searchIndicatorClear = document.getElementById('search-indicator-clear')
+
+  searchIndicatorClear.addEventListener('click', () => {
+    ctx.filters.currentSearchTerm = null
+    ctx.update()
+  })
 
   if (searchForm) {
     const submitButton = searchForm.querySelector('button[type="submit"]')
