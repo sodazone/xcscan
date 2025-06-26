@@ -73,20 +73,18 @@ function asCriteria(filters) {
   const { amountPreset, amountGte, amountLte } = selectedUsdAmounts || {}
 
   if (amountPreset != null || amountGte != null || amountLte != null) {
-    criteria.usdAmount = {}
-
     if (amountPreset) {
       if (amountPreset.includes('-')) {
         const [min, max] = amountPreset.split('-').map(Number)
-        if (!isNaN(min)) criteria.usdAmount.gte = min
-        if (!isNaN(max)) criteria.usdAmount.lte = max
+        if (!isNaN(min)) criteria.usdAmountGte = min
+        if (!isNaN(max)) criteria.usdAmountLte = max
       } else if (amountPreset.includes('+')) {
         const min = parseFloat(amountPreset.replace('+', ''))
-        if (!isNaN(min)) criteria.usdAmount.gte = min
+        if (!isNaN(min)) criteria.usdAmountGte = min
       }
     } else {
-      if (amountGte != null) criteria.usdAmount.gte = amountGte
-      if (amountLte != null) criteria.usdAmount.lte = amountLte
+      if (amountGte != null) criteria.usdAmountGte = amountGte
+      if (amountLte != null) criteria.usdAmountLte = amountLte
     }
   }
 
