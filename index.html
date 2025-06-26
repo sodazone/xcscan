@@ -452,36 +452,34 @@
                     <div class="flex flex-col gap-2">
                       <span class="text-white/50">Presets</span>
                       <label
+                        class="group flex items-center gap-2 p-2 cursor-pointer transition-colors text-white/80 hover:bg-white/5 has-[:checked]:bg-white/10 has-[:checked]:text-white has-[:disabled]:opacity-40 has-[:disabled]:cursor-not-allowed"
                         ><input
                           type="radio"
+                          class="accent-white"
                           name="filter-usd-amount-preset"
-                          value="0-1000"
+                          value="10000+"
                         />
-                        &lt; 1k</label
+                        ≥ $10k</label
                       >
                       <label
+                        class="group flex items-center gap-2 p-2 cursor-pointer transition-colors text-white/80 hover:bg-white/5 has-[:checked]:bg-white/10 has-[:checked]:text-white has-[:disabled]:opacity-40 has-[:disabled]:cursor-not-allowed"
                         ><input
                           type="radio"
-                          name="filter-usd-amount-preset"
-                          value="1000-10000"
-                        />
-                        $1k - $10k</label
-                      >
-                      <label
-                        ><input
-                          type="radio"
-                          name="filter-usd-amount-preset"
-                          value="10000-100000"
-                        />
-                        $10k - $100k</label
-                      >
-                      <label
-                        ><input
-                          type="radio"
+                          class="accent-white"
                           name="filter-usd-amount-preset"
                           value="100000+"
                         />
-                        &gt; $100K</label
+                        ≥ $100k</label
+                      >
+                      <label
+                        class="group flex items-center gap-2 p-2 cursor-pointer transition-colors text-white/80 hover:bg-white/5 has-[:checked]:bg-white/10 has-[:checked]:text-white has-[:disabled]:opacity-40 has-[:disabled]:cursor-not-allowed"
+                        ><input
+                          type="radio"
+                          class="accent-white"
+                          name="filter-usd-amount-preset"
+                          value="1000000+"
+                        />
+                        ≥ $1M</label
                       >
                     </div>
                     <button
