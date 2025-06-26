@@ -110,7 +110,44 @@ export function prettify(str) {
 }
 
 export function formatAssetAmount(asset) {
-  return `${humanizeNumber(asset.amount / 10 ** asset.decimals)} ${asset.symbol}`
+  let amount = ''
+  amount += `<div class="flex space-x-1"><span>${humanizeNumber(asset.amount / 10 ** asset.decimals)}</span><span class="text-white/60">${asset.symbol}</span></div>`
+  console.log(asset)
+  if (asset.usd != null) {
+    amount += `<div class="flex text-xs text-white/60">($${humanizeNumber(asset.usd)})</div>`
+  }
+  return `<div class="flex flex-wrap items-center space-x-2">${amount}</div>`
+}
+
+export const selectableActions = [
+  {
+    label: 'Transfer',
+    value: 'transfer',
+  },
+  {
+    label: 'Transact',
+    value: 'transact',
+  },
+  {
+    label: 'Query',
+    value: 'query',
+  },
+]
+
+export function actionsToQueryValues(actions) {
+  const expanded = (Array.isArray(actions) ? actions : [actions]).flatMap(
+    (action) => {
+      if (action === 'transfer') {
+        return ['transfer', 'teleport']
+      }
+      if (action === 'query') {
+        return ['queryResponse']
+      }
+      return [action]
+    }
+  )
+
+  return expanded
 }
 
 export const selectableStatus = ['sent', 'received', 'failed']

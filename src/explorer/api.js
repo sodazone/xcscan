@@ -31,9 +31,11 @@ function asCriteria(filters) {
     selectedDestinations,
     selectedOrigins,
     selectedStatus,
+    selectedActions,
   } = filters
 
   const criteria = {}
+
   if (selectedDestinations && selectedDestinations.length > 0) {
     criteria.destinations = [...selectedDestinations]
   }
@@ -43,6 +45,10 @@ function asCriteria(filters) {
   if (selectedStatus && selectedStatus.length > 0) {
     criteria.status = [...selectedStatus]
   }
+  if (selectedActions && selectedActions.length > 0) {
+    criteria.actions = [...actionsToQueryValues(selectedActions)]
+  }
+
   if (currentSearchTerm != null) {
     const trimed = currentSearchTerm.trim()
     if (currentSearchTerm.length > 2 && currentSearchTerm.length < 100) {
@@ -63,10 +69,11 @@ function asCriteria(filters) {
 
 export async function listJourneys({ filters, pagination }) {
   try {
+    const criteria = asCriteria(filters)
     return await _fetch(
       {
         op: 'journeys.list',
-        criteria: asCriteria(filters),
+        criteria,
       },
       {
         ...pagination,

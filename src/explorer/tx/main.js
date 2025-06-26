@@ -5,6 +5,7 @@ import {
   asClassName,
   decodeWellKnownAddressHTML,
   formatAction,
+  formatAssetAmount,
   formatNetworkWithIconHTML,
   getStatusLabel,
   loadResources,
@@ -195,11 +196,7 @@ function getTimeDetails({ sentAt, recvAt }) {
 function getAmounts({ assets }) {
   return Array.isArray(assets)
     ? assets
-        .map((a) =>
-          a.decimals == null
-            ? ''
-            : `<div>${a.amount / 10 ** a.decimals} ${a.symbol}</div>`
-        )
+        .map((a) => (a.decimals == null ? '' : formatAssetAmount(a)))
         .join('')
     : ''
 }

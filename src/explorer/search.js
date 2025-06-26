@@ -1,16 +1,11 @@
 import { NetworkInfos, resolveNetworkName } from '../extras.js'
-import { getStatusLabel, selectableStatus } from './common.js'
+import {
+  getStatusLabel,
+  selectableActions,
+  selectableStatus,
+} from './common.js'
 
-let filterDirty = false
-
-function applyIfDirty(update) {
-  if (!filterDirty) {
-    return
-  }
-
-  filterDirty = false
-  update()
-}
+import { MultiCheckboxDropdown } from './components/multi-checkbox-dropdown.js'
 
 export function isValidQuery(value) {
   const trimmed = value.trim()
@@ -27,186 +22,96 @@ export function isValidQuery(value) {
   return isEvmAddress || isSs58Address || isTxHash
 }
 
-function renderCheckbox({ id, value, label, type = '', disabled = false }) {
-  return `
-    <label for="${id}" class="group flex items-center gap-2 p-2 rounded cursor-pointer transition-colors text-white/80 
-      hover:bg-white/5 
-      has-[:checked]:bg-white/10 
-      has-[:checked]:text-white 
-      has-[:disabled]:opacity-40 
-      has-[:disabled]:cursor-not-allowed">
-      
-      <input
-        id="${id}"
-        ${type ? `data-filter="${type}"` : ''}
-        value="${value}"
-        type="checkbox"
-        class="accent-white"
-        ${disabled ? 'disabled' : ''}
-      />
-      <span>${label}</span>
-    </label>`
-}
-
-function collectionUpdater(filter, resolveCollection, update) {
-  const checkboxes = Array.from(filter.querySelectorAll('input[type=checkbox]'))
-  const labels = filter
-    .closest('.dropdown')
-    .querySelector('[data-dropdown-labels]')
-
-  function updateLabels() {
-    if (filterDirty) {
-      const checked = checkboxes.filter((c) => c.checked)
-      const labelsList = checked.map((c) => c.parentElement.textContent.trim())
-      const maxVisible = 2
-
-      let display = ''
-
-      if (labelsList.length === 0) {
-        display = 'All'
-      } else if (labelsList.length <= maxVisible) {
-        display = labelsList.join(', ')
-      } else {
-        const visible = labelsList.slice(0, maxVisible).join(', ')
-        const remaining = labelsList.length - maxVisible
-        display = `${visible}, +${remaining}`
-      }
-
-      labels.textContent = display
-    }
-  }
-
-  for (const checkbox of checkboxes) {
-    checkbox.addEventListener('change', ({ currentTarget }) => {
-      const collection = resolveCollection(currentTarget)
-      const value = currentTarget.value
-      const isChecked = currentTarget.checked
-      const index = collection.indexOf(value)
-
-      if (isChecked && index === -1) {
-        collection.push(value)
-        filterDirty = true
-      } else if (!isChecked && index !== -1) {
-        collection.splice(index, 1)
-        filterDirty = true
-      }
-
-      updateLabels()
-      applyIfDirty(update)
-    })
-  }
-
-  return {
-    updateLabels,
-  }
-}
-
 function loadStatusFilter(ctx) {
-  const filter = document.getElementById('filter-status-content')
-  filter.innerHTML = `<div
-    class="flex flex-col gap-2 text-sm text-white/80"
-  >
-    ${selectableStatus
-      .map((s) =>
-        renderCheckbox({
-          id: `status-filter-${s}`,
-          value: s,
-          label: getStatusLabel(s),
-        })
-      )
-      .join('')}
-  </div>`
+  MultiCheckboxDropdown({
+    containerId: 'filter-status-content',
+    items: selectableStatus,
+    labelResolver: getStatusLabel,
+    valueResolver: (s) => s,
+    resolveCollection: () => ctx.filters.selectedStatus,
+    onUpdate: ctx.update,
+  })
+}
 
-  collectionUpdater(filter, () => ctx.filters.selectedStatus, ctx.update)
+function loadActionsFilter(ctx) {
+  MultiCheckboxDropdown({
+    containerId: 'filter-actions-content',
+    items: selectableActions,
+    resolveCollection: () => ctx.filters.selectedActions,
+    onUpdate: ctx.update,
+  })
 }
 
 function loadChainsFilter(ctx) {
-  const resolvedChains = Object.values(NetworkInfos).map((chain) => ({
+  const chains = Object.values(NetworkInfos).map((chain) => ({
     ...chain,
     label: resolveNetworkName(chain.urn) ?? chain.urn,
   }))
 
-  resolvedChains.sort((a, b) => a.label.localeCompare(b.label))
+  chains.sort((a, b) => a.label.localeCompare(b.label))
 
-  const buildCheckboxes = (chains, type) => {
-    return chains
-      .map((chain) =>
-        renderCheckbox({
-          id: `${type}-${chain.urn}`,
-          value: chain.urn,
-          label: chain.label,
-          type,
-        })
-      )
-      .join('')
-  }
-
-  const filter = document.getElementById('filter-chains-content')
-
-  filter.innerHTML = `
-  <div class="flex gap-x-6 text-sm text-white/80 overflow-y-auto max-h-screen md:max-h-80 w-full">
-    <div class="flex flex-col gap-2 grow">
-      <span class="text-white/50 text-xs font-semibold">Origin</span>
-      ${buildCheckboxes(resolvedChains, 'origin')}
-    </div>
-    <div class="flex flex-col gap-2 grow">
-      <span class="text-white/50 text-xs font-semibold">Destination</span>
-      ${buildCheckboxes(resolvedChains, 'destination')}
-    </div>
-  </div>
-`
-
-  const { updateLabels } = collectionUpdater(
-    filter,
-    (currentTarget) =>
-      currentTarget.dataset.filter === 'origin'
+  const { updateLabels, getCheckboxes } = MultiCheckboxDropdown({
+    containerId: 'filter-chains-content',
+    items: chains,
+    type: '',
+    labelResolver: (c) => c.label,
+    valueResolver: (c) => c.urn,
+    resolveCollection: (el) =>
+      el.dataset.filter === 'origin'
         ? ctx.filters.selectedOrigins
         : ctx.filters.selectedDestinations,
-    ctx.update
-  )
+    onUpdate: ctx.update,
+    groupBy: [
+      { label: 'Origin', type: 'origin' },
+      { label: 'Destination', type: 'destination' },
+    ],
+  })
 
+  // Disable same values
   const syncDisabledStates = () => {
     const originChecked = Array.from(
-      filter.querySelectorAll('input[data-filter="origin"]:checked')
+      document.querySelectorAll('input[data-filter="origin"]:checked')
     ).map((el) => el.value)
-
     const destChecked = Array.from(
-      filter.querySelectorAll('input[data-filter="destination"]:checked')
+      document.querySelectorAll('input[data-filter="destination"]:checked')
     ).map((el) => el.value)
 
-    for (const input of filter.querySelectorAll(
+    for (const input of document.querySelectorAll(
       'input[data-filter="origin"]'
     )) {
       input.disabled = destChecked.includes(input.value)
     }
 
-    for (const input of filter.querySelectorAll(
+    for (const input of document.querySelectorAll(
       'input[data-filter="destination"]'
     )) {
       input.disabled = originChecked.includes(input.value)
     }
   }
 
-  filter.addEventListener('change', (e) => {
-    if (e.target.matches('input[type="checkbox"][data-filter]')) {
-      syncDisabledStates()
-    }
-  })
+  document
+    .getElementById('filter-chains-content')
+    .addEventListener('change', (e) => {
+      if (e.target.matches('input[data-filter]')) {
+        syncDisabledStates()
+      }
+    })
 
   document
     .getElementById('clear-filter-chains')
     .addEventListener('click', () => {
       ctx.filters.selectedOrigins.length = 0
       ctx.filters.selectedDestinations.length = 0
-      const checkboxes = filter.querySelectorAll('input[type=checkbox]')
+      let filterDirty = false
+      const checkboxes = getCheckboxes()
       for (const checkbox of checkboxes) {
-        if (checkbox.checked) {
-          filterDirty = true
-        }
+        if (checkbox.checked) filterDirty = true
         checkbox.checked = false
       }
       updateLabels()
-      applyIfDirty(ctx.update)
+      if (filterDirty) {
+        ctx.update()
+      }
     })
 }
 
@@ -298,6 +203,7 @@ export function loadSearch(ctx) {
   }
 
   loadChainsFilter(ctx)
+  loadActionsFilter(ctx)
   loadStatusFilter(ctx)
   setupToggles()
 }

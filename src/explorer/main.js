@@ -23,6 +23,7 @@ const filters = {
   selectedDestinations: [],
   selectedOrigins: [],
   selectedStatus: [],
+  selectedActions: [],
 }
 
 function formatTimestamp(timestamp) {
@@ -340,7 +341,7 @@ function applyFiltersAndRender() {
 
       renderTransactionsTable(results)
     })
-    .catch(console.log)
+    .catch(console.error)
 
   updateSearchIndicator()
 
