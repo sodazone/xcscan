@@ -181,3 +181,27 @@ export function makeGuardedClickHandler(button, update) {
     })
   }
 }
+
+export function enforceNumericInput(inputEl, { allowDecimal = false } = {}) {
+  inputEl.addEventListener('input', () => {
+    let cleaned = inputEl.value
+
+    if (allowDecimal) {
+      // Remove invalid characters and allow only one decimal point
+      cleaned = cleaned
+        .replace(/[^\d.]/g, '') // remove non-numeric/non-dot
+        .replace(/^\.*/, '') // don't allow starting with a dot
+        .replace(/(\..*)\./g, '$1') // only one decimal allowed
+    } else {
+      cleaned = cleaned.replace(/[^\d]/g, '') // remove everything except digits
+    }
+
+    if (inputEl.value !== cleaned) {
+      const cursorPos = inputEl.selectionStart
+      inputEl.value = cleaned
+      // Try to restore cursor position
+      inputEl.setSelectionRange(cursorPos - 1, cursorPos - 1)
+    }
+  })
+  return inputEl
+}

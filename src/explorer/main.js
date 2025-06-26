@@ -25,6 +25,11 @@ const filters = {
   selectedOrigins: [],
   selectedStatus: [],
   selectedActions: [],
+  selectedUsdAmounts: {
+    amountPreset: null,
+    amountGte: null,
+    amountLte: null,
+  },
 }
 
 function formatTimestamp(timestamp) {

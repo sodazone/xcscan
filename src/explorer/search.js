@@ -1,5 +1,7 @@
 import { NetworkInfos, resolveNetworkName } from '../extras.js'
+import { humanizeNumber } from '../formats.js'
 import {
+  enforceNumericInput,
   getStatusLabel,
   selectableActions,
   selectableStatus,
@@ -162,6 +164,106 @@ function setupToggles() {
   }
 }
 
+function loadAmountFilter(ctx) {
+  const gteInput = enforceNumericInput(
+    document.getElementById('filter-usd-amount-gte')
+  )
+  const lteInput = enforceNumericInput(
+    document.getElementById('filter-usd-amount-lte')
+  )
+  const presetRadios = document.querySelectorAll(
+    'input[name="filter-usd-amount-preset"]'
+  )
+  const applyButton = document.getElementById('filter-usd-amount-apply')
+  const resetButton = document.getElementById('filter-usd-amount-reset')
+
+  const labelEl = document.querySelector(
+    '#filter-usd-amount [data-dropdown-labels]'
+  )
+  const dropdown = document
+    .getElementById('filter-usd-amount-content')
+    ?.closest('.dropdown')
+  const dropdownMenu = dropdown?.querySelector('.dropdown-menu')
+
+  function updateLabelFromFilters({ amountPreset, amountGte, amountLte }) {
+    let label = 'All'
+
+    if (amountPreset) {
+      if (amountPreset === '') {
+        label = 'All'
+      } else if (amountPreset.endsWith('+')) {
+        label = `≥ $${humanizeNumber(amountPreset.replace('+', ''))}`
+      } else if (amountPreset.includes('-')) {
+        const [min, max] = amountPreset.split('-')
+        label = `$${humanizeNumber(min)}–${humanizeNumber(max)}`
+      }
+    } else if (amountGte != null || amountLte != null) {
+      if (amountGte != null && amountLte != null) {
+        label = `$${humanizeNumber(amountGte)}–${humanizeNumber(amountLte)}`
+      } else if (amountGte != null) {
+        label = `≥ $${humanizeNumber(amountGte)}`
+      } else if (amountLte != null) {
+        label = `≤ $${humanizeNumber(amountLte)}`
+      }
+    }
+
+    if (labelEl) {
+      labelEl.textContent = label
+    }
+  }
+
+  function applyAmountsFilter() {
+    updateLabelFromFilters(ctx.filters.selectedUsdAmounts)
+    dropdownMenu?.classList.add('hidden')
+    dropdown?.classList.remove('open')
+    ctx.update()
+  }
+
+  function hydrateFromCtx() {
+    const f = ctx.filters.selectedUsdAmounts || {}
+
+    gteInput.value = f.amountGte != null ? f.amountGte : ''
+    lteInput.value = f.amountLte != null ? f.amountLte : ''
+    presetRadios.forEach((r) => {
+      r.checked = r.value === f.amountPreset
+    })
+
+    updateLabelFromFilters(f)
+  }
+
+  applyButton.addEventListener('click', () => {
+    const gte = parseFloat(gteInput.value)
+    const lte = parseFloat(lteInput.value)
+    const selectedPreset = [...presetRadios].find((r) => r.checked)?.value
+
+    ctx.filters.selectedUsdAmounts = {
+      amountPreset: selectedPreset || null,
+      amountGte: isNaN(gte) ? null : gte,
+      amountLte: isNaN(lte) ? null : lte,
+    }
+
+    applyAmountsFilter()
+  })
+
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      gteInput.value = ''
+      lteInput.value = ''
+      presetRadios.forEach((r) => (r.checked = false))
+
+      ctx.filters.selectedUsdAmounts = {
+        amountPreset: null,
+        amountGte: null,
+        amountLte: null,
+      }
+
+      applyAmountsFilter()
+    })
+  }
+
+  hydrateFromCtx()
+}
+
 export function loadSearch(ctx) {
   const searchForm = document.getElementById('search')
   const inputError = document.getElementById('search-input-error')
@@ -211,5 +313,6 @@ export function loadSearch(ctx) {
   loadChainsFilter(ctx)
   loadActionsFilter(ctx)
   loadStatusFilter(ctx)
+  loadAmountFilter(ctx)
   setupToggles()
 }

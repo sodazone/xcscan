@@ -33,6 +33,7 @@ function asCriteria(filters) {
     selectedOrigins,
     selectedStatus,
     selectedActions,
+    selectedUsdAmounts,
   } = filters
 
   const criteria = {}
@@ -67,6 +68,26 @@ function asCriteria(filters) {
   }
   if (selectedActions?.length) {
     criteria.actions = [...actionsToQueryValues(selectedActions)]
+  }
+
+  const { amountPreset, amountGte, amountLte } = selectedUsdAmounts || {}
+
+  if (amountPreset != null || amountGte != null || amountLte != null) {
+    criteria.usdAmount = {}
+
+    if (amountPreset) {
+      if (amountPreset.includes('-')) {
+        const [min, max] = amountPreset.split('-').map(Number)
+        if (!isNaN(min)) criteria.usdAmount.gte = min
+        if (!isNaN(max)) criteria.usdAmount.lte = max
+      } else if (amountPreset.includes('+')) {
+        const min = parseFloat(amountPreset.replace('+', ''))
+        if (!isNaN(min)) criteria.usdAmount.gte = min
+      }
+    } else {
+      if (amountGte != null) criteria.usdAmount.gte = amountGte
+      if (amountLte != null) criteria.usdAmount.lte = amountLte
+    }
   }
 
   return criteria

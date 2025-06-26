@@ -154,6 +154,7 @@
               id="filters"
               class="hidden gap-3 flex-wrap md:flex md:ml-auto md:items-center"
             >
+              <!-- Chains Filter -->
               <div class="relative dropdown">
                 <button
                   class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle transition"
@@ -314,7 +315,7 @@
 
                 <div
                   id="filter-status"
-                  class="dropdown-menu hidden fixed flex flex-col gap-y-4 md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow"
+                  class="dropdown-menu hidden fixed flex-col gap-y-4 md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow"
                 >
                   <div
                     class="flex items-center md:hidden border-b border-white/5 p-4"
@@ -350,6 +351,146 @@
                     id="filter-status-content"
                     class="grid gap-3 px-4 md:py-4"
                   ></div>
+                </div>
+              </div>
+
+              <!-- USD Filter -->
+              <div id="filter-usd-amount" class="relative dropdown">
+                <button
+                  class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
+                >
+                  <div class="flex items-start gap-2">
+                    <span>Amounts</span>
+                    <span
+                      data-dropdown-labels
+                      class="text-white text-left truncate max-w-48"
+                      >All</span
+                    >
+                  </div>
+
+                  <svg
+                    class="w-4 h-4 text-white/40 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div
+                  class="dropdown-menu hidden fixed flex-col gap-y-4 md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:w-fit md:rounded-lg md:shadow"
+                >
+                  <div
+                    class="flex items-center md:hidden border-b border-white/5 p-4"
+                  >
+                    <span class="text-xs text-white/80 uppercase"
+                      >Select Amounts</span
+                    >
+                    <button
+                      data-dropdown-close
+                      class="flex items-center ml-auto flex space-x-1"
+                      id="close-filter-usd-amount"
+                    >
+                      <div
+                        class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#121212"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="w-3.5 h-3.5"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                  <div
+                    id="filter-usd-amount-content"
+                    class="p-4 w-full md:w-64 flex flex-col gap-4 text-sm text-white/80"
+                  >
+                    <div class="flex gap-x-2 justify-between items-center">
+                      <span class="text-white/50">Amount Range (USD)</span>
+                      <button
+                        id="filter-usd-amount-reset"
+                        class="rounded-lg border border-white/10 text-white/60 px-2 py-1 cursor-pointer p-2"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label>Min</label>
+                      <input
+                        id="filter-usd-amount-gte"
+                        type="text"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        class="w-full bg-black/20 text-white px-2 py-3 rounded w-full focus:outline-none"
+                        placeholder="e.g. 10000"
+                      />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label>Max</label>
+                      <input
+                        id="filter-usd-amount-lte"
+                        type="text"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        class="w-full bg-black/20 text-white px-2 py-3 rounded w-full focus:outline-none"
+                        placeholder="e.g. 10000000"
+                      />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <span class="text-white/50">Presets</span>
+                      <label
+                        ><input
+                          type="radio"
+                          name="filter-usd-amount-preset"
+                          value="0-1000"
+                        />
+                        &lt; 1k</label
+                      >
+                      <label
+                        ><input
+                          type="radio"
+                          name="filter-usd-amount-preset"
+                          value="1000-10000"
+                        />
+                        $1k - $10k</label
+                      >
+                      <label
+                        ><input
+                          type="radio"
+                          name="filter-usd-amount-preset"
+                          value="10000-100000"
+                        />
+                        $10k - $100k</label
+                      >
+                      <label
+                        ><input
+                          type="radio"
+                          name="filter-usd-amount-preset"
+                          value="100000+"
+                        />
+                        &gt; $100K</label
+                      >
+                    </div>
+                    <button
+                      id="filter-usd-amount-apply"
+                      class="cursor-pointer w-full bg-white/10 rounded px-2 py-3 text-white"
+                    >
+                      Apply
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
