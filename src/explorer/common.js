@@ -112,7 +112,6 @@ export function prettify(str) {
 export function formatAssetAmount(asset) {
   let amount = ''
   amount += `<div class="flex space-x-1"><span>${humanizeNumber(asset.amount / 10 ** asset.decimals)}</span><span class="text-white/60">${asset.symbol}</span></div>`
-  console.log(asset)
   if (asset.usd != null) {
     amount += `<div class="flex text-xs text-white/60">($${humanizeNumber(asset.usd)})</div>`
   }
