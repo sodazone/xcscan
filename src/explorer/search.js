@@ -109,6 +109,7 @@ function loadChainsFilter(ctx) {
       for (const checkbox of checkboxes) {
         if (checkbox.checked) filterDirty = true
         checkbox.checked = false
+        checkbox.disabled = false
       }
       updateLabels()
       if (filterDirty) {
