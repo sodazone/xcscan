@@ -4,6 +4,11 @@ import { httpUrl } from '../env.js'
 const queryUrl = `${httpUrl}/query/xcm`
 
 export const TIME_PERIODS = {
+  quarterly: {
+    label: 'Last 3 months',
+    timeframe: '3 months',
+    bucket: '1 days',
+  },
   monthly: {
     label: 'Month to Date',
     timeframe: '1 months',
@@ -46,6 +51,7 @@ function getTimeRange(timeframe, bucket) {
     days: 86400,
     week: 604800,
     weeks: 604800,
+    months: 2592000
   }
 
   const timeframeSeconds =

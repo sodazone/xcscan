@@ -21,22 +21,23 @@ export function setupCounters() {
     unit,
     invertPct = false,
     format,
+    showPrev = true
   }) {
     const pct = (diff / current) * 100.0
     element.innerHTML = `
       <div class="flex justify-between items-center">
         <span class="text-white/70 font-medium">${title}</span>
-        <span class="h-fit w-fit text-sm ${(invertPct ? pct < 0 : pct > 0) ? 'pct-positive' : 'pct-negative'}">${pct > 0 ? '+' : ''}${pct.toFixed(2)}%</span>
+        ${showPrev ? `<span class="h-fit w-fit text-sm ${(invertPct ? pct < 0 : pct > 0) ? 'pct-positive' : 'pct-negative'}">${pct > 0 ? '+' : ''}${pct.toFixed(2)}%</span>` : ''}
       </div>
       <div id="tx-counter" class="flex flex-col gap-1">
         <div>
           <span class="text-white/80 text-4xl font-medium">${format ? format(current) : current}</span>
           <span class="text-white/50 text-md">${unit}</span>
         </div>
-        <div class="flex items-center justify-between">
+        ${showPrev ? `<div class="flex items-center justify-between">
           <span class="text-xs text-white/50">Previous ${format ? format(previous) : previous} ${unit}</span>
           <span class="text-xs text-white/50">(${diff > 0 ? '+' : ''}${format(diff)}${unit ? ` ${unit}` : ''})</span>
-        </div>
+        </div>` : ''}
       </div>
       `
   }
@@ -53,6 +54,7 @@ export function setupCounters() {
           diff: counters.volumeUsd.diff,
           unit: 'usd',
           format: formatAssetVolume,
+          showPrev: period !== 'quarterly'
         })
         render({
           title: 'Transfers',
@@ -62,6 +64,7 @@ export function setupCounters() {
           diff: counters.diff,
           unit: 'tx',
           format: formatTxs,
+          showPrev: period !== 'quarterly'
         })
         render({
           title: 'Accounts',
@@ -71,6 +74,7 @@ export function setupCounters() {
           diff: counters.accounts.diff,
           unit: '',
           format: formatAccounts,
+          showPrev: period !== 'quarterly'
         })
         render({
           title: 'Avg. Time',
@@ -83,6 +87,7 @@ export function setupCounters() {
           unit: 's',
           invertPct: true,
           format: formatRoundtrip,
+          showPrev: period !== 'quarterly'
         })
       })
       .catch(console.error)
