@@ -27,7 +27,30 @@ import { setupCounters } from './indicators.js'
 import { setupTimeSelector } from './time-selector.js'
 import { setupSeriesSelector } from './series-selector.js'
 
+// TODO: improve wiring on part loaded events (if needed)
+function setupSekeletons() {
+  const countersContainer = document.getElementById('counters')
+
+  const skeletonHTML = `
+  <div class="flex animate-pulse space-x-4 h-15 bg-linear-to-r from-white/10 to-transparent"></div>
+`
+
+  function showSkeletons() {
+    const counters = countersContainer.querySelectorAll(
+      'div.flex.flex-col.gap-1'
+    )
+    counters.forEach((counter) => {
+      counter.innerHTML = skeletonHTML
+    })
+  }
+  window.addEventListener('timeChanged', (e) => {
+    showSkeletons()
+  })
+}
+
 window.onload = () => {
+  setupSekeletons()
+
   setupSeriesChart(document.querySelector('#chart'))
   setupAssetsGrid(document.querySelector('#grid-assets'))
   setupChannelsGrid(document.querySelector('#grid-channels'))

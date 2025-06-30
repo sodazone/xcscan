@@ -51,7 +51,7 @@ function getTimeRange(timeframe, bucket) {
     days: 86400,
     week: 604800,
     weeks: 604800,
-    months: 2592000
+    months: 2592000,
   }
 
   const timeframeSeconds =
