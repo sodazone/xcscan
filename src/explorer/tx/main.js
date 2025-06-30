@@ -18,7 +18,10 @@ import {
   getSubscanBlockLink,
   getSubscanExtrinsicLink,
 } from '../links.js'
-import { createCopyLinkHTML, installCopyEventListener } from './copy-link.js'
+import {
+  createCopyLinkHTML,
+  installCopyEventListener,
+} from '../components/copy-link.js'
 import { createXcmProgramViewer } from './json.js'
 
 function formatLocalAndUTC(dateInput) {

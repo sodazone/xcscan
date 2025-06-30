@@ -12,7 +12,11 @@ import {
   prettify,
   shortenAddress,
 } from './common.js'
-import { isValidQuery, loadSearch } from './search.js'
+import {
+  createCopyLinkHTML,
+  installCopyEventListener,
+} from './components/copy-link.js'
+import { loadSearch, resolveQueryType } from './search.js'
 import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
 
 const pageCursors = [null]
@@ -138,13 +142,29 @@ function createJourneyRow(item) {
         <div class="cell flex md:items-center" data-label="From">
           <div class="flex flex-col space-y-1">
             ${formatNetworkWithIconHTML(fromChain)}
-            ${fromAddress == null ? '' : `<div>${fromAddress}</div>`}
+            ${
+              fromAddress == null
+                ? ''
+                : `<div class="break-all">${createCopyLinkHTML({
+                    text: item.fromFormatted ?? item.from,
+                    display: fromAddress,
+                    url: `/?search=${item.fromFormatted ?? item.from}`,
+                  })}</div>`
+            }
           </div>
         </div>
         <div class="cell flex md:items-center" data-label="To">
             <div class="flex flex-col space-y-1">
             ${formatNetworkWithIconHTML(toChain)}
-            ${toAddress == null ? '' : `<div>${toAddress}</div>`}
+            ${
+              toAddress == null
+                ? ''
+                : `<div class="break-all">${createCopyLinkHTML({
+                    text: item.toFormatted ?? item.to,
+                    display: toAddress,
+                    url: `/?search=${item.toFormatted ?? item.to}`,
+                  })}</div>`
+            }
             </div>
         </div>
         <div class="cell flex md:items-center ${Array.isArray(item.assets) && item.assets.length === 0 ? 'sm-hidden' : ''}"
@@ -361,6 +381,8 @@ window.onload = async () => {
     Object.assign(filters, savedFilters)
   }
 
+  installCopyEventListener()
+
   loadToggles()
   loadSearch({
     filters,
@@ -369,8 +391,9 @@ window.onload = async () => {
 
   const urlParams = new URLSearchParams(window.location.search)
   const deepSearch = urlParams.get('search')
+  const queryType = deepSearch != null ? resolveQueryType(deepSearch) : null
 
-  if (deepSearch && isValidQuery(deepSearch)) {
+  if (deepSearch && queryType != null) {
     filters.currentSearchTerm = deepSearch
 
     listJourneys({
@@ -380,14 +403,13 @@ window.onload = async () => {
       },
     })
       .then((results) => {
-        if (results.items.length === 1) {
+        if (queryType.startsWith('tx') && results.items.length === 1) {
           window.location.href = `/tx/index.html#${results.items[0].correlationId}`
         } else {
           currentPage = 0
           pageCursors.length = 1
 
           saveFiltersToSession(filters)
-
           renderTransactionsTable(results)
         }
       })

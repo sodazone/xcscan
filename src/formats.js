@@ -24,7 +24,7 @@ export function humanizeNumber(
     return `${formatter.format(value / 1000000) + siSeparator}M`
   }
   if (absValue >= 100000) {
-    return `${formatter.format(value / 1000) + siSeparator}k`
+    return `${formatter.format(value / 1000) + siSeparator}K`
   }
   if (absValue > 10000) {
     return formatter.format(Math.round(absValue))

@@ -19,8 +19,10 @@ export function createCopyLink({ text, display = null, url = null }) {
   if (url) {
     copyText = document.createElement('a')
     copyText.href = url
-    copyText.target = '_blank'
-    copyText.rel = 'noopener noreferrer'
+    if (url.startsWith('http')) {
+      copyText.target = '_blank'
+      copyText.rel = 'noopener noreferrer'
+    }
   } else {
     copyText = document.createElement('span')
   }

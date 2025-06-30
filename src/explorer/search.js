@@ -9,19 +9,27 @@ import {
 
 import { MultiCheckboxDropdown } from './components/multi-checkbox-dropdown.js'
 
-export function isValidQuery(value) {
+export function resolveQueryType(value) {
   const trimmed = value.trim()
 
   // EVM address (0x-prefixed, 40 hex chars)
-  const isEvmAddress = /^0x[a-fA-F0-9]{40}$/.test(trimmed)
-
+  if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) {
+    return 'address-evm'
+  }
   // SS58 address (47-48 chars typical, base58)
-  const isSs58Address = /^[1-9A-HJ-NP-Za-km-z]{38,60}$/.test(trimmed)
-
+  if (/^[1-9A-HJ-NP-Za-km-z]{38,60}$/.test(trimmed)) {
+    return 'address-ss58'
+  }
   // Tx hash (usually 0x + 64 hex chars)
-  const isTxHash = /^0x[a-fA-F0-9]{64}$/.test(trimmed)
+  if (/^0x[a-fA-F0-9]{64}$/.test(trimmed)) {
+    return 'tx-hash'
+  }
 
-  return isEvmAddress || isSs58Address || isTxHash
+  return null
+}
+
+export function isValidQuery(value) {
+  return resolveQueryType(value) !== null
 }
 
 function loadStatusFilter(ctx) {
