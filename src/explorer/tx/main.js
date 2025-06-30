@@ -6,9 +6,11 @@ import {
   decodeWellKnownAddressHTML,
   formatAction,
   formatAssetAmount,
+  formatLocalTimestamp,
   formatNetworkWithIconHTML,
   getStatusLabel,
   loadResources,
+  pad,
   shortenAddress,
 } from '../common.js'
 import {
@@ -19,32 +21,28 @@ import {
 import { createCopyLinkHTML, installCopyEventListener } from './copy-link.js'
 import { createXcmProgramViewer } from './json.js'
 
-function formatTimestampHTML(ts) {
-  const date = new Date(ts)
+function formatLocalAndUTC(dateInput) {
+  const date = new Date(dateInput)
 
-  const hours = date.getUTCHours()
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0')
-  const seconds = String(date.getUTCSeconds()).padStart(2, '0')
+  const yyyy = date.getFullYear()
+  const mm = pad(date.getMonth() + 1)
+  const dd = pad(date.getDate())
+  const hh = pad(date.getHours())
+  const mi = pad(date.getMinutes())
+  const ss = pad(date.getSeconds())
 
-  const ampm = hours >= 12 ? 'PM' : 'AM'
-  const hr12 = hours % 12 || 12
+  const timeZoneName =
+    new Intl.DateTimeFormat(undefined, {
+      timeZoneName: 'short',
+    })
+      .formatToParts(date)
+      .find((part) => part.type === 'timeZoneName')?.value || ''
 
-  const time = `${hr12}:${minutes}:${seconds} ${ampm} UTC`
+  const local = `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} ${timeZoneName}`
 
-  const day = String(date.getUTCDate()).padStart(2, '0')
-  const month = date.toLocaleString('en-US', {
-    month: 'short',
-    timeZone: 'UTC',
-  })
-  const year = date.getUTCFullYear()
+  const utc = date.toISOString().split('T').join(' ').split('.')[0] + ' UTC'
 
-  const dateStr = `${day} ${month} ${year}`
-
-  return `
-    <div class="flex flex-col text-sm text-white/80 leading-tight">
-      <span class="font-medium text-white">${time}</span>
-      <span class="text-white/50">${dateStr}</span>
-    </div>`
+  return `<span title="${utc}">${local}</span>`
 }
 
 function formatStatusIconHTML(status) {
@@ -130,7 +128,7 @@ function createLegStopHTML(stop) {
     `
 
   const timestampHTML = stop.timestamp
-    ? `<div class="text-white/40 text-xs">${formatTimestampHTML(stop.timestamp)}</div>`
+    ? formatLocalTimestamp(stop.timestamp)
     : ''
 
   const metaHTML = createLegStopMetaHTML(stop) || ''
@@ -167,12 +165,12 @@ function getTimeDetails({ sentAt, recvAt }) {
     const sentDate = new Date(sentAt)
     const receivedDate = recvAt ? new Date(recvAt) : null
 
-    const formattedSent = `${sentDate.toISOString().split('T').join(' ').split('.')[0]} UTC`
+    const formattedSent = formatLocalAndUTC(sentDate)
     let formattedReceived = ''
     let elapsed = ''
 
     if (receivedDate) {
-      formattedReceived = `${receivedDate.toISOString().split('T').join(' ').split('.')[0]} UTC`
+      formattedReceived = formatLocalAndUTC(receivedDate)
       elapsed = getElapsedText(sentAt, recvAt)
     }
 

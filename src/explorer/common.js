@@ -205,3 +205,34 @@ export function enforceNumericInput(inputEl, { allowDecimal = false } = {}) {
   })
   return inputEl
 }
+
+export function pad(num) {
+  return String(num).padStart(2, '0')
+}
+
+export function formatLocalTimestamp(timestamp) {
+  const date = new Date(timestamp)
+
+  const yyyy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  const hh = String(date.getHours()).padStart(2, '0')
+  const mi = String(date.getMinutes()).padStart(2, '0')
+  const ss = String(date.getSeconds()).padStart(2, '0')
+
+  const utcYyyy = date.getUTCFullYear()
+  const utcMm = String(date.getUTCMonth() + 1).padStart(2, '0')
+  const utcDd = String(date.getUTCDate()).padStart(2, '0')
+  const utcHh = String(date.getUTCHours()).padStart(2, '0')
+  const utcMi = String(date.getUTCMinutes()).padStart(2, '0')
+  const utcSs = String(date.getUTCSeconds()).padStart(2, '0')
+
+  const utcTooltip = `UTC ${utcHh}:${utcMi}:${utcSs} · ${utcYyyy}-${utcMm}-${utcDd}`
+
+  return `
+    <div class="flex flex-col space-y-1 leading-tight text-sm" title="${utcTooltip}">
+      <span class="text-white">${hh}:${mi}:${ss}</span>
+      <span class="text-white/60">${yyyy}-${mm}-${dd}</span>
+    </div>
+  `
+}

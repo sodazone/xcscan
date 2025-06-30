@@ -4,6 +4,7 @@ import {
   asClassName,
   decodeWellKnownAddressHTML,
   formatAssetAmount,
+  formatLocalTimestamp,
   formatNetworkWithIconHTML,
   getStatusLabel,
   loadResources,
@@ -30,24 +31,6 @@ const filters = {
     amountGte: null,
     amountLte: null,
   },
-}
-
-function formatTimestamp(timestamp) {
-  const date = new Date(timestamp)
-
-  const yyyy = date.getUTCFullYear()
-  const mm = String(date.getUTCMonth() + 1).padStart(2, '0')
-  const dd = String(date.getUTCDate()).padStart(2, '0')
-  const hh = String(date.getUTCHours()).padStart(2, '0')
-  const mi = String(date.getUTCMinutes()).padStart(2, '0')
-  const ss = String(date.getUTCSeconds()).padStart(2, '0')
-
-  return `
-    <div class="flex flex-col space-y-1 leading-tight text-sm">
-      <span class="text-white">${hh}:${mi}:${ss} UTC</span>
-      <span class="text-white/60">${yyyy}-${mm}-${dd}</span>
-    </div>
-  `
 }
 
 function renderPaginationFooter({ hasNextPage, endCursor }) {
@@ -119,7 +102,7 @@ function createJourneyRow(item) {
     ? null
     : (decodeWellKnownAddressHTML(item.to) ??
       shortenAddress(item.toFormatted ?? item.to))
-  const time = formatTimestamp(item.sentAt)
+  const time = formatLocalTimestamp(item.sentAt)
 
   const action = {
     type: item.type,
