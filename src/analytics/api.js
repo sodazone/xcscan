@@ -1,12 +1,7 @@
-import { apiKey, httpUrl } from '../env.js'
+import { fetchWithRetry } from '../api.js'
+import { httpUrl } from '../env.js'
 
 const queryUrl = `${httpUrl}/query/xcm`
-const headers = Object.assign(
-  {
-    'Content-Type': 'application/json',
-  },
-  apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
-)
 
 export const TIME_PERIODS = {
   monthly: {
@@ -97,18 +92,7 @@ function fill(items, { timeframe, bucket }) {
 }
 
 async function _fetch(args) {
-  const response = await fetch(queryUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      args,
-    }),
-  })
-  if (!response.ok) {
-    throw new Error(`Response status: ${response.status}`)
-  }
-
-  return await response.json()
+  return await fetchWithRetry(queryUrl, { args })
 }
 
 export async function getTransfersTotal(period) {

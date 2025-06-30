@@ -116,6 +116,8 @@ function loadChainsFilter(ctx) {
         ctx.update()
       }
     })
+
+  syncDisabledStates()
 }
 
 function setupToggles() {

@@ -1,29 +1,12 @@
-import { apiKey, httpUrl } from '../env.js'
+import { fetchWithRetry } from '../api.js'
+import { httpUrl } from '../env.js'
 import { actionsToQueryValues } from './common.js'
 
 const sseUrl = `${httpUrl}/agents/xcm/sse`
 const queryUrl = `${httpUrl}/query/xcm`
-const headers = Object.assign(
-  {
-    'Content-Type': 'application/json',
-  },
-  apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
-)
 
-async function _fetch(args, pagination) {
-  const response = await fetch(queryUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      args,
-      pagination,
-    }),
-  })
-  if (!response.ok) {
-    throw new Error(`Response status: ${response.status}`)
-  }
-
-  return await response.json()
+async function _fetch(args) {
+  return await fetchWithRetry(queryUrl, args)
 }
 
 function asCriteria(filters) {
@@ -94,15 +77,13 @@ function asCriteria(filters) {
 export async function listJourneys({ filters, pagination }) {
   try {
     const criteria = asCriteria(filters)
-    return await _fetch(
-      {
+    return await _fetch({
+      args: {
         op: 'journeys.list',
         criteria,
       },
-      {
-        ...pagination,
-      }
-    )
+      pagination,
+    })
   } catch (error) {
     console.error(error.message)
   }
@@ -111,9 +92,11 @@ export async function listJourneys({ filters, pagination }) {
 export async function getJourneyById(id) {
   try {
     return await _fetch({
-      op: 'journeys.by_id',
-      criteria: {
-        id,
+      args: {
+        op: 'journeys.by_id',
+        criteria: {
+          id,
+        },
       },
     })
   } catch (error) {
