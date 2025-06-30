@@ -106,6 +106,7 @@ function createJourneyRow(item) {
     ? null
     : (decodeWellKnownAddressHTML(item.to) ??
       shortenAddress(item.toFormatted ?? item.to))
+
   const time = formatLocalTimestamp(item.sentAt)
 
   const action = {
@@ -115,6 +116,18 @@ function createJourneyRow(item) {
     const call = item.transactCalls[0]
     action.module = call.module
     action.method = prettify(call.method)
+  }
+
+  function addressHTML({ display, text }) {
+    if (display == null || text == null) {
+      return ''
+    }
+
+    return `<div class="break-all">${createCopyLinkHTML({
+      text,
+      display,
+      url: `/?search=${text}`,
+    })}</div>`
   }
 
   const row = document.createElement('a')
@@ -142,29 +155,19 @@ function createJourneyRow(item) {
         <div class="cell flex md:items-center" data-label="From">
           <div class="flex flex-col space-y-1">
             ${formatNetworkWithIconHTML(fromChain)}
-            ${
-              fromAddress == null
-                ? ''
-                : `<div class="break-all">${createCopyLinkHTML({
-                    text: item.fromFormatted ?? item.from,
-                    display: fromAddress,
-                    url: `/?search=${item.fromFormatted ?? item.from}`,
-                  })}</div>`
-            }
+            ${addressHTML({
+              display: fromAddress,
+              text: item.fromFormatted ?? item.from,
+            })}
           </div>
         </div>
         <div class="cell flex md:items-center" data-label="To">
             <div class="flex flex-col space-y-1">
             ${formatNetworkWithIconHTML(toChain)}
-            ${
-              toAddress == null
-                ? ''
-                : `<div class="break-all">${createCopyLinkHTML({
-                    text: item.toFormatted ?? item.to,
-                    display: toAddress,
-                    url: `/?search=${item.toFormatted ?? item.to}`,
-                  })}</div>`
-            }
+            ${addressHTML({
+              display: toAddress,
+              text: item.toFormatted ?? item.to,
+            })}
             </div>
         </div>
         <div class="cell flex md:items-center ${Array.isArray(item.assets) && item.assets.length === 0 ? 'sm-hidden' : ''}"
