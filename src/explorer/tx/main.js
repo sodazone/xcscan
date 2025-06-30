@@ -57,7 +57,7 @@ function formatStatusHTML(status) {
   return `<div class="status status-${cls}"><span class="status-bullet"></span><span class="status-label">${label}</span></div>`
 }
 
-function createLegStopMetaHTML({ extrinsic, event, chainId }) {
+function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
   const extrinsicHTML = extrinsic?.module
     ? `
     <div class="flex items-center space-x-2">
@@ -74,18 +74,24 @@ function createLegStopMetaHTML({ extrinsic, event, chainId }) {
       `
         : ''
     }
-    <div class="flex items-center space-x-2">
-      <span class="text-white/50 text-xs">Extrinsic</span>
-      <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/80 truncate">${extrinsic.module}.${extrinsic.method}</span>
+    <div class="flex flex-col space-y-1">
+      <div class="text-white/50 text-xs">Extrinsic</div>
+      <div class="flex flex-col space-y-1">
+        <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/80 truncate">${extrinsic.module}.${extrinsic.method}</span>
+        <span class="text-xs text-white/60">${blockNumber}-${extrinsic.blockPosition}</span>
+      </div>
     </div>
     `
     : ''
 
   const eventHTML = event?.module
     ? `
-    <div class="flex items-center space-x-2">
-      <span class="text-white/50 text-xs">Event</span>
-      <span title="${event.module}.${event.name}" class="text-xs font-medium text-white/80 truncate">${event.module}.${event.name}</span>
+    <div class="flex flex-col space-y-1">
+      <div class="text-white/50 text-xs">Event</div>
+      <div class="flex flex-col space-y-1">
+        <span title="${event.module}.${event.name}" class="text-xs font-medium text-white/80 truncate">${event.module}.${event.name}</span>
+        <span class="text-xs text-white/60">${blockNumber}-${event.blockPosition}</span>
+      </div>
     </div>
     `
     : ''
