@@ -63,6 +63,8 @@ export function installCopyEventListener() {
     if (!text) return
 
     try {
+      event.preventDefault()
+
       await navigator.clipboard.writeText(text)
       const original = btn.innerHTML
       btn.innerHTML = okSVG
