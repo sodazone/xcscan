@@ -232,6 +232,22 @@ function loadAmountFilter(ctx) {
     updateLabelFromFilters(f)
   }
 
+  presetRadios.forEach((radio) => {
+    radio.addEventListener('change', () => {
+      if (radio.checked) {
+        gteInput.value = ''
+        lteInput.value = ''
+      }
+    })
+  })
+
+  function handleCustomInput() {
+    presetRadios.forEach((r) => (r.checked = false))
+  }
+
+  gteInput.addEventListener('input', handleCustomInput)
+  lteInput.addEventListener('input', handleCustomInput)
+
   applyButton.addEventListener('click', () => {
     const gte = parseFloat(gteInput.value)
     const lte = parseFloat(lteInput.value)
