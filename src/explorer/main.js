@@ -179,8 +179,9 @@ function createJourneyRow(item) {
               Array.isArray(item.assets) && item.assets.length > 0
                 ? item.assets
                     .map((asset) => {
-                      if (asset.decimals !== null) {
-                        return `<div>${formatAssetAmount(asset)}</div>`
+                      const fmtAmount = formatAssetAmount(asset)
+                      if (fmtAmount !== '') {
+                        return `<div>${fmtAmount}</div>`
                       }
                       return '<div class="text-white/20">-</div>'
                     })

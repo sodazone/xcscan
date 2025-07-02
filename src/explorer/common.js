@@ -109,10 +109,35 @@ export function prettify(str) {
     .replace(/[_\-]/g, ' ') // snake_case or kebab-case to space
 }
 
+function safeNumber(num) {
+  if (num == null) return null
+  const n = Number(num)
+  if (isNaN(n)) return null
+  return n
+}
+
+function safeNormalizeAmount(amount, decimals) {
+  const amt = safeNumber(amount)
+  const dec = safeNumber(decimals)
+  if (amount == null || decimals == null) return null
+  return amt / 10 ** dec
+}
+
 export function formatAssetAmount(asset) {
+  if (asset.decimals == null) {
+    return ''
+  }
+
   let amount = ''
-  amount += `<div class="flex space-x-1"><span>${humanizeNumber(asset.amount / 10 ** asset.decimals)}</span><span class="text-white/60">${asset.symbol}</span></div>`
-  if (asset.usd != null) {
+  const normalizedAmount = safeNormalizeAmount(asset.amount, asset.decimals)
+  const usdNumber = safeNumber(asset.usd)
+
+  if (normalizedAmount == null) {
+    return ''
+  }
+
+  amount += `<div class="flex space-x-1"><span>${humanizeNumber(normalizedAmount)}</span><span class="text-white/60">${asset.symbol}</span></div>`
+  if (usdNumber != null) {
     amount += `<div class="flex text-xs text-white/60">($${humanizeNumber(asset.usd)})</div>`
   }
   return `<div class="flex flex-wrap items-center space-x-2">${amount}</div>`

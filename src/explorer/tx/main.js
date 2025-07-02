@@ -202,9 +202,7 @@ function getTimeDetails({ sentAt, recvAt }) {
 
 function getAmounts({ assets }) {
   return Array.isArray(assets)
-    ? assets
-        .map((a) => (a.decimals == null ? '' : formatAssetAmount(a)))
-        .join('')
+    ? assets.map((a) => formatAssetAmount(a)).join('')
     : ''
 }
 
