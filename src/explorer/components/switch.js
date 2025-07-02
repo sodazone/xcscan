@@ -16,14 +16,14 @@ export function setupSwitches() {
     knob.style.width = '0.75rem'
     knob.style.height = '0.75rem'
     knob.style.borderRadius = '2px'
-    knob.style.background = '#fff'
+    knob.style.background = '#FFFFFF'
     knob.style.transition = 'transform 0.2s'
     el.appendChild(knob)
 
     let on = false
 
     const update = () => {
-      el.style.background = on ? '#4caf50' : 'rgba(255,255,255,0.1)'
+      el.style.background = on ? '#00c951' : 'rgba(255,255,255,0.1)'
       knob.style.transform = on ? 'translateX(0.75rem)' : 'translateX(0)'
     }
 
