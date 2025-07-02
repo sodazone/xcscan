@@ -150,6 +150,8 @@ function loadChainsFilter(ctx) {
 
     flatContainer.style.display = grouped ? 'none' : 'grid'
     groupedContainer.style.display = grouped ? 'grid' : 'none'
+    flatDropdown.searchInput.style.display = grouped ? 'none' : 'flex'
+    groupedDropdown.searchInput.style.display = grouped ? 'flex' : 'none'
 
     updateLabels()
   }

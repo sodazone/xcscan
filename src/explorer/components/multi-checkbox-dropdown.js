@@ -1,3 +1,5 @@
+import { createFuzzySearch } from './fuzzy'
+
 export function setupToggles() {
   const toggles = document.querySelectorAll('.dropdown-toggle')
   const dropdowns = document.querySelectorAll('.dropdown')
@@ -156,6 +158,25 @@ export function MultiCheckboxDropdown({
     })
   }
 
+  const fuzzySearch = container.parentNode.querySelector('.fuzzy-search-bar')
+  let searchInput
+  if (fuzzySearch) {
+    searchInput = createFuzzySearch({
+      container: fuzzySearch,
+      items: items.map(labelResolver),
+      onFilter: (matches) => {
+        const matchSet = new Set(matches.map((m) => m.toLowerCase()))
+        checkboxes.forEach((c) => {
+          if (matchSet.has(c.parentNode.textContent?.trim()?.toLowerCase())) {
+            c.parentNode.classList.remove('hidden')
+          } else {
+            c.parentNode.classList.add('hidden')
+          }
+        })
+      },
+    })
+  }
+
   return {
     updateLabels,
     getCheckboxes: () => checkboxes,
@@ -166,5 +187,6 @@ export function MultiCheckboxDropdown({
       })
       updateLabels()
     },
+    searchInput,
   }
 }

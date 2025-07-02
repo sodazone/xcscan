@@ -182,7 +182,7 @@
                   class="dropdown-menu hidden fixed inset-0 h-screen md:h-auto flex flex-col w-screen md:absolute md:-right-20 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 md:h-auto md:w-auto md:max-w-2xl md:rounded-lg md:shadow"
                 >
                   <div
-                    class="flex space-x-4 items-center justify-end border-b border-white/5 p-4"
+                    class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
                   >
                     <span class="text-xs text-white/80 uppercase">
                       Select Chains
@@ -213,32 +213,35 @@
                       </button>
                     </div>
                   </div>
-                  <div
-                    class="flex gap-6 items-center px-4 pt-3 justify-between"
-                  >
+                  <div class="flex flex-col gap-2">
                     <div
-                      class="flex gap-1 items-center"
-                      title="Toggle Group by Origin & Destination"
+                      class="flex gap-6 items-center px-4 pt-4 justify-between"
                     >
-                      <span id="filter-chains-switch" data-switch></span>
-                      <span class="text-xs text-white/80"
-                        >Origin/Destination</span
+                      <div
+                        class="flex gap-1 items-center"
+                        title="Toggle Group by Origin & Destination"
                       >
+                        <span id="filter-chains-switch" data-switch></span>
+                        <span class="text-xs text-white/80"
+                          >Origin/Destination</span
+                        >
+                      </div>
+                      <button
+                        id="clear-filter-chains"
+                        class="cursor-pointer text-white/40 hover:text-white text-sm"
+                      >
+                        Clear All
+                      </button>
                     </div>
-                    <button
-                      id="clear-filter-chains"
-                      class="cursor-pointer text-white/40 hover:text-white text-sm"
-                    >
-                      Clear All
-                    </button>
+                    <div class="fuzzy-search-bar"></div>
                   </div>
                   <div
                     id="filter-chains-content"
-                    class="flex-1 overflow-y-auto grid gap-3 pl-4 pr-1 py-4 scroll-pb-6 md:w-xl"
+                    class="flex-1 overflow-y-auto grid gap-3 pl-4 pr-1 pt-1 pb-4 scroll-pb-6 md:w-xl"
                   ></div>
                   <div
                     id="filter-chain-content"
-                    class="flex-1 overflow-y-auto flex-col gap-3 pl-4 pr-1 py-4 scroll-pb-6 md:w-[350px]"
+                    class="flex-1 overflow-y-auto flex-col gap-3 pl-4 pr-1 pt-1 pb-4 scroll-pb-6 md:w-[350px]"
                   ></div>
                 </div>
               </div>
