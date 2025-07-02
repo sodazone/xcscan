@@ -23,7 +23,7 @@ function asCriteria(filters) {
 
   const criteria = {}
 
-  // Text search, overrides other filters
+  // Text search
   if (currentSearchTerm != null) {
     const trimmed = currentSearchTerm.trim()
     if (trimmed.length > 2 && trimmed.length < 100) {
@@ -37,11 +37,10 @@ function asCriteria(filters) {
       } else {
         criteria.address = trimmed
       }
-      return criteria
     }
   }
 
-  // Structured filters, only apply when no text search
+  // Structured filters
   if (chainPairMode) {
     if (selectedDestinations?.length) {
       criteria.destinations = [...selectedDestinations]
