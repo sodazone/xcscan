@@ -12,6 +12,8 @@ async function _fetch(args) {
 function asCriteria(filters) {
   const {
     currentSearchTerm,
+    chainPairMode,
+    selectedChains,
     selectedDestinations,
     selectedOrigins,
     selectedStatus,
@@ -40,12 +42,17 @@ function asCriteria(filters) {
   }
 
   // Structured filters, only apply when no text search
-  if (selectedDestinations?.length) {
-    criteria.destinations = [...selectedDestinations]
+  if (chainPairMode) {
+    if (selectedDestinations?.length) {
+      criteria.destinations = [...selectedDestinations]
+    }
+    if (selectedOrigins?.length) {
+      criteria.origins = [...selectedOrigins]
+    }
+  } else if (selectedChains?.length) {
+    criteria.networks = [...selectedChains]
   }
-  if (selectedOrigins?.length) {
-    criteria.origins = [...selectedOrigins]
-  }
+
   if (selectedStatus?.length) {
     criteria.status = [...selectedStatus]
   }

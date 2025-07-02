@@ -1,3 +1,50 @@
+export function setupToggles() {
+  const toggles = document.querySelectorAll('.dropdown-toggle')
+  const dropdowns = document.querySelectorAll('.dropdown')
+  const dropdownMenus = document.querySelectorAll('.dropdown-menu')
+
+  function hideAll() {
+    for (const m of dropdownMenus) {
+      m.classList.add('hidden')
+    }
+    for (const d of dropdowns) {
+      d.classList.remove('open')
+    }
+  }
+
+  for (const toggle of toggles) {
+    toggle.addEventListener('click', () => {
+      const dropdown = toggle.closest('.dropdown')
+      const menu = dropdown.querySelector('.dropdown-menu')
+
+      const isHidden = menu.classList.contains('hidden')
+
+      hideAll()
+
+      if (isHidden) {
+        menu.classList.remove('hidden')
+        dropdown.classList.add('open')
+      } else {
+        menu.classList.add('hidden')
+        dropdown.classList.remove('open')
+      }
+    })
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown')) {
+      hideAll()
+    }
+  })
+
+  const dataCloseBtns = document.querySelectorAll('[data-dropdown-close]')
+  for (const button of dataCloseBtns) {
+    button.addEventListener('click', () => {
+      hideAll()
+    })
+  }
+}
+
 export function MultiCheckboxDropdown({
   containerId,
   items,
@@ -109,5 +156,15 @@ export function MultiCheckboxDropdown({
     })
   }
 
-  return { updateLabels, getCheckboxes: () => checkboxes }
+  return {
+    updateLabels,
+    getCheckboxes: () => checkboxes,
+    reset: () => {
+      checkboxes.forEach((cb) => {
+        cb.checked = false
+        cb.disabled = false
+      })
+      updateLabels()
+    },
+  }
 }

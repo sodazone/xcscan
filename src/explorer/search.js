@@ -7,7 +7,11 @@ import {
   selectableStatus,
 } from './common.js'
 
-import { MultiCheckboxDropdown } from './components/multi-checkbox-dropdown.js'
+import {
+  MultiCheckboxDropdown,
+  setupToggles,
+} from './components/multi-checkbox-dropdown.js'
+import { setupSwitches } from './components/switch.js'
 
 export function resolveQueryType(value) {
   const trimmed = value.trim()
@@ -33,7 +37,7 @@ export function isValidQuery(value) {
 }
 
 function loadStatusFilter(ctx) {
-  MultiCheckboxDropdown({
+  const dropdown = MultiCheckboxDropdown({
     containerId: 'filter-status-content',
     items: selectableStatus,
     labelResolver: getStatusLabel,
@@ -41,29 +45,59 @@ function loadStatusFilter(ctx) {
     resolveCollection: () => ctx.filters.selectedStatus,
     onUpdate: ctx.update,
   })
+
+  return {
+    reset: () => {
+      ctx.filters.selectedStatus.length = 0
+      dropdown.reset()
+    },
+  }
 }
 
 function loadActionsFilter(ctx) {
-  MultiCheckboxDropdown({
+  const dropdown = MultiCheckboxDropdown({
     containerId: 'filter-actions-content',
     items: selectableActions,
     resolveCollection: () => ctx.filters.selectedActions,
     onUpdate: ctx.update,
   })
+
+  return {
+    reset: () => {
+      ctx.filters.selectedActions.length = 0
+      dropdown.reset()
+    },
+  }
 }
 
 function loadChainsFilter(ctx) {
-  const chains = Object.values(NetworkInfos).map((chain) => ({
-    ...chain,
-    label: resolveNetworkName(chain.urn) ?? chain.urn,
-  }))
+  const toggle = document.getElementById('filter-chains-switch')
+  const flatContainer = document.getElementById('filter-chain-content')
+  const groupedContainer = document.getElementById('filter-chains-content')
 
-  chains.sort((a, b) => a.label.localeCompare(b.label))
+  const chains = Object.values(NetworkInfos)
+    .map((chain) => ({
+      ...chain,
+      label: resolveNetworkName(chain.urn) ?? chain.urn,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 
-  const { updateLabels, getCheckboxes } = MultiCheckboxDropdown({
+  // Chains
+  const flatDropdown = MultiCheckboxDropdown({
+    containerId: 'filter-chain-content',
+    items: chains,
+    type: 'flat',
+    labelResolver: (c) => c.label,
+    valueResolver: (c) => c.urn,
+    resolveCollection: () => ctx.filters.selectedChains,
+    onUpdate: ctx.update,
+    groupBy: null,
+  })
+
+  // Origin Destination pairs
+  const groupedDropdown = MultiCheckboxDropdown({
     containerId: 'filter-chains-content',
     items: chains,
-    type: '',
     labelResolver: (c) => c.label,
     valueResolver: (c) => c.urn,
     resolveCollection: (el) =>
@@ -76,6 +110,60 @@ function loadChainsFilter(ctx) {
       { label: 'Destination', type: 'destination' },
     ],
   })
+
+  function reset() {
+    ctx.filters.selectedChains.length = 0
+    ctx.filters.selectedOrigins.length = 0
+    ctx.filters.selectedDestinations.length = 0
+
+    flatDropdown.reset()
+    groupedDropdown.reset()
+
+    ctx.update()
+  }
+
+  function updateLabels() {
+    if (ctx.filters.chainPairMode) {
+      groupedDropdown.updateLabels()
+    } else {
+      flatDropdown.updateLabels()
+    }
+  }
+
+  function updateMode(grouped) {
+    ctx.filters.chainPairMode = grouped
+
+    if (grouped) {
+      ctx.filters.selectedChains.length = 0
+      flatDropdown.getCheckboxes().forEach((cb) => {
+        cb.checked = false
+        cb.disabled = false
+      })
+    } else {
+      ctx.filters.selectedOrigins.length = 0
+      ctx.filters.selectedDestinations.length = 0
+      groupedDropdown.getCheckboxes().forEach((cb) => {
+        cb.checked = false
+        cb.disabled = false
+      })
+    }
+
+    flatContainer.style.display = grouped ? 'none' : 'grid'
+    groupedContainer.style.display = grouped ? 'grid' : 'none'
+
+    updateLabels()
+  }
+
+  toggle.addEventListener('switch-change', ({ detail }) => {
+    updateMode(detail.on)
+    ctx.update()
+  })
+
+  updateMode()
+
+  document
+    .getElementById('clear-filter-chains')
+    .addEventListener('click', reset)
 
   // Disable same values
   const syncDisabledStates = () => {
@@ -113,7 +201,7 @@ function loadChainsFilter(ctx) {
       ctx.filters.selectedOrigins.length = 0
       ctx.filters.selectedDestinations.length = 0
       let filterDirty = false
-      const checkboxes = getCheckboxes()
+      const checkboxes = flatDropdown.getCheckboxes()
       for (const checkbox of checkboxes) {
         if (checkbox.checked) filterDirty = true
         checkbox.checked = false
@@ -126,52 +214,9 @@ function loadChainsFilter(ctx) {
     })
 
   syncDisabledStates()
-}
 
-function setupToggles() {
-  const toggles = document.querySelectorAll('.dropdown-toggle')
-  const dropdowns = document.querySelectorAll('.dropdown')
-  const dropdownMenus = document.querySelectorAll('.dropdown-menu')
-
-  function hideAll() {
-    for (const m of dropdownMenus) {
-      m.classList.add('hidden')
-    }
-    for (const d of dropdowns) {
-      d.classList.remove('open')
-    }
-  }
-
-  for (const toggle of toggles) {
-    toggle.addEventListener('click', () => {
-      const dropdown = toggle.closest('.dropdown')
-      const menu = dropdown.querySelector('.dropdown-menu')
-
-      const isHidden = menu.classList.contains('hidden')
-
-      hideAll()
-
-      if (isHidden) {
-        menu.classList.remove('hidden')
-        dropdown.classList.add('open')
-      } else {
-        menu.classList.add('hidden')
-        dropdown.classList.remove('open')
-      }
-    })
-  }
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.dropdown')) {
-      hideAll()
-    }
-  })
-
-  const dataCloseBtns = document.querySelectorAll('[data-dropdown-close]')
-  for (const button of dataCloseBtns) {
-    button.addEventListener('click', () => {
-      hideAll()
-    })
+  return {
+    reset,
   }
 }
 
@@ -272,23 +317,29 @@ function loadAmountFilter(ctx) {
     applyAmountsFilter()
   })
 
+  function reset() {
+    gteInput.value = ''
+    lteInput.value = ''
+    presetRadios.forEach((r) => (r.checked = false))
+
+    ctx.filters.selectedUsdAmounts = {
+      amountPreset: null,
+      amountGte: null,
+      amountLte: null,
+    }
+
+    applyAmountsFilter()
+  }
+
   if (resetButton) {
-    resetButton.addEventListener('click', () => {
-      gteInput.value = ''
-      lteInput.value = ''
-      presetRadios.forEach((r) => (r.checked = false))
-
-      ctx.filters.selectedUsdAmounts = {
-        amountPreset: null,
-        amountGte: null,
-        amountLte: null,
-      }
-
-      applyAmountsFilter()
-    })
+    resetButton.addEventListener('click', reset)
   }
 
   hydrateFromCtx()
+
+  return {
+    reset,
+  }
 }
 
 export function loadSearch(ctx) {
@@ -337,9 +388,22 @@ export function loadSearch(ctx) {
     })
   }
 
-  loadChainsFilter(ctx)
-  loadActionsFilter(ctx)
-  loadStatusFilter(ctx)
-  loadAmountFilter(ctx)
+  const chainsFilter = loadChainsFilter(ctx)
+  const actionsFilter = loadActionsFilter(ctx)
+  const statusFilter = loadStatusFilter(ctx)
+  const amountFilter = loadAmountFilter(ctx)
+
+  function resetAllFilters() {
+    chainsFilter.reset()
+    actionsFilter.reset()
+    statusFilter.reset()
+    amountFilter.reset()
+  }
+
+  document
+    .getElementById('filters-reset-all')
+    .addEventListener('click', resetAllFilters)
+
   setupToggles()
+  setupSwitches()
 }

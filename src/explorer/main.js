@@ -28,6 +28,7 @@ const filters = {
   currentSearchTerm: '',
   selectedDestinations: [],
   selectedOrigins: [],
+  selectedChains: [],
   selectedStatus: [],
   selectedActions: [],
   selectedUsdAmounts: {
@@ -35,6 +36,7 @@ const filters = {
     amountGte: null,
     amountLte: null,
   },
+  chainPairMode: false,
 }
 
 function renderPaginationFooter({ hasNextPage, endCursor }) {
