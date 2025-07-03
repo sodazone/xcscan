@@ -207,7 +207,7 @@ function assetIconHTML({ asset }) {
     if (assetIconUrl) {
       return `
       <div class="relative inline-block w-5 h-5">
-        <img class="w-full h-full rounded-full object-cover bg-black/20 border-black/70 border" src="${assetIconUrl}" alt="" />
+        <img class="w-full h-full rounded-full object-cover bg-black/20 border-black/40 border" src="${assetIconUrl}" alt="" />
         ${
           chainIconUrl
             ? `<img
