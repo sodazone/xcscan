@@ -52,8 +52,8 @@ export function formatNetworkWithIconHTML(networkId) {
   }
 
   return `
-    <div class="flex items-center space-x-1">
-      <img src="${iconUrl}" alt="${name}" class="size-5 rounded-full" />
+    <div class="flex items-center gap-2">
+      <img src="${iconUrl}" alt="${name}" class="size-5 rounded-full bg-black/20 border-black/70 border" />
       <span>${name ?? networkId}</span>
     </div>
   `

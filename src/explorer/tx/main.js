@@ -1,4 +1,4 @@
-import { resolveNetworkName } from '../../extras'
+import { resolveAssetIcon, resolveNetworkName } from '../../extras'
 import { htmlToElement } from '../../utils.js'
 import { getJourneyById, subscribeToJourney } from '../api.js'
 import {
@@ -200,9 +200,38 @@ function getTimeDetails({ sentAt, recvAt }) {
   return timeDetails
 }
 
+function assetIconHTML({ asset }) {
+  const sources = resolveAssetIcon(asset)
+  if (sources) {
+    const { assetIconUrl, chainIconUrl } = sources
+    if (assetIconUrl) {
+      return `
+      <div class="relative inline-block w-5 h-5">
+        <img class="w-full h-full rounded-full object-cover bg-black/20 border-black/70 border" src="${assetIconUrl}" alt="" />
+        ${
+          chainIconUrl
+            ? `<img
+              class="absolute top-0 -left-1 w-3 h-3 rounded-full border border-white bg-white"
+              src="${chainIconUrl}"
+              alt=""
+            />`
+            : ''
+        }
+      </div>
+    `
+    }
+  }
+  return ''
+}
+
 function getAmounts({ assets }) {
   return Array.isArray(assets)
-    ? assets.map((a) => formatAssetAmount(a)).join('')
+    ? assets
+        .map(
+          (a) =>
+            `<div class="flex items-center gap-2">${assetIconHTML(a)}${formatAssetAmount(a)}</div>`
+        )
+        .join('')
     : ''
 }
 
@@ -268,7 +297,7 @@ function createJourneySummary(journey) {
       amounts === ''
         ? ''
         : `<div class="text-right text-white/50">Assets</div>
-    <div class="flex flex-col space-y-1">${amounts}</div>`
+    <div class="flex flex-col space-y-2">${amounts}</div>`
     }
   </div>
 `
