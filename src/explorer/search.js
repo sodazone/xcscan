@@ -11,7 +11,7 @@ import {
   MultiCheckboxDropdown,
   setupToggles,
 } from './components/multi-checkbox-dropdown.js'
-import { setupSwitches } from './components/switch.js'
+import { createSwitch } from './components/switch.js'
 
 export function resolveQueryType(value) {
   const trimmed = value.trim()
@@ -71,7 +71,7 @@ function loadActionsFilter(ctx) {
 }
 
 function loadChainsFilter(ctx) {
-  const toggle = document.getElementById('filter-chains-switch')
+  const switchElement = document.getElementById('filter-chains-switch')
   const flatContainer = document.getElementById('filter-chain-content')
   const groupedContainer = document.getElementById('filter-chains-content')
 
@@ -111,13 +111,25 @@ function loadChainsFilter(ctx) {
     ],
   })
 
+  const switchMode = createSwitch(switchElement, ctx.filters.chainPairMode)
+
+  switchElement.addEventListener('switch-change', ({ detail }) => {
+    updateMode(detail.on)
+    ctx.update()
+  })
+
+  updateMode(ctx.filters.chainPairMode)
+
   function reset() {
     ctx.filters.selectedChains.length = 0
     ctx.filters.selectedOrigins.length = 0
     ctx.filters.selectedDestinations.length = 0
+    ctx.filters.chainPairMode = false
 
     flatDropdown.reset()
     groupedDropdown.reset()
+    switchMode.reset()
+    updateMode(false)
 
     ctx.update()
   }
@@ -155,13 +167,6 @@ function loadChainsFilter(ctx) {
 
     updateLabels()
   }
-
-  toggle.addEventListener('switch-change', ({ detail }) => {
-    updateMode(detail.on)
-    ctx.update()
-  })
-
-  updateMode()
 
   document
     .getElementById('clear-filter-chains')
@@ -407,5 +412,4 @@ export function loadSearch(ctx) {
     .addEventListener('click', resetAllFilters)
 
   setupToggles()
-  setupSwitches()
 }
