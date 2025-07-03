@@ -15,7 +15,7 @@ function AssetIconCellRenders(params) {
   const { assetIconUrl: url, chainIconUrl } = resolveAssetIcon(params.data.key)
 
   const assetImg = url
-    ? `<img src="${url}" class="h-6 w-6" />`
+    ? `<img src="${url}" class="h-6 w-6 rounded-full" />`
     : '<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>'
 
   const chainImg = chainIconUrl
