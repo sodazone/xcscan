@@ -95,7 +95,7 @@ function renderCurrentPage(cursor) {
     .then((results) => {
       renderTransactionsTable(results)
     })
-    .catch(console.log)
+    .catch(console.error)
 }
 
 function createJourneyRow(item) {
