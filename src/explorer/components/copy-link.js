@@ -15,6 +15,7 @@ export function createCopyLink({ text, display = null, url = null }) {
   container.className =
     'flex w-fit items-center space-x-1 group text-sm text-white/80'
 
+  let isExtLink = false
   let copyText
   if (url) {
     copyText = document.createElement('a')
@@ -22,6 +23,7 @@ export function createCopyLink({ text, display = null, url = null }) {
     if (url.startsWith('http')) {
       copyText.target = '_blank'
       copyText.rel = 'noopener noreferrer'
+      isExtLink = true
     }
   } else {
     copyText = document.createElement('span')
@@ -45,6 +47,21 @@ export function createCopyLink({ text, display = null, url = null }) {
   copyBtn.setAttribute('aria-label', 'Copy to clipboard')
 
   container.appendChild(copyText)
+  if (isExtLink) {
+    const extArrow = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'svg'
+    )
+    extArrow.setAttribute('class', 'size-4 text-white/20')
+    extArrow.setAttribute('title', 'External Link')
+    extArrow.setAttribute('viewBox', '0 0 16 16')
+    extArrow.setAttribute('fill', 'currentColor')
+    extArrow.innerHTML = `
+  <path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z" />
+  <path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z" />
+  `
+    container.appendChild(extArrow)
+  }
   container.appendChild(copyBtn)
 
   return container
