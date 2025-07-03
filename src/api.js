@@ -1,4 +1,5 @@
 import { apiKey } from './env'
+import { withRetry } from './utils'
 
 const headers = Object.assign(
   {
@@ -7,29 +8,8 @@ const headers = Object.assign(
   apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
 )
 
-export async function fetchWithRetry(
-  queryUrl,
-  body,
-  retries = 5,
-  delay = 2000
-) {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      return await _fetch(queryUrl, body)
-    } catch (err) {
-      if (i === retries) throw err
-      if (!navigator.onLine) {
-        console.warn('Offline detected. Waiting for reconnection...')
-        await new Promise((resolve) =>
-          window.addEventListener('online', resolve, { once: true })
-        )
-        console.info('Back online. Retrying now...')
-        continue
-      }
-      console.warn(`Retrying fetch (${i + 1}/${retries})...`, err.message)
-      await new Promise((r) => setTimeout(r, delay * (i + 1)))
-    }
-  }
+export async function fetchWithRetry(queryUrl, body) {
+  return withRetry(() => _fetch(queryUrl, body))()
 }
 
 async function _fetch(queryUrl, body) {

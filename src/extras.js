@@ -1,6 +1,7 @@
 import { createStewardAgent } from '@sodazone/ocelloids-client'
 
 import { apiKey, httpUrl } from './env.js'
+import { withRetry } from './utils.js'
 
 const BASE_CDN =
   'https://cdn.jsdelivr.net/gh/sodazone/intergalactic-asset-metadata'
@@ -40,7 +41,7 @@ async function fetchNetworkInfos() {
     apiKey,
   })
 
-  async function doFetch(cursor) {
+  async function _stewardFetch(cursor) {
     const { items, pageInfo } = await steward.query(
       {
         op: 'chains.list',
@@ -51,7 +52,7 @@ async function fetchNetworkInfos() {
       networkMap[chainInfo.urn] = chainInfo
     }
     if (pageInfo?.hasNextPage) {
-      await doFetch(pageInfo.endCursor)
+      await withRetry(async () => _stewardFetch(pageInfo.endCursor))
     }
     for (const ethChain of EthereumChains) {
       networkMap[ethChain.urn] = ethChain
@@ -59,18 +60,18 @@ async function fetchNetworkInfos() {
     return networkMap
   }
 
-  return doFetch()
+  return withRetry(_stewardFetch)()
 }
 
 export async function loadExtraInfos() {
-  const fetchAssetsExtra = async () => {
+  const fetchAssetsExtra = withRetry(async () => {
     const response = await fetch(`${BASE_CDN}/assets-v2.json`)
     return await response.json()
-  }
-  const fetchNetworksExtra = async () => {
+  })
+  const fetchNetworksExtra = withRetry(async () => {
     const response = await fetch(`${BASE_CDN}/chains-v2.json`)
     return await response.json()
-  }
+  })
   const [assetsExtras, chainsExtras, networkInfos] = await Promise.all([
     fetchAssetsExtra(),
     fetchNetworksExtra(),
