@@ -24,7 +24,9 @@ export function viteEjsPlugin() {
                   ? 'tx'
                   : req.url.includes('analytics')
                     ? 'analytics'
-                    : 'home',
+                    : req.url.includes('network')
+                      ? 'network'
+                      : 'home',
               }
 
               const html = await ejs.render(template, data, {
@@ -57,7 +59,9 @@ export function viteEjsPlugin() {
             ? 'tx'
             : filename.includes('analytics')
               ? 'analytics'
-              : 'home'
+              : filename.includes('network')
+                ? 'network'
+                : 'home'
 
           const rendered = ejs.render(
             html,

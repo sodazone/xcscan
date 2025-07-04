@@ -101,9 +101,12 @@ async function _fetch(args) {
   return await fetchWithRetry(queryUrl, { args })
 }
 
-export async function getTransfersTotal(period) {
+export async function getTransfersTotal(period, network) {
   try {
     const criteria = TIME_PERIODS[period]
+    if (network !== undefined) {
+      criteria.network = network
+    }
     return await _fetch({
       op: 'transfers_total',
       criteria,
@@ -120,21 +123,13 @@ export async function getTransfersCount(period) {
       op: 'transfers_count_series',
       criteria,
     })
-    return fill(r.items, criteria)
-  } catch (error) {
-    console.error(error.message)
-  }
-}
-
-export async function getTransfersVolume(period) {
-  try {
-    const criteria = TIME_PERIODS[period]
-    const r = await _fetch({
-      op: 'transfers_count_series',
-      criteria,
-    })
-    const volSeries = r.items.map((i) => ({ time: i.time, value: i.volumeUsd }))
-    return fill(volSeries, criteria)
+    return {
+      transfers: fill(r.items, criteria),
+      volume: fill(
+        r.items.map((i) => ({ time: i.time, value: i.volumeUsd })),
+        criteria
+      ),
+    }
   } catch (error) {
     console.error(error.message)
   }
@@ -189,6 +184,74 @@ export async function getTransfersByNetwork(period) {
         criteria,
       })
     ).items
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+export async function getTransfersByNetworkSeries(period, network) {
+  try {
+    const opts = TIME_PERIODS[period]
+    const criteria = opts.trend ? opts.trend : opts
+    criteria.network = network
+
+    const { items } = await _fetch({
+      op: 'transfers_series.by_network',
+      criteria,
+    })
+    const { series } = items[0]
+
+    return {
+      transfers: fill(
+        series.map((i) => ({ time: i.time, value: i.txCount })),
+        criteria
+      ),
+      volume: fill(
+        series.map((i) => ({ time: i.time, value: i.totalVolumeUsd })),
+        criteria
+      ),
+      share: fill(
+        series.map((i) => ({ time: i.time, value: i.sharePct })),
+        criteria
+      ),
+      flows: {
+        in: fill(
+          series.map((i) => ({ time: i.time, value: i.inflowUsd })),
+          criteria
+        ),
+        out: fill(
+          series.map((i) => ({ time: i.time, value: i.outflowUsd })),
+          criteria
+        ),
+        net: fill(
+          series.map((i) => ({
+            time: i.time,
+            value: i.inflowUsd - i.outflowUsd,
+          })),
+          criteria
+        ),
+      },
+    }
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+export async function getNetworkAssetsSeries(period, network, type = 'usd') {
+  try {
+    const opts = TIME_PERIODS[period]
+    const criteria = opts.trend ? opts.trend : opts
+    criteria.network = network
+
+    const { items } = await _fetch({
+      op: `transfers_assets_series.by_network.${type}`,
+      criteria,
+    })
+
+    return items.map((item) => ({
+      ...item,
+      series: fill(item.series, criteria),
+    }))
   } catch (error) {
     console.error(error.message)
   }

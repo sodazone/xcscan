@@ -16,13 +16,21 @@ function ChannelIconCellRenders(params) {
   const chain = {
     url: resolveNetworkIcon(params.value),
     name: resolveNetworkName(params.value) ?? params.value,
+    id: params.value,
   }
+
   const imgIcon =
     chain.url && chain.url !== '#'
       ? `<img src="${chain.url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
       : placeholder
 
-  return `<div class="flex gap-2 items-center"><div class="flex -space-x-2">${imgIcon}</div><span class="truncate">${chain.name}</span></div>`
+  const href = `/network/index.html#${encodeURIComponent(chain.id)}`
+  return `
+    <a href="${href}" class="flex gap-2 items-center hover:underline">
+      <div class="flex -space-x-2">${imgIcon}</div>
+      <span class="truncate">${chain.name}</span>
+    </a>
+  `
 }
 
 function NetFlowCellRenders(params) {
@@ -90,6 +98,12 @@ export function setupNetworksGrid(element) {
           cellRenderer: NetFlowCellRenders,
         },
       ],
+      onRowClicked: (event) => {
+        const networkId = event.data.network
+        if (networkId) {
+          window.location.href = `/network/index.html#${encodeURIComponent(networkId)}`
+        }
+      },
     }
 
     grid = createGrid(element, gridOptions)

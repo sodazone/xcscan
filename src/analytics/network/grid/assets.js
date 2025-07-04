@@ -1,18 +1,23 @@
 import { createGrid } from 'ag-grid-community'
-import { formatAssetVolume, formatTxs } from '../../formats.js'
-import { getTransfersVolumeByAsset } from '../api.js'
+import { ModuleRegistry } from 'ag-grid-community'
+import { ClientSideRowModelModule, PaginationModule } from 'ag-grid-community'
+
+import { getNetworkAssetsSeries } from '../../api.js'
 import {
   FlowCellRenders,
   AssetIconCellRenders,
   SparklineCellRenderer,
   isMobile,
-  loadResources,
   themeGrid,
-} from './common.js'
+} from '../../grid/common.js'
 
-export function setupAssetsGrid(element) {
+ModuleRegistry.registerModules([ClientSideRowModelModule, PaginationModule])
+
+export function setupNetworkAssetsGrid(element, network) {
   let grid
   let data
+  let currentTimeFrame
+  let currentType = 'volume'
 
   function install() {
     const gridOptions = {
@@ -41,39 +46,29 @@ export function setupAssetsGrid(element) {
           cellRenderer: AssetIconCellRenders,
         },
         {
-          field: 'volumeUsd',
-          headerName: 'Volume (USD)',
+          field: 'total',
+          headerName: 'Total',
+          type: 'numericColumn',
+          cellRenderer: FlowCellRenders,
+          sort: 'desc',
+        },
+        {
+          field: 'inflow',
+          headerName: 'Inflow',
           type: 'numericColumn',
           cellRenderer: FlowCellRenders,
         },
         {
-          field: 'volume',
-          headerName: 'Volume (Asset)',
+          field: 'outflow',
+          headerName: 'Outflow',
           type: 'numericColumn',
-          valueFormatter: ({ value }) => formatAssetVolume(value),
+          cellRenderer: FlowCellRenders,
         },
         {
-          field: 'total',
-          headerName: 'Transfers',
+          field: 'netflow',
+          headerName: 'Netflow',
           type: 'numericColumn',
-          valueFormatter: ({ value }) => formatTxs(value),
-        },
-        {
-          headerName: 'Vol Share %',
-          type: 'numericColumn',
-          field: 'percentageVol',
-          valueFormatter: ({ value }) => {
-            return `${Number(value).toFixed(2)}%`
-          },
-          sort: 'desc',
-        },
-        {
-          headerName: 'Tx Share %',
-          type: 'numericColumn',
-          field: 'percentageTx',
-          valueFormatter: ({ value }) => {
-            return `${Number(value).toFixed(2)}%`
-          },
+          cellRenderer: FlowCellRenders,
         },
         {
           headerName: 'Trend',
@@ -89,19 +84,36 @@ export function setupAssetsGrid(element) {
     grid = createGrid(element, gridOptions)
   }
 
-  function update(period) {
-    loadResources().then(() => {
-      getTransfersVolumeByAsset(period).then((newData) => {
+  function update(period, type) {
+    currentType = type
+    currentTimeFrame = period
+
+    if (currentType === 'volume') {
+      getNetworkAssetsSeries(period, network, 'usd').then((newData) => {
         data = newData
         grid.setGridOption('rowData', data)
       })
-    })
+    } else if (currentType === 'asset') {
+      getNetworkAssetsSeries(period, network, 'asset').then((newData) => {
+        data = newData
+        grid.setGridOption('rowData', data)
+      })
+    } else {
+      getNetworkAssetsSeries(period, network, 'tx').then((newData) => {
+        data = newData
+        grid.setGridOption('rowData', data)
+      })
+    }
   }
 
   install()
 
   window.addEventListener('timeChanged', (e) => {
-    update(e.detail)
+    update(e.detail, currentType)
+  })
+
+  window.addEventListener('networkAssetsTypeChanged', (e) => {
+    update(currentTimeFrame, e.detail)
   })
 
   let w =

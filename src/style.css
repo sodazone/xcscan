@@ -29,6 +29,10 @@ body {
   border-right: none;
 }
 
+#grid-networks .ag-row:hover {
+  cursor: pointer;
+}
+
 .chart-series-tooltip {
   @apply absolute hidden p-1 box-border z-[1000] top-3 left-3 pointer-events-none rounded bg-black/65;
 }
@@ -245,4 +249,22 @@ button.loading .btn-label::after {
 
 .json-children {
   margin-top: 0.15em;
+}
+
+.dropdown-item {
+  @apply text-white/70 px-2 py-1 cursor-pointer;
+  width: 100%;
+  background-color: transparent;
+  text-align: left;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  @apply text-cyan-200;
+}
+
+.dropdown-item.selected {
+  @apply text-cyan-200/20 cursor-default pointer-events-none;
 }

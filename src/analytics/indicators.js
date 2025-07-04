@@ -6,7 +6,7 @@ import {
 } from '../formats.js'
 import { getTransfersTotal } from './api.js'
 
-export function setupCounters() {
+export function setupCounters(network) {
   const vol = document.querySelector('#volume-counter')
   const txn = document.querySelector('#tx-counter')
   const rtt = document.querySelector('#roundtrip-counter')
@@ -46,8 +46,8 @@ export function setupCounters() {
       `
   }
 
-  function update(period) {
-    getTransfersTotal(period)
+  function update(period, network) {
+    getTransfersTotal(period, network)
       .then((result) => {
         const counters = result.items[0]
         render({
@@ -98,6 +98,6 @@ export function setupCounters() {
   }
 
   window.addEventListener('timeChanged', (e) => {
-    update(e.detail)
+    update(e.detail, network)
   })
 }

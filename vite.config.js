@@ -15,6 +15,7 @@ export default defineConfig({
         home: 'index.html',
         analytics: 'analytics/index.html',
         tx: 'tx/index.html',
+        network: 'network/index.html',
       },
     },
   },

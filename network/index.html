@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('/head.html') %>
+  </head>
+
+  <body>
+    <%- include('/header.html', { currentPage: 'network' }) %>
+    <main class="w-full pt-start">
+      <div
+        class="flex space-x-2 text-sm items-center text-white/60 mx-auto w-full max-w-screen-xl px-4 mb-8"
+      >
+        <a
+          class="group flex space-x-2 items-center"
+          href="/analytics/index.html"
+        >
+          <div
+            class="rounded-full bg-white/10 p-1 text-black/90 group-hover:bg-white/30"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 19.5 8.25 12l7.5-7.5"
+              />
+            </svg>
+          </div>
+          <span class="group-hover:text-white">All networks</span>
+        </a>
+      </div>
+      <section>
+        <div
+          class="flex mx-auto w-full max-w-screen-xl justify-between items-center px-4 mb-4"
+        >
+          <div
+            id="network-title"
+            class="flex gap-2 mx-auto w-full max-w-screen-xl"
+          ></div>
+          <div class="flex gap-2 items-center">
+            <div class="flex flex-col gap-4 grow">
+              <div id="select-time" class="flex gap-2 text-sm">
+                <span
+                  data-value="daily"
+                  class="bg-cyan-800/40 rounded text-cyan-200 p-1"
+                  >24H</span
+                >
+                <span data-value="weekly" class="text-cyan-200/40 p-1">7D</span>
+                <span data-value="monthly" class="text-cyan-200/40 p-1"
+                  >30D</span
+                >
+                <span data-value="quarterly" class="text-cyan-200/40 p-1"
+                  >90D</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div
+          id="counters"
+          class="mx-auto flex w-full max-w-screen-xl flex-col md:items-center md:flex-row md:flex-wrap md:justify-between gap-8 px-4 py-4"
+        >
+          <div
+            id="volume-counter"
+            class="flex flex-col gap-4 rounded-md bg-white/5 grow p-4"
+          >
+            <span class="text-white/70 font-medium"> Volume </span>
+            <div class="flex flex-col gap-1">
+              <div
+                class="flex animate-pulse space-x-4 h-15 bg-linear-to-r from-white/10 to-transparent"
+              ></div>
+            </div>
+          </div>
+          <div
+            id="tx-counter"
+            class="flex flex-col gap-4 rounded-md bg-white/5 grow p-4"
+          >
+            <span class="text-white/70 font-medium"> Transfers </span>
+            <div class="flex flex-col gap-1">
+              <div
+                class="flex animate-pulse space-x-4 h-15 bg-linear-to-r from-white/10 to-transparent"
+              ></div>
+            </div>
+          </div>
+          <div
+            id="accounts-counter"
+            class="flex flex-col gap-4 rounded-md bg-white/5 grow p-4"
+          >
+            <span class="text-white/70 font-medium"> Accounts </span>
+            <div class="flex flex-col gap-1">
+              <div
+                class="flex animate-pulse space-x-4 h-15 bg-linear-to-r from-white/10 to-transparent"
+              ></div>
+            </div>
+          </div>
+          <div
+            id="roundtrip-counter"
+            class="flex md:w- flex-col gap-4 rounded-md bg-white/5 grow p-4"
+          >
+            <span class="text-white/70 font-medium"> Avg. Time </span>
+            <div class="flex flex-col gap-1">
+              <div
+                class="flex animate-pulse space-x-4 h-15 bg-linear-to-r from-white/10 to-transparent"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div
+          class="mx-auto flex w-full max-w-screen-xl flex-col gap-4 px-4 py-8 md:gap-8"
+        >
+          <div
+            class="flex flex-col gap-y-4 md:flex-row md:gap-2 md:items-center md:justify-between"
+          >
+            <div class="flex gap-2 items-center">
+              <svg
+                class="w-7 h-7 text-cyan-700"
+                width="24"
+                height="24"
+                viewBox="0 0 28 29"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke="currentColor"
+              >
+                <path
+                  d="M2 14.5684C2 21.1958 7.37259 26.5684 14 26.5684C20.6274 26.5684 26 21.1958 26 14.5684C26 7.94094 20.6274 2.56836 14 2.56836C7.37258 2.56836 2 7.94094 2 14.5684Z"
+                ></path>
+                <path
+                  d="M7.14283 14.5684C7.14283 18.3555 10.2129 21.4256 14 21.4256C17.7871 21.4256 20.8571 18.3555 20.8571 14.5684C20.8571 10.7814 17.7871 7.7113 14 7.7113C10.2129 7.7113 7.14283 10.7814 7.14283 14.5684Z"
+                ></path>
+                <path d="M17.1064 2.97809L15.8862 7.53174"></path>
+                <path d="M3.60749 20.5675L7.69019 18.2103"></path>
+                <path d="M25.5917 11.4627L21.038 12.6829"></path>
+                <path d="M22.4851 23.0538L19.1516 19.7203"></path>
+                <path d="M11.0052 25.7452L12.2253 21.1915"></path>
+                <path
+                  d="M11.4285 14.5685C11.4285 15.9887 12.5798 17.1399 13.9999 17.1399C15.4201 17.1399 16.5714 15.9887 16.5714 14.5685C16.5714 13.1483 15.4201 11.9971 13.9999 11.9971C12.5798 11.9971 11.4285 13.1483 11.4285 14.5685Z"
+                ></path>
+              </svg>
+              <span class="text-white/75 text-xl font-medium"> Transfers </span>
+              <span class="text-sm text-white/50 current-period"></span>
+            </div>
+            <div class="flex gap-2 items-center text-sm">
+              <span class="text-sm text-white/50 current-type"></span>
+              <div
+                id="select-series-type"
+                class="relative inline-block text-left text-sm"
+              >
+                <button
+                  type="button"
+                  id="series-button"
+                  class="inline-flex items-center gap-2 min-w-[8rem] justify-between rounded bg-cyan-800/40 px-2 py-1 text-cyan-200 hover:bg-cyan-800/60 focus:outline-none focus:ring"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="series-label"></span>
+                  <svg
+                    class="h-4 w-4 text-cyan-200/40"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.585l3.71-4.355a.75.75 0 011.14.976l-4.25 5a.75.75 0 01-1.14 0l-4.25-5a.75.75 0 01.02-1.06z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+
+                <div
+                  id="series-options"
+                  class="absolute z-10 mt-2 origin-top-left rounded-md bg-white/10 backdrop-blur-md shadow-lg ring-1 ring-white/10"
+                  role="menu"
+                  tabindex="-1"
+                >
+                  <div class="py-1">
+                    <button
+                      data-value="volume"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Volume
+                    </button>
+                    <button
+                      data-value="count"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Transfers
+                    </button>
+                    <button
+                      data-value="flow"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Netflow
+                    </button>
+                    <button
+                      data-value="share"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Share
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="w-full bg-white/5 rounded-md p-4">
+            <div id="chart-container" class="w-full h-70 chart-container">
+              <div id="chart"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div
+          class="mx-auto flex w-full max-w-screen-xl flex-col gap-8 px-4 py-8"
+        >
+          <div class="flex justify-between items-center">
+            <div class="flex gap-2 items-center">
+              <svg
+                class="w-7 h-7 text-cyan-700"
+                width="24"
+                height="24"
+                viewBox="0 0 28 26"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke="currentColor"
+              >
+                <path
+                  d="M19.8885 11.3879C23.3217 11.3879 26.1049 14.1711 26.1049 17.6043C26.1049 21.0375 23.3217 23.8207 19.8885 23.8207C17.3384 23.8207 15.1469 22.2851 14.1882 20.0882"
+                  stroke-miterlimit="10"
+                ></path>
+                <path
+                  d="M13.8626 15C14.2286 15.7922 14.4328 16.6744 14.4328 17.6044C14.4328 21.0376 11.6496 23.8208 8.21643 23.8208C4.78322 23.8208 2.00006 21.0376 2.00006 17.6044C2.00006 14.2107 4.71949 11.4522 8.09809 11.3891"
+                  stroke-miterlimit="10"
+                ></path>
+                <path
+                  d="M13.9888 14.4327C17.422 14.4327 20.2051 11.6496 20.2051 8.21637C20.2051 4.78316 17.422 2 13.9888 2C10.5556 2 7.7724 4.78316 7.7724 8.21637C7.7724 11.6496 10.5556 14.4327 13.9888 14.4327Z"
+                  stroke-miterlimit="10"
+                ></path>
+              </svg>
+              <span class="text-white/75 text-xl font-medium"> Assets </span>
+              <span class="text-sm text-white/50 current-period"></span>
+            </div>
+            <div class="flex gap-2 items-center text-sm">
+              <span
+                class="text-sm text-white/50 network-assets-current-type"
+              ></span>
+              <div
+                id="select-network-assets-type"
+                class="relative inline-block text-left text-sm"
+              >
+                <button
+                  type="button"
+                  id="series-button"
+                  class="inline-flex items-center gap-2 min-w-[8rem] justify-between rounded bg-cyan-800/40 px-3 py-1 text-cyan-200 hover:bg-cyan-800/60 focus:outline-none focus:ring"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="series-label"></span>
+                  <svg
+                    class="h-4 w-4 text-cyan-200/40"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.585l3.71-4.355a.75.75 0 011.14.976l-4.25 5a.75.75 0 01-1.14 0l-4.25-5a.75.75 0 01.02-1.06z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+
+                <div
+                  id="series-options"
+                  class="absolute z-10 mt-2 origin-top-left rounded-md bg-white/10 backdrop-blur-md shadow-lg ring-1 ring-white/10"
+                  role="menu"
+                  tabindex="-1"
+                >
+                  <div class="py-1">
+                    <button
+                      data-value="volume"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Volume
+                    </button>
+                    <button
+                      data-value="asset"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Amount
+                    </button>
+                    <button
+                      data-value="count"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Transfers
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="w-full bg-white/5 rounded-md p-4">
+            <div id="grid-assets" class="w-full"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <%- include('/footer.html') %>
+
+    <script type="module" src="/src/analytics/network/main.js"></script>
+  </body>
+</html>

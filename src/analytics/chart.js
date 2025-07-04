@@ -1,6 +1,6 @@
 import { AreaSeries, createChart } from 'lightweight-charts'
 
-import { getTransfersCount, getTransfersVolume } from './api.js'
+import { getTransfersCount } from './api.js'
 import { formatAssetVolume } from '../formats.js'
 
 export function setupSeriesChart(element) {
@@ -106,8 +106,9 @@ export function setupSeriesChart(element) {
       } else {
         const dateStr = new Date(param.time * 1000).toUTCString()
         toolTip.style.display = 'block'
-        const data = param.seriesData.get(series)
-        const price = data.value !== undefined ? data.value : data.close
+        const dataPoint = param.seriesData.get(series)
+        const price =
+          dataPoint.value !== undefined ? dataPoint.value : dataPoint.close
         toolTip.innerHTML = `
 		  <div class="flex flex-col gap-2">
 			<div class="flex gap-1 items-end">
@@ -138,23 +139,17 @@ export function setupSeriesChart(element) {
   function update(period, type = 'volume') {
     currentType = type
     currentTimeFrame = period
-    if (type === 'volume') {
-      getTransfersVolume(period)
-        .then((newData) => {
-          data = newData.slice(0, -1)
-          series.setData(data)
-          chart.timeScale().fitContent()
-        })
-        .catch(console.error)
-    } else {
-      getTransfersCount(period)
-        .then((newData) => {
-          data = newData.slice(0, -1)
-          series.setData(data)
-          chart.timeScale().fitContent()
-        })
-        .catch(console.error)
-    }
+    getTransfersCount(period)
+      .then((newData) => {
+        if (type === 'volume') {
+          data = newData.volume.slice(0, -1)
+        } else {
+          data = newData.transfers.slice(0, -1)
+        }
+        series.setData(data)
+        chart.timeScale().fitContent()
+      })
+      .catch(console.error)
   }
 
   install()
