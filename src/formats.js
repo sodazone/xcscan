@@ -1,7 +1,7 @@
 export function humanizeNumber(
   value,
   maximumFractionDigits = 2,
-  siSeparator = ' ',
+  siSeparator = '',
   locale = 'en-US'
 ) {
   const absValue = Math.abs(value)

@@ -7,6 +7,7 @@ import { setupDropdownSelector } from './dropdown-selector'
 import { resolveNetworkIcon, resolveNetworkName } from '../../extras'
 import { loadExtraInfos } from '../../extras'
 import { setupNetworkAssetsGrid } from './grid/assets'
+import { setupNetworkChannelsGrid } from './grid/channels'
 
 function setUpNetworkTitle(network) {
   const element = document.querySelector('#network-title')
@@ -19,7 +20,7 @@ function setUpNetworkTitle(network) {
       ? `<img src="${networkIconUrl}" class="h-7 w-7 rounded-full bg-white border border-white" />`
       : null
 
-  element.innerHTML = `${imgIcon !== null ? `<div class="flex -space-x-2">${imgIcon}</div>` : ''}<span class="text-white/75 text-xl font-medium">${networkName} Crosschain Statistics</span>`
+  element.innerHTML = `${imgIcon !== null ? `<div class="flex -space-x-2">${imgIcon}</div>` : ''}<span class="text-white/75 text-xl font-medium">${networkName}</span>`
 }
 
 window.onload = async () => {
@@ -31,6 +32,7 @@ window.onload = async () => {
     setupCounters(network)
     setupNetworkSeriesChart(document.querySelector('#chart'), network)
     setupNetworkAssetsGrid(document.querySelector('#grid-assets'), network)
+    setupNetworkChannelsGrid(document.querySelector('#grid-channels'), network)
     setupTimeSelector(document.querySelector('#select-time'), 'daily')
     setupDropdownSelector(
       document.querySelector('#select-series-type'),
@@ -42,6 +44,12 @@ window.onload = async () => {
       document.querySelector('#select-network-assets-type'),
       document.querySelector('.network-assets-current-type'),
       'networkAssetsTypeChanged',
+      'volume'
+    )
+    setupDropdownSelector(
+      document.querySelector('#select-network-channels-type'),
+      document.querySelector('.network-channels-current-type'),
+      'networkChannelsTypeChanged',
       'volume'
     )
   })

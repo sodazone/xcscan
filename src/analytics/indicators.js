@@ -58,7 +58,7 @@ export function setupCounters(network) {
           diff: counters.volumeUsd.diff,
           unit: 'usd',
           format: formatAssetVolume,
-          showPrev: period !== 'quarterly',
+          showPrev: period !== 'quarterly' && counters.volumeUsd.current > 0,
         })
         render({
           title: 'Transfers',
@@ -68,7 +68,7 @@ export function setupCounters(network) {
           diff: counters.diff,
           unit: 'tx',
           format: formatTxs,
-          showPrev: period !== 'quarterly',
+          showPrev: period !== 'quarterly' && counters.current > 0,
         })
         render({
           title: 'Accounts',
@@ -78,7 +78,7 @@ export function setupCounters(network) {
           diff: counters.accounts.diff,
           unit: '',
           format: formatAccounts,
-          showPrev: period !== 'quarterly',
+          showPrev: period !== 'quarterly' && counters.accounts.current > 0,
         })
         render({
           title: 'Avg. Time',
@@ -91,7 +91,9 @@ export function setupCounters(network) {
           unit: 's',
           invertPct: true,
           format: formatRoundtrip,
-          showPrev: period !== 'quarterly',
+          showPrev:
+            period !== 'quarterly' &&
+            Math.abs(counters.avgTimeSpent.current) > 0,
         })
       })
       .catch(console.error)

@@ -199,6 +199,19 @@ export async function getTransfersByNetworkSeries(period, network) {
       op: 'transfers_series.by_network',
       criteria,
     })
+
+    if (items.length === 0) {
+      return {
+        transfers: fill([], criteria),
+        volume: fill([], criteria),
+        share: fill([], criteria),
+        flows: {
+          in: fill([], criteria),
+          out: fill([], criteria),
+          net: fill([], criteria),
+        },
+      }
+    }
     const { series } = items[0]
 
     return {
@@ -245,6 +258,26 @@ export async function getNetworkAssetsSeries(period, network, type = 'usd') {
 
     const { items } = await _fetch({
       op: `transfers_assets_series.by_network.${type}`,
+      criteria,
+    })
+
+    return items.map((item) => ({
+      ...item,
+      series: fill(item.series, criteria),
+    }))
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+export async function getNetworkChannelsSeries(period, network, type = 'usd') {
+  try {
+    const opts = TIME_PERIODS[period]
+    const criteria = opts.trend ? opts.trend : opts
+    criteria.network = network
+
+    const { items } = await _fetch({
+      op: `transfers_channels_series.by_network.${type}`,
       criteria,
     })
 

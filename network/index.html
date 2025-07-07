@@ -327,6 +327,99 @@
             <div id="grid-assets" class="w-full"></div>
           </div>
         </div>
+        <div
+          class="mx-auto flex w-full max-w-screen-xl flex-col gap-8 px-4 py-8"
+        >
+          <div class="flex justify-between items-center">
+            <div class="flex gap-2 items-center">
+              <svg
+                class="w-6 h-6 text-cyan-700"
+                width="24"
+                height="24"
+                viewBox="0 0 28 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke="currentColor"
+              >
+                <g>
+                  <path
+                    d="M6.46256 2L6.46256 9.02948M6.46254 26L6.46254 18.9235"
+                  ></path>
+                  <path
+                    d="M21.3759 2L21.3759 9.02948M21.3759 26L21.3759 18.9235"
+                  ></path>
+                  <path d="M11.2265 9.38394H2V18.6105H11.2265V9.38394Z"></path>
+                  <path
+                    d="M25.9891 9.38394H16.7626V18.6105H25.9891V9.38394Z"
+                  ></path>
+                  <path d="M12.1115 13.9972L15.8775 13.9972"></path>
+                </g>
+              </svg>
+              <span class="text-white/75 text-xl font-medium"> Channels </span>
+              <span class="text-sm text-white/50 current-period"></span>
+            </div>
+            <div class="flex gap-2 items-center text-sm">
+              <span
+                class="text-sm text-white/50 network-channels-current-type"
+              ></span>
+              <div
+                id="select-network-channels-type"
+                class="relative inline-block text-left text-sm"
+              >
+                <button
+                  type="button"
+                  id="series-button"
+                  class="inline-flex items-center gap-2 min-w-[8rem] justify-between rounded bg-cyan-800/40 px-3 py-1 text-cyan-200 hover:bg-cyan-800/60 focus:outline-none focus:ring"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="series-label"></span>
+                  <svg
+                    class="h-4 w-4 text-cyan-200/40"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.585l3.71-4.355a.75.75 0 011.14.976l-4.25 5a.75.75 0 01-1.14 0l-4.25-5a.75.75 0 01.02-1.06z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+
+                <div
+                  id="series-options"
+                  class="absolute z-10 mt-2 origin-top-left rounded-md bg-white/10 backdrop-blur-md shadow-lg ring-1 ring-white/10"
+                  role="menu"
+                  tabindex="-1"
+                >
+                  <div class="py-1">
+                    <button
+                      data-value="volume"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Volume
+                    </button>
+                    <button
+                      data-value="count"
+                      class="dropdown-item"
+                      role="menuitem"
+                    >
+                      Transfers
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="w-full bg-white/5 rounded-md p-4">
+            <div id="grid-channels" class="w-full"></div>
+          </div>
+        </div>
       </section>
     </main>
 

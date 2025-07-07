@@ -198,7 +198,7 @@ export function setupNetworkSeriesChart(element, network) {
     if (currentType === 'count') {
       return Number(data).toFixed(0)
     }
-    return Number(data).toFixed(2)
+    return Number(data).toFixed(1)
   }
 
   function formatLabel() {

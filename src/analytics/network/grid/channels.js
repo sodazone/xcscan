@@ -2,19 +2,19 @@ import { createGrid } from 'ag-grid-community'
 import { ModuleRegistry } from 'ag-grid-community'
 import { ClientSideRowModelModule, PaginationModule } from 'ag-grid-community'
 
-import { getNetworkAssetsSeries } from '../../api.js'
+import { getNetworkChannelsSeries } from '../../api.js'
 import {
   FlowCellRenders,
-  AssetIconCellRenders,
   SparklineCellRenderer,
   isMobile,
   themeGrid,
+  NetworkIconCellRenders,
   NetFlowCellRenders,
 } from '../../grid/common.js'
 
 ModuleRegistry.registerModules([ClientSideRowModelModule, PaginationModule])
 
-export function setupNetworkAssetsGrid(element, network) {
+export function setupNetworkChannelsGrid(element, network) {
   let grid
   let data
   let currentTimeFrame
@@ -39,12 +39,12 @@ export function setupNetworkAssetsGrid(element, network) {
       },
       columnDefs: [
         {
-          field: 'symbol',
-          headerName: 'Asset',
+          field: 'key',
+          headerName: 'Channel',
           pinned: 'left',
           suppressMovable: true,
           valueFormatter: ({ value }) => (value === '' ? 'N/A' : value),
-          cellRenderer: AssetIconCellRenders,
+          cellRenderer: NetworkIconCellRenders,
         },
         {
           field: 'total',
@@ -90,17 +90,12 @@ export function setupNetworkAssetsGrid(element, network) {
     currentTimeFrame = period
 
     if (currentType === 'volume') {
-      getNetworkAssetsSeries(period, network, 'usd').then((newData) => {
-        data = newData
-        grid.setGridOption('rowData', data)
-      })
-    } else if (currentType === 'asset') {
-      getNetworkAssetsSeries(period, network, 'asset').then((newData) => {
+      getNetworkChannelsSeries(period, network, 'usd').then((newData) => {
         data = newData
         grid.setGridOption('rowData', data)
       })
     } else {
-      getNetworkAssetsSeries(period, network, 'tx').then((newData) => {
+      getNetworkChannelsSeries(period, network, 'tx').then((newData) => {
         data = newData
         grid.setGridOption('rowData', data)
       })
@@ -113,7 +108,7 @@ export function setupNetworkAssetsGrid(element, network) {
     update(e.detail, currentType)
   })
 
-  window.addEventListener('networkAssetsTypeChanged', (e) => {
+  window.addEventListener('networkChannelsTypeChanged', (e) => {
     update(currentTimeFrame, e.detail)
   })
 

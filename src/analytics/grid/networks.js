@@ -1,44 +1,14 @@
 import { createGrid } from 'ag-grid-community'
 
-import { resolveNetworkIcon, resolveNetworkName } from '../../extras.js'
-import { formatAssetVolume } from '../../formats.js'
 import { getTransfersByNetwork } from '../api.js'
 import {
   FlowCellRenders,
+  NetworkIconCellRenders,
+  NetFlowCellRenders,
   isMobile,
   loadResources,
   themeGrid,
 } from './common.js'
-
-const placeholder = `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>`
-
-function ChannelIconCellRenders(params) {
-  const chain = {
-    url: resolveNetworkIcon(params.value),
-    name: resolveNetworkName(params.value) ?? params.value,
-    id: params.value,
-  }
-
-  const imgIcon =
-    chain.url && chain.url !== '#'
-      ? `<img src="${chain.url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
-      : placeholder
-
-  const href = `/network/index.html#${encodeURIComponent(chain.id)}`
-  return `
-    <a href="${href}" class="flex gap-2 items-center hover:underline">
-      <div class="flex -space-x-2">${imgIcon}</div>
-      <span class="truncate">${chain.name}</span>
-    </a>
-  `
-}
-
-function NetFlowCellRenders(params) {
-  const net = params.value
-  return net === 0
-    ? `<div class="text-white/30">N/A</div>`
-    : `<div class="${net > 0 ? 'pct-positive' : 'pct-negative'}">${net > 0 ? '+' : '-'}${formatAssetVolume(Math.abs(net))}</div>`
-}
 
 export function setupNetworksGrid(element) {
   let grid
@@ -70,7 +40,7 @@ export function setupNetworksGrid(element) {
           flex: 0,
           width: 300,
           valueFormatter: ({ value }) => value.name,
-          cellRenderer: ChannelIconCellRenders,
+          cellRenderer: NetworkIconCellRenders,
         },
         {
           field: 'volumeUsd',

@@ -50,7 +50,7 @@ export function setupAssetsGrid(element) {
           field: 'volume',
           headerName: 'Volume (Asset)',
           type: 'numericColumn',
-          valueFormatter: ({ value }) => formatAssetVolume(value),
+          cellRenderer: FlowCellRenders,
         },
         {
           field: 'total',
