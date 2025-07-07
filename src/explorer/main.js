@@ -74,14 +74,10 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
 function renderStatus({ status }) {
   const label = getStatusLabel(status)
   const cls = asClassName(label)
-  return `
-  <div class="cell flex md:justify-center md:items-center" data-label="Status" title="${label}">
-          <div class="flex space-x-2 items-center">
+  return `<div class="flex space-x-2 items-center">
             <img class="table-status ${cls} size-4" src="/icons/${cls}.svg" alt="${label}" />
             <span class="md:hidden capitalize text-white/60">${label}</span>
-          </div>
-        </div>
-  `
+          </div>`
 }
 
 function renderCurrentPage(cursor) {
@@ -205,7 +201,9 @@ function createJourneyRow(item) {
             ${renderAssets(item)}
             </div>
         </div>
-        ${renderStatus(item)}
+        <div class="cell flex  md:justify-center md:items-center" data-label="Status">
+          ${renderStatus(item)}
+        </div>
         <div class="md:hidden w-full flex items-center px-4">
            <span class="rounded-lg text-xs text-white/80 w-full border border-[#121212] px-4 py-2 text-center">Show Details</span>
         </div>
