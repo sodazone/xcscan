@@ -92,8 +92,7 @@ body {
 }
 
 .transaction-row {
-  @apply grid rounded-lg py-4 md:py-3 gap-y-4 transition hover:bg-teal-300/10 bg-white/5 rounded-xl focus:outline-none focus:bg-teal-300/10;
-  grid-template-columns: 1fr;
+  @apply rounded-lg pt-2 gap-y-2 md:py-3 md:gap-y-4 transition hover:bg-teal-300/10 bg-white/5 rounded-xl focus:outline-none focus:bg-teal-300/10;
   opacity: 0;
   transform: translateY(10px);
   transition:
@@ -104,15 +103,6 @@ body {
 .transaction-row.fade-in {
   opacity: 1;
   transform: translateY(0);
-}
-
-@media (min-width: 768px) {
-  .transaction-row {
-    @apply grid gap-y-1;
-    grid-template-columns:
-      minmax(80px, 1fr) minmax(100px, 1.2fr) minmax(150px, 1.5fr)
-      minmax(150px, 1.5fr) minmax(150px, 1.5fr) minmax(90px, 90px);
-  }
 }
 
 .transaction-detail {
@@ -129,21 +119,6 @@ body {
 }
 
 .cell > div {
-  @apply truncate;
-}
-
-.cell::before {
-  content: attr(data-label);
-  @apply text-white/40 inline-block w-[70px] md:content-none text-right pr-4;
-}
-
-@media (max-width: 600px) {
-  .cell.sm-hidden {
-    display: none;
-  }
-}
-
-.cell.flex-col > div {
   @apply truncate;
 }
 

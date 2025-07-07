@@ -258,7 +258,7 @@ export function pad(num) {
   return String(num).padStart(2, '0')
 }
 
-export function formatLocalTimestamp(timestamp) {
+export function formatLocalTimestamp(timestamp, style = 'col') {
   const date = new Date(timestamp)
 
   const yyyy = date.getFullYear()
@@ -276,9 +276,13 @@ export function formatLocalTimestamp(timestamp) {
   const utcSs = String(date.getUTCSeconds()).padStart(2, '0')
 
   const utcTooltip = `UTC ${utcHh}:${utcMi}:${utcSs} · ${utcYyyy}-${utcMm}-${utcDd}`
+  const classes =
+    style == 'col'
+      ? 'flex-col space-y-1 leading-tight text-sm'
+      : 'space-x-2 text-xs'
 
   return `
-    <div class="flex flex-col space-y-1 leading-tight text-sm" title="${utcTooltip}">
+    <div class="flex ${classes}" title="${utcTooltip}">
       <span class="text-white">${hh}:${mi}:${ss}</span>
       <span class="text-white/60">${yyyy}-${mm}-${dd}</span>
     </div>

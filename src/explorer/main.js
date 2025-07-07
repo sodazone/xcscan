@@ -76,7 +76,6 @@ function renderStatus({ status }) {
   const cls = asClassName(label)
   return `<div class="flex space-x-2 items-center">
             <img class="table-status ${cls} size-4" src="/icons/${cls}.svg" alt="${label}" />
-            <span class="md:hidden capitalize text-white/60">${label}</span>
           </div>`
 }
 
@@ -106,7 +105,7 @@ function renderAction(item) {
 
   return action.module !== undefined
     ? `
-    <div class="flex flex-col space-y-0.5 text-sm text-white leading-tight tracking-wide break-words">
+    <div class="flex space-x-2 md:flex-col md:space-y-0.5 text-sm text-white leading-tight tracking-wide break-words">
       <span class="text-white truncate">${action.module}</span>
       <span class="text-xs text-white/70 font-medium truncate">${action.method}</span>
     </div>
@@ -169,8 +168,8 @@ function renderAssets(item) {
     : '<div class="text-white/20">-</div>'
 }
 
-function renderTime(item) {
-  return formatLocalTimestamp(item.sentAt)
+function renderTime(item, style) {
+  return formatLocalTimestamp(item.sentAt, style)
 }
 
 function createJourneyRow(item) {
@@ -181,6 +180,29 @@ function createJourneyRow(item) {
   row.className = 'transaction-row'
 
   row.innerHTML = `
+  <div class="flex flex-col space-y-1 md:hidden">
+    <div class="cell flex space-x-2">
+      <div class="flex flex-col space-y-2">
+        <div>${renderTime(item, 'row')}</div>
+        <div>${renderAction(item)}</div>
+      </div>
+      <div class="ml-auto">${renderStatus(item)}</div>
+    </div>
+    <div class="cell flex gap-1">
+      <div class="text-xs text-white/40 w-[2.5rem]">from</div>
+      <div>${renderFrom(item)}</div>
+    </div>
+    <div class="cell flex gap-1">
+      <div class="text-xs text-white/40 w-[2.5rem]">to</div>
+      <div>${renderTo(item)}</div>
+    </div>
+    <div class="cell ${Array.isArray(item.assets) && item.assets.length === 0 ? 'hidden' : 'flex gap-1'}">
+      <div class="text-xs text-white/40 w-[2.5rem]"></div>
+      <div>${renderAssets(item)}</div>
+    </div>
+  </div>
+
+  <div class="hidden md:grid md:gap-y-1 md:grid-cols-[minmax(80px,_1fr)_minmax(100px,_1.2fr)_minmax(150px,_1.5fr)_minmax(150px,_1.5fr)_minmax(150px,_1.5fr)_minmax(90px,_90px)]">
         <div class="cell flex md:items-center" data-label="Time">${renderTime(item)}</div>
         <div class="cell flex md:items-center" data-label="Action">
           ${renderAction(item)}
@@ -203,9 +225,6 @@ function createJourneyRow(item) {
         </div>
         <div class="cell flex  md:justify-center md:items-center" data-label="Status">
           ${renderStatus(item)}
-        </div>
-        <div class="md:hidden w-full flex items-center px-4">
-           <span class="rounded-lg text-xs text-white/80 w-full border border-[#121212] px-4 py-2 text-center">Show Details</span>
         </div>
       `
   return row
