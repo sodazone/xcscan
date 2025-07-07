@@ -225,7 +225,7 @@ function assetIconHTML({ asset }) {
 }
 
 function getAmounts({ assets }) {
-  return Array.isArray(assets)
+  return Array.isArray(assets) && assets.length > 0
     ? assets
         .map(
           (a) =>
