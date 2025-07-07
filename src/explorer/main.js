@@ -71,7 +71,7 @@ function renderPaginationFooter({ hasNextPage, endCursor }) {
   })
 }
 
-function createStatusHTML({ status }) {
+function renderStatus({ status }) {
   const label = getStatusLabel(status)
   const cls = asClassName(label)
   return `
@@ -98,19 +98,7 @@ function renderCurrentPage(cursor) {
     .catch(console.error)
 }
 
-function createJourneyRow(item) {
-  const fromChain = item.origin
-  const toChain = item.destination
-  const fromAddress = item.from.startsWith('urn')
-    ? null
-    : shortenAddress(item.fromFormatted ?? item.from)
-  const toAddress = item.to.startsWith('urn')
-    ? null
-    : (decodeWellKnownAddressHTML(item.to) ??
-      shortenAddress(item.toFormatted ?? item.to))
-
-  const time = formatLocalTimestamp(item.sentAt)
-
+function renderAction(item) {
   const action = {
     type: item.type,
   }
@@ -120,18 +108,76 @@ function createJourneyRow(item) {
     action.method = prettify(call.method)
   }
 
-  function addressHTML({ display, text }) {
-    if (display == null || text == null) {
-      return ''
-    }
+  return action.module !== undefined
+    ? `
+    <div class="flex flex-col space-y-0.5 text-sm text-white leading-tight tracking-wide break-words">
+      <span class="text-white truncate">${action.module}</span>
+      <span class="text-xs text-white/70 font-medium truncate">${action.method}</span>
+    </div>
+    `
+    : `<div class="text-sm text-white tracking-wide capitalize">
+    ${action.type}
+  </div>`
+}
 
-    return `<div class="break-all">${createCopyLinkHTML({
-      text,
-      display,
-      url: `/?search=${text}`,
-    })}</div>`
+function addressHTML({ display, text }) {
+  if (display == null || text == null) {
+    return ''
   }
 
+  return `<div class="break-all">${createCopyLinkHTML({
+    text,
+    display,
+    url: `/?search=${text}`,
+  })}</div>`
+}
+
+function renderFrom(item) {
+  const fromChain = item.origin
+  const fromAddress = item.from.startsWith('urn')
+    ? null
+    : shortenAddress(item.fromFormatted ?? item.from)
+
+  return `${formatNetworkWithIconHTML(fromChain)}
+            ${addressHTML({
+              display: fromAddress,
+              text: item.fromFormatted ?? item.from,
+            })}`
+}
+
+function renderTo(item) {
+  const toChain = item.destination
+  const toAddress = item.to.startsWith('urn')
+    ? null
+    : (decodeWellKnownAddressHTML(item.to) ??
+      shortenAddress(item.toFormatted ?? item.to))
+
+  return `${formatNetworkWithIconHTML(toChain)}
+            ${addressHTML({
+              display: toAddress,
+              text: item.toFormatted ?? item.to,
+            })}`
+}
+
+function renderAssets(item) {
+  return Array.isArray(item.assets) && item.assets.length > 0
+    ? item.assets
+        .map((asset) => {
+          const fmtAmount = formatAssetAmount(asset)
+          if (fmtAmount !== '') {
+            return `<div>${fmtAmount}</div>`
+          }
+          return '<div class="text-white/20">-</div>'
+        })
+        .join('')
+    : '<div class="text-white/20">-</div>'
+}
+
+function renderTime(item) {
+  return formatLocalTimestamp(item.sentAt)
+}
+
+function createJourneyRow(item) {
   const row = document.createElement('a')
   row.href = `/tx/index.html#${item.correlationId}`
   row.tabIndex = 0
@@ -139,58 +185,27 @@ function createJourneyRow(item) {
   row.className = 'transaction-row'
 
   row.innerHTML = `
-<div class="cell flex md:items-center" data-label="Time">${time}</div>
-<div class="cell flex md:items-center" data-label="Action">
-  ${
-    action.module !== undefined
-      ? `
-    <div class="flex flex-col space-y-0.5 text-sm text-white leading-tight tracking-wide break-words">
-      <span class="text-white truncate">${action.module}</span>
-      <span class="text-xs text-white/70 font-medium truncate">${action.method}</span>
-    </div>
-    `
-      : `<div class="text-sm text-white tracking-wide capitalize">
-    ${action.type}
-  </div>`
-  }
-</div>
+        <div class="cell flex md:items-center" data-label="Time">${renderTime(item)}</div>
+        <div class="cell flex md:items-center" data-label="Action">
+          ${renderAction(item)}
+        </div>
         <div class="cell flex md:items-center" data-label="From">
           <div class="flex flex-col space-y-1">
-            ${formatNetworkWithIconHTML(fromChain)}
-            ${addressHTML({
-              display: fromAddress,
-              text: item.fromFormatted ?? item.from,
-            })}
+            ${renderFrom(item)}
           </div>
         </div>
         <div class="cell flex md:items-center" data-label="To">
             <div class="flex flex-col space-y-1">
-            ${formatNetworkWithIconHTML(toChain)}
-            ${addressHTML({
-              display: toAddress,
-              text: item.toFormatted ?? item.to,
-            })}
+            ${renderTo(item)}
             </div>
         </div>
         <div class="cell flex md:items-center ${Array.isArray(item.assets) && item.assets.length === 0 ? 'sm-hidden' : ''}"
              data-label="Assets">
             <div class="flex flex-col space-y-1">
-            ${
-              Array.isArray(item.assets) && item.assets.length > 0
-                ? item.assets
-                    .map((asset) => {
-                      const fmtAmount = formatAssetAmount(asset)
-                      if (fmtAmount !== '') {
-                        return `<div>${fmtAmount}</div>`
-                      }
-                      return '<div class="text-white/20">-</div>'
-                    })
-                    .join('')
-                : '<div class="text-white/20">-</div>'
-            }
+            ${renderAssets(item)}
             </div>
         </div>
-        ${createStatusHTML(item)}
+        ${renderStatus(item)}
         <div class="md:hidden w-full flex items-center px-4">
            <span class="rounded-lg text-xs text-white/80 w-full border border-[#121212] px-4 py-2 text-center">Show Details</span>
         </div>
