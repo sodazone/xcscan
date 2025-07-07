@@ -186,7 +186,7 @@ function createJourneyRow(item) {
         <div>${renderTime(item, 'row')}</div>
         <div>${renderAction(item)}</div>
       </div>
-      <div class="ml-auto">${renderStatus(item)}</div>
+      <div class="ml-auto" data-label="Status">${renderStatus(item)}</div>
     </div>
     <div class="cell flex gap-1">
       <div class="text-xs text-white/40 w-[2.5rem]">from</div>
@@ -274,25 +274,27 @@ function renderTransactionsTable({ items, pageInfo }) {
           return
         }
 
-        const statusCell = row.querySelector('[data-label="Status"]')
-        if (!statusCell) return
+        const statusCells = row.querySelectorAll('[data-label="Status"]')
+        if (statusCells == null || statusCells.length < 1) return
 
         const statusLabel = getStatusLabel(journey.status)
         const statusCls = asClassName(statusLabel)
 
-        statusCell.setAttribute('title', statusLabel)
+        statusCells.forEach((statusCell) => {
+          statusCell.setAttribute('title', statusLabel)
 
-        const img = statusCell.querySelector('img.table-status')
-        if (img) {
-          img.className = `table-status ${statusCls} size-4`
-          img.src = `/icons/${statusCls}.svg`
-          img.alt = statusLabel
-        }
+          const img = statusCell.querySelector('img.table-status')
+          if (img) {
+            img.className = `table-status ${statusCls} size-4`
+            img.src = `/icons/${statusCls}.svg`
+            img.alt = statusLabel
+          }
 
-        const text = statusCell.querySelector('span')
-        if (text) {
-          text.textContent = statusLabel
-        }
+          const text = statusCell.querySelector('span')
+          if (text) {
+            text.textContent = statusLabel
+          }
+        })
       }
     } else {
       console.warn('Journey not found')
