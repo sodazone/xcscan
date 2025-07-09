@@ -7,10 +7,10 @@ const descriptions = {
 }
 
 const labels = {
-  volume: 'Volume',
+  volume: 'Volume USD',
   count: 'Transfers',
-  flow: 'Netflow',
-  share: 'Share',
+  flow: 'Netflow USD',
+  share: 'Share %',
   asset: 'Amount',
 }
 
@@ -20,8 +20,8 @@ export function setupDropdownSelector(
   eventName,
   initial = 'volume'
 ) {
-  const button = container.querySelector('#series-button')
-  const menu = container.querySelector('#series-options')
+  const button = container.querySelector('[data-series-button]')
+  const menu = container.querySelector('[data-series-options]')
   const selection = container.querySelector('.series-label')
   const items = container.querySelectorAll('[data-value]')
 
@@ -31,16 +31,16 @@ export function setupDropdownSelector(
     selected = value
     selection.textContent = labels[value] ?? value
     menu.classList.add('hidden')
+    container.classList.remove('open')
     button.setAttribute('aria-expanded', 'false')
-    window.dispatchEvent(new CustomEvent(eventName, { detail: selected }))
     const label = descriptions[selected] ?? selected
     if (labelElement) labelElement.textContent = label
 
     items.forEach((item) => {
       if (item.dataset.value === selected) {
-        item.classList.add('selected')
+        item.classList.add('hidden')
       } else {
-        item.classList.remove('selected')
+        item.classList.remove('hidden')
       }
     })
   }
@@ -49,14 +49,20 @@ export function setupDropdownSelector(
   button.addEventListener('click', () => {
     const isOpen = menu.classList.contains('hidden') === false
     menu.classList.toggle('hidden')
+    container.classList.toggle('open')
     button.setAttribute('aria-expanded', String(!isOpen))
   })
+
+  function closeDropdown() {
+    menu.classList.add('hidden')
+    container.classList.remove('open')
+    button.setAttribute('aria-expanded', 'false')
+  }
 
   // Click outside closes
   document.addEventListener('click', (e) => {
     if (!container.contains(e.target)) {
-      menu.classList.add('hidden')
-      button.setAttribute('aria-expanded', 'false')
+      closeDropdown()
     }
   })
 
@@ -66,11 +72,17 @@ export function setupDropdownSelector(
       const value = item.dataset.value
       if (value !== selected) {
         updateSelection(value)
+        window.dispatchEvent(new CustomEvent(eventName, { detail: selected }))
       } else {
         menu.classList.add('hidden')
       }
     })
   })
+
+  const closeBtn = menu.querySelector('[data-dropdown-close]')
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeDropdown)
+  }
 
   // Initial trigger
   updateSelection(selected)

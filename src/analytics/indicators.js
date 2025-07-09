@@ -23,12 +23,25 @@ export function setupCounters(network) {
     format,
     showPrev = true,
   }) {
-    const pct = (diff / current) * 100.0
+    const pct = current == 0 ? 0 : (diff / current) * 100.0
     element.innerHTML = `
       <div class="flex justify-between items-center">
-        <span class="text-white/70 font-medium">${title}</span>
-        ${showPrev ? `<span class="h-fit w-fit text-sm ${(invertPct ? pct < 0 : pct > 0) ? 'pct-positive' : 'pct-negative'}">${pct > 0 ? '+' : ''}${pct.toFixed(2)}%</span>` : ''}
-      </div>
+  <span class="text-white/70 font-medium">${title}</span>
+  ${
+    showPrev
+      ? `
+    <span class="h-fit w-fit text-sm ${
+      pct === 0
+        ? 'text-white/40'
+        : (invertPct ? pct < 0 : pct > 0)
+          ? 'pct-positive'
+          : 'pct-negative'
+    }">
+      ${pct > 0 ? '+' : ''}${pct.toFixed(2)}%
+    </span>`
+      : ''
+  }
+</div>
       <div id="tx-counter" class="flex flex-col gap-1">
         <div>
           <span class="text-white/80 text-4xl font-medium">${format ? format(current) : current}</span>
@@ -58,7 +71,7 @@ export function setupCounters(network) {
           diff: counters.volumeUsd.diff,
           unit: 'usd',
           format: formatAssetVolume,
-          showPrev: period !== 'quarterly' && counters.volumeUsd.current > 0,
+          showPrev: period !== 'quarterly',
         })
         render({
           title: 'Transfers',
@@ -68,7 +81,7 @@ export function setupCounters(network) {
           diff: counters.diff,
           unit: 'tx',
           format: formatTxs,
-          showPrev: period !== 'quarterly' && counters.current > 0,
+          showPrev: period !== 'quarterly',
         })
         render({
           title: 'Accounts',
@@ -78,7 +91,7 @@ export function setupCounters(network) {
           diff: counters.accounts.diff,
           unit: '',
           format: formatAccounts,
-          showPrev: period !== 'quarterly' && counters.accounts.current > 0,
+          showPrev: period !== 'quarterly',
         })
         render({
           title: 'Avg. Time',
@@ -91,9 +104,7 @@ export function setupCounters(network) {
           unit: 's',
           invertPct: true,
           format: formatRoundtrip,
-          showPrev:
-            period !== 'quarterly' &&
-            Math.abs(counters.avgTimeSpent.current) > 0,
+          showPrev: period !== 'quarterly',
         })
       })
       .catch(console.error)

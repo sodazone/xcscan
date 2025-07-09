@@ -7,6 +7,7 @@ import {
 
 import { getTransfersByNetworkSeries } from '../api.js'
 import { formatAssetVolume } from '../../formats.js'
+import { setupDropdownSelector } from './dropdown-selector.js'
 
 export function setupNetworkSeriesChart(element, network) {
   let chart
@@ -239,7 +240,7 @@ export function setupNetworkSeriesChart(element, network) {
       lastValueVisible: false,
       crosshairMarkerVisible: true,
       priceLineVisible: false,
-      color: 'rgba(188, 244, 166, 0.65)', // teal-ish
+      color: 'rgba(102, 153, 153, 0.85)',
       priceFormat: {
         type: 'price',
         precision: 0,
@@ -255,7 +256,7 @@ export function setupNetworkSeriesChart(element, network) {
       lastValueVisible: false,
       crosshairMarkerVisible: true,
       priceLineVisible: false,
-      color: 'rgba(255, 151, 147, 0.65)',
+      color: 'rgba(51, 75, 75, 0.85)',
       priceFormat: {
         type: 'price',
         precision: 0,
@@ -271,7 +272,7 @@ export function setupNetworkSeriesChart(element, network) {
       lastValueVisible: false,
       crosshairMarkerVisible: true,
       priceLineVisible: false,
-      color: 'rgba(247, 249, 247, 0.75)',
+      color: 'rgba(255, 255, 255, 0.8)',
       lineWidth: 2,
       priceScaleId: flowPriceScaleId,
       priceFormat: {
@@ -321,6 +322,13 @@ export function setupNetworkSeriesChart(element, network) {
   window.addEventListener('seriesTypeChanged', (e) => {
     update(currentTimeFrame, e.detail)
   })
+
+  setupDropdownSelector(
+    document.querySelector('#select-series-type'),
+    document.querySelector('.current-type'),
+    'seriesTypeChanged',
+    'volume'
+  )
 
   let w =
     window.innerWidth ||

@@ -58,7 +58,6 @@ export function setupChannelsGrid(element) {
         {
           field: 'key',
           headerName: 'Channel',
-          pinned: 'left',
           suppressMovable: true,
           flex: 0,
           width: 300,
@@ -98,6 +97,7 @@ export function setupChannelsGrid(element) {
           headerName: 'Trend',
           field: 'series',
           maxWidth: 150,
+          minWidth: 150,
           sortable: false,
           valueFormatter: ({ value }) => value[value.length - 1],
           cellRenderer: SparklineCellRenderer,

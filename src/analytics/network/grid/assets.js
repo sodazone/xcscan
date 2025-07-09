@@ -1,6 +1,4 @@
 import { createGrid } from 'ag-grid-community'
-import { ModuleRegistry } from 'ag-grid-community'
-import { ClientSideRowModelModule, PaginationModule } from 'ag-grid-community'
 
 import { getNetworkAssetsSeries } from '../../api.js'
 import {
@@ -11,8 +9,7 @@ import {
   themeGrid,
   NetFlowCellRenders,
 } from '../../grid/common.js'
-
-ModuleRegistry.registerModules([ClientSideRowModelModule, PaginationModule])
+import { setupDropdownSelector } from '../dropdown-selector.js'
 
 export function setupNetworkAssetsGrid(element, network) {
   let grid
@@ -75,6 +72,7 @@ export function setupNetworkAssetsGrid(element, network) {
           headerName: 'Trend',
           field: 'series',
           maxWidth: 150,
+          minWidth: 150,
           sortable: false,
           valueFormatter: ({ value }) => value[value.length - 1],
           cellRenderer: SparklineCellRenderer,
@@ -116,6 +114,13 @@ export function setupNetworkAssetsGrid(element, network) {
   window.addEventListener('networkAssetsTypeChanged', (e) => {
     update(currentTimeFrame, e.detail)
   })
+
+  setupDropdownSelector(
+    document.querySelector('#select-network-assets-type'),
+    document.querySelector('.network-assets-current-type'),
+    'networkAssetsTypeChanged',
+    'volume'
+  )
 
   let w =
     window.innerWidth ||

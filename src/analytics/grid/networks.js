@@ -35,10 +35,9 @@ export function setupNetworksGrid(element) {
         {
           field: 'network',
           headerName: 'Network',
-          pinned: 'left',
           suppressMovable: true,
           flex: 0,
-          width: 300,
+          width: 280,
           valueFormatter: ({ value }) => value.name,
           cellRenderer: NetworkIconCellRenders,
         },

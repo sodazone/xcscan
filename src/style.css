@@ -127,12 +127,65 @@ body {
 }
 
 /* Dropdown */
+
+.dropdown-toggle {
+  @apply flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none transition;
+}
+
+.dropdown-chevron {
+  @apply w-4 h-4 text-white/40 ml-2;
+}
+
+.dropdown-menu {
+  @apply fixed inset-0 flex-col z-50 bg-[#121212]
+         md:absolute md:inset-auto md:right-0 md:bg-[#121212]/80
+         md:backdrop-blur md:mt-2 md:rounded-lg md:shadow;
+}
+
 .dropdown-toggle svg {
   transition: transform 0.3s ease;
 }
 
 .dropdown.open .dropdown-toggle svg {
   transform: rotate(180deg);
+}
+
+.dropdown-item {
+  @apply text-white/70 p-2 cursor-pointer w-full text-left;
+  font-size: 0.875rem;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  @apply bg-white/5 text-white rounded;
+}
+
+.dropdown-item.selected {
+  @apply text-white/20 cursor-default pointer-events-none;
+}
+
+/* Tooltips */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.info-button {
+  @apply flex items-center text-white/30 cursor-pointer;
+}
+
+.tooltip-text {
+  @apply absolute flex bottom-[120%] left-0 md:left-auto md:right-[50%] bg-black/70 backdrop-blur text-white/80 p-4 min-w-40;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s;
+  overflow: hidden;
+}
+
+.info-button:focus + .tooltip-text,
+.info-button:hover + .tooltip-text {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Status */
@@ -249,22 +302,4 @@ button.loading .btn-label::after {
 
 .json-children {
   margin-top: 0.15em;
-}
-
-.dropdown-item {
-  @apply text-white/70 px-2 py-1 cursor-pointer;
-  width: 100%;
-  background-color: transparent;
-  text-align: left;
-  font-size: 0.875rem;
-  transition: background 0.2s;
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-  @apply text-cyan-200;
-}
-
-.dropdown-item.selected {
-  @apply text-cyan-200/20 cursor-default pointer-events-none;
 }

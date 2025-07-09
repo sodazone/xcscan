@@ -47,9 +47,14 @@ export function NetworkIconCellRenders(params) {
 
   const href = `/network/index.html#${encodeURIComponent(chain.id)}`
   return `
-    <a href="${href}" class="flex gap-2 items-center hover:underline">
+    <a href="${href}" class="group flex gap-2 items-center">
       <div class="flex -space-x-2">${imgIcon}</div>
-      <span class="truncate">${chain.name}</span>
+      <span class="truncate group-hover:text-white">${chain.name}</span>
+      <div class="flex ml-auto text-white/20 group-hover:text-white/70">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+        <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+      </svg>
+      </div>
     </a>
   `
 }

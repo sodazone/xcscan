@@ -1,6 +1,6 @@
 import { TIME_PERIODS } from './api.js'
 
-export function setupTimeSelector(element, initial = 'daily') {
+export function setupTimeSelector(element, initial = 'monthly') {
   let selected = initial
 
   function update() {
@@ -8,10 +8,9 @@ export function setupTimeSelector(element, initial = 'daily') {
 
     for (const child of element.children) {
       if (child.dataset.value === selected) {
-        child.className = 'bg-cyan-800/40 rounded text-cyan-200 p-1'
+        child.className = 'text-white/80 p-1'
       } else {
-        child.className =
-          'text-cyan-200/40 p-1 cursor-pointer hover:text-cyan-200'
+        child.className = 'text-white/40 p-1 cursor-pointer hover:text-white'
       }
     }
 

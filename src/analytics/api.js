@@ -26,6 +26,45 @@ export const TIME_PERIODS = {
   },
 }
 
+const CACHE_EXPIRY_MS = 3_600_000
+
+let hasStorage = null
+function hasLocalStorage() {
+  if (hasStorage !== null) {
+    return hasStorage
+  }
+
+  try {
+    const testKey = 'test'
+    localStorage.setItem(testKey, testKey)
+    localStorage.removeItem(testKey)
+    hasStorage = true
+  } catch {
+    hasStorage = false
+  }
+
+  return hasStorage
+}
+
+function stableStringify(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return String(obj)
+  }
+
+  if (Array.isArray(obj)) {
+    return `_${obj.map(stableStringify).join('_')}`
+  }
+
+  const keys = Object.keys(obj).sort()
+  return `_${keys.map((key) => `${key}-${stableStringify(obj[key])}`).join('_')}`
+}
+
+function getCacheKey(args) {
+  const serialized = stableStringify(args)
+  const safeKey = serialized.replace(/\s+/g, '_')
+  return `xcsAnalyticsCache_${safeKey}`
+}
+
 function alignTime(originalTime, bucketSeconds) {
   // Align to the bucket size (e.g., 1 hour = 3600 seconds)
   return Math.floor(originalTime / bucketSeconds) * bucketSeconds
@@ -98,6 +137,23 @@ function fill(items, { timeframe, bucket }) {
 }
 
 async function _fetch(args) {
+  if (hasLocalStorage()) {
+    const cacheKey = getCacheKey(args)
+    const cached = localStorage.getItem(cacheKey)
+    if (cached) {
+      const { timestamp, data } = JSON.parse(cached)
+      if (Date.now() - timestamp < CACHE_EXPIRY_MS) {
+        return data
+      }
+    }
+
+    const data = await fetchWithRetry(queryUrl, { args })
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify({ timestamp: Date.now(), data })
+    )
+    return data
+  }
   return await fetchWithRetry(queryUrl, { args })
 }
 

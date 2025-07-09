@@ -1,6 +1,4 @@
 import { createGrid } from 'ag-grid-community'
-import { ModuleRegistry } from 'ag-grid-community'
-import { ClientSideRowModelModule, PaginationModule } from 'ag-grid-community'
 
 import { getNetworkChannelsSeries } from '../../api.js'
 import {
@@ -11,8 +9,7 @@ import {
   NetworkIconCellRenders,
   NetFlowCellRenders,
 } from '../../grid/common.js'
-
-ModuleRegistry.registerModules([ClientSideRowModelModule, PaginationModule])
+import { setupDropdownSelector } from '../dropdown-selector.js'
 
 export function setupNetworkChannelsGrid(element, network) {
   let grid
@@ -41,7 +38,8 @@ export function setupNetworkChannelsGrid(element, network) {
         {
           field: 'key',
           headerName: 'Channel',
-          pinned: 'left',
+          width: 280,
+          flex: 0,
           suppressMovable: true,
           valueFormatter: ({ value }) => (value === '' ? 'N/A' : value),
           cellRenderer: NetworkIconCellRenders,
@@ -69,17 +67,28 @@ export function setupNetworkChannelsGrid(element, network) {
           field: 'netflow',
           headerName: 'Netflow',
           type: 'numericColumn',
+          minWidth: 100,
           cellRenderer: NetFlowCellRenders,
         },
         {
           headerName: 'Trend',
           field: 'series',
           maxWidth: 150,
+          minWidth: 150,
           sortable: false,
           valueFormatter: ({ value }) => value[value.length - 1],
           cellRenderer: SparklineCellRenderer,
         },
       ],
+      onRowClicked: (event) => {
+        const networkId = event.data.key
+        if (networkId) {
+          window.location.assign(
+            `/network/index.html#${encodeURIComponent(networkId)}`
+          )
+          window.location.reload()
+        }
+      },
     }
 
     grid = createGrid(element, gridOptions)
@@ -111,6 +120,13 @@ export function setupNetworkChannelsGrid(element, network) {
   window.addEventListener('networkChannelsTypeChanged', (e) => {
     update(currentTimeFrame, e.detail)
   })
+
+  setupDropdownSelector(
+    document.querySelector('#select-network-channels-type'),
+    document.querySelector('.network-channels-current-type'),
+    'networkChannelsTypeChanged',
+    'volume'
+  )
 
   let w =
     window.innerWidth ||

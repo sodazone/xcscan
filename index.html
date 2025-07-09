@@ -156,9 +156,7 @@
             >
               <!-- Chains Filter -->
               <div class="relative dropdown">
-                <button
-                  class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle transition"
-                >
+                <button class="dropdown-toggle">
                   <div class="flex items-start gap-2">
                     <span>Chains</span>
                     <span data-dropdown-labels class="text-white text-left"
@@ -167,7 +165,7 @@
                   </div>
 
                   <svg
-                    class="w-4 h-4 text-white/40 ml-2"
+                    class="dropdown-chevron"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
@@ -179,7 +177,7 @@
 
                 <div
                   id="filter-chains"
-                  class="dropdown-menu hidden fixed inset-0 h-screen md:h-auto flex flex-col w-screen md:absolute md:-right-20 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 md:h-auto md:w-auto md:max-w-2xl md:rounded-lg md:shadow"
+                  class="dropdown-menu hidden flex h-screen md:h-auto w-screen md:h-auto md:w-auto md:max-w-2xl"
                 >
                   <div
                     class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
@@ -250,9 +248,7 @@
 
               <!-- Actions Filter -->
               <div class="relative dropdown">
-                <button
-                  class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
-                >
+                <button class="dropdown-toggle">
                   <div class="flex items-start gap-2">
                     <span>Actions</span>
                     <span data-dropdown-labels class="text-white text-left"
@@ -261,7 +257,7 @@
                   </div>
 
                   <svg
-                    class="w-4 h-4 text-white/40 ml-2"
+                    class="dropdown-chevron"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
@@ -273,7 +269,7 @@
 
                 <div
                   id="filter-actions"
-                  class="dropdown-menu hidden fixed flex flex-col gap-y-4 md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow"
+                  class="dropdown-menu hidden flex w-screen md:w-48"
                 >
                   <div
                     class="flex items-center md:hidden border-b border-white/5 p-4"
@@ -314,9 +310,7 @@
 
               <!-- Status Filter -->
               <div class="relative dropdown">
-                <button
-                  class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
-                >
+                <button class="dropdown-toggle">
                   <div class="flex items-start gap-2">
                     <span>Status</span>
                     <span data-dropdown-labels class="text-white text-left"
@@ -325,7 +319,7 @@
                   </div>
 
                   <svg
-                    class="w-4 h-4 text-white/40 ml-2"
+                    class="dropdown-chevron"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
@@ -337,7 +331,7 @@
 
                 <div
                   id="filter-status"
-                  class="dropdown-menu hidden fixed flex-col gap-y-4 md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:w-48 md:rounded-lg md:shadow"
+                  class="dropdown-menu hidden flex w-screen md:w-48"
                 >
                   <div
                     class="flex items-center md:hidden border-b border-white/5 p-4"
@@ -378,9 +372,7 @@
 
               <!-- USD Filter -->
               <div id="filter-usd-amount" class="relative dropdown">
-                <button
-                  class="flex cursor-pointer items-center px-3 text-sm text-white/40 focus:outline-none dropdown-toggle"
-                >
+                <button class="dropdown-toggle">
                   <div class="flex items-start gap-2">
                     <span>Amounts</span>
                     <span
@@ -391,7 +383,7 @@
                   </div>
 
                   <svg
-                    class="w-4 h-4 text-white/40 ml-2"
+                    class="dropdown-chevron"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
@@ -401,9 +393,7 @@
                   </svg>
                 </button>
 
-                <div
-                  class="dropdown-menu hidden fixed flex-col gap-y-4 md:absolute md:right-0 inset-0 md:inset-auto z-50 bg-[#121212] md:bg-[#121212]/80 md:backdrop-blur md:mt-2 w-screen md:w-fit md:rounded-lg md:shadow"
-                >
+                <div class="dropdown-menu hidden flex w-screen md:w-fit">
                   <div
                     class="flex items-center md:hidden border-b border-white/5 p-4"
                   >

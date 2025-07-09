@@ -1,5 +1,5 @@
 import { createGrid } from 'ag-grid-community'
-import { formatAssetVolume, formatTxs } from '../../formats.js'
+import { formatTxs } from '../../formats.js'
 import { getTransfersVolumeByAsset } from '../api.js'
 import {
   FlowCellRenders,
@@ -79,6 +79,7 @@ export function setupAssetsGrid(element) {
           headerName: 'Trend',
           field: 'series',
           maxWidth: 150,
+          minWidth: 150,
           sortable: false,
           valueFormatter: ({ value }) => value[value.length - 1],
           cellRenderer: SparklineCellRenderer,

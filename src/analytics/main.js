@@ -56,6 +56,6 @@ window.onload = () => {
   setupChannelsGrid(document.querySelector('#grid-channels'))
   setupNetworksGrid(document.querySelector('#grid-networks'))
   setupCounters()
-  setupTimeSelector(document.querySelector('#select-time'), 'daily')
+  setupTimeSelector(document.querySelector('#select-time'), 'monthly')
   setupSeriesSelector(document.querySelector('#select-series-type'), 'volume')
 }
