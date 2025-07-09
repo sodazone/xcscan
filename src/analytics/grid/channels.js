@@ -8,10 +8,9 @@ import {
   SparklineCellRenderer,
   isMobile,
   loadResources,
+  placeholder,
   themeGrid,
 } from './common.js'
-
-const placeholder = `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>`
 
 function ChannelIconCellRenders(params) {
   const chains = params.value.split('-')

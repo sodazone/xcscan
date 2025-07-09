@@ -9,7 +9,7 @@ import {
 import { formatAssetVolume } from '../../formats.js'
 import { drawSparkline } from '../sparkline.js'
 
-const placeholder = `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>`
+export const placeholder = `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>`
 
 export function FlowCellRenders({ value }) {
   return value === null

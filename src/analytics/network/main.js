@@ -26,6 +26,7 @@ import { resolveNetworkIcon, resolveNetworkName } from '../../extras'
 import { loadExtraInfos } from '../../extras'
 import { setupNetworkAssetsGrid } from './grid/assets'
 import { setupNetworkChannelsGrid } from './grid/channels'
+import { placeholder } from '../grid/common'
 
 function setUpNetworkTitle(network) {
   const elements = document.querySelectorAll('[data-network-name]')
@@ -39,17 +40,19 @@ function setUpNetworkTitle(network) {
       ? `<img src="${networkIconUrl}" />`
       : null
 
-  const imgHTML = `<div class="flex size-7">${imgIcon}</div>`
   const nameHTML = `<span class="text-white/80">${networkName}</span>`
 
   elements.forEach((element) => {
-    element.innerHTML = `<div class="flex size-5">${imgIcon}</div>${nameHTML}`
+    element.innerHTML =
+      imgIcon == null
+        ? nameHTML
+        : `<div class="flex size-5">${imgIcon}</div>${nameHTML}`
   })
   iconElements.forEach((element) => {
     element.innerHTML =
       imgIcon !== null
-        ? imgHTML
-        : `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">${networkName[0]}</span>`
+        ? `<div class="flex size-7">${imgIcon}</div>`
+        : placeholder
   })
 }
 
