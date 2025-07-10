@@ -53,7 +53,8 @@ function fsiCellRenderer({ data }) {
 export function createFisColumn(
   grid,
   gridOptions,
-  { netflowKey = 'netflow', totalKey = 'total' }
+  { netflowKey = 'netflow', totalKey = 'total' },
+  network
 ) {
   let showDFI = true
 
@@ -83,7 +84,9 @@ export function createFisColumn(
     },
     update: (newData) => {
       toggleColumn()
-      return showDFI ? computeFIS(newData, { netflowKey, totalKey }) : newData
+      return showDFI
+        ? computeFIS(newData, { netflowKey, totalKey }, network)
+        : newData
     },
     onResize: toggleColumn,
   }
