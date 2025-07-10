@@ -1,12 +1,31 @@
 import { computeFIS, flowLabels } from '../fis'
 
+const styles = {
+  down_strong: 'bg-red-500/10 text-red-300',
+  down_neutral: 'bg-red-400/10 text-red-300',
+  out_strong: 'bg-orange-400/10 text-orange-300',
+
+  up_strong: 'bg-green-500/10 text-green-300',
+  in_strong: 'bg-emerald-500/10 text-emerald-300',
+  in_neutral: 'bg-emerald-400/10 text-emerald-300',
+
+  eq_strong: 'bg-slate-400/10 text-slate-300',
+}
+
 function fsiCellRenderer({ data }) {
-  const fisLabel = data.fis?.label
-  if (fisLabel == null) {
-    return ''
+  const flowKey = data?.fis?.label
+  if (!flowKey) return ''
+
+  const label = flowLabels[flowKey]
+  const style = styles[flowKey]
+
+  if (style) {
+    return `<span class="inline-flex items-center rounded px-2 py-0.5 text-xs ${style}">
+      ${label}
+    </span>`
   }
-  const label = flowLabels[fisLabel]
-  return `<span class="truncate text-white/80">${label}</span>`
+
+  return `<span class="text-white/50 text-xs">${label}</span>`
 }
 
 export function createFisColumn(
@@ -21,7 +40,7 @@ export function createFisColumn(
 
     if (showDFI) {
       baseDefs.push({
-        headerName: 'Flow Impact Score',
+        headerName: 'Flow Category',
         maxWidth: 180,
         sortingOrder: ['desc', null],
         valueGetter: ({ data }) => data?.fis?.score ?? null,
