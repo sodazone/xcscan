@@ -9,6 +9,7 @@ import {
   loadResources,
   themeGrid,
 } from './common.js'
+import { computeFIS, fsiCellRenderer } from '../fis.js'
 
 export function setupNetworksGrid(element) {
   let grid
@@ -66,6 +67,13 @@ export function setupNetworksGrid(element) {
           field: 'netFlow',
           cellRenderer: NetFlowCellRenders,
         },
+        {
+          headerName: 'Flow Impact Score',
+          //type: 'numericColumn',
+          field: 'fis',
+          valueFormatter: ({ value }) => value === undefined ? 0 : value.dfi,
+          cellRenderer: fsiCellRenderer,
+        },
       ],
       onRowClicked: (event) => {
         const networkId = event.data.network
@@ -81,7 +89,7 @@ export function setupNetworksGrid(element) {
   function update(period) {
     loadResources().then(() => {
       getTransfersByNetwork(period).then((newData) => {
-        data = newData
+        data = computeFIS(newData, 'volumeUsd', (row) => +(row.netFlow / row.volumeUsd).toFixed(2))
         grid.setGridOption('rowData', data)
       })
     })

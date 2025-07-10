@@ -10,15 +10,18 @@ import {
   NetFlowCellRenders,
 } from '../../grid/common.js'
 import { setupDropdownSelector } from '../dropdown-selector.js'
+import { computeFIS, fsiCellRenderer } from '../../fis.js'
 
 export function setupNetworkAssetsGrid(element, network) {
   let grid
+  let gridOptions
   let data
   let currentTimeFrame
   let currentType = 'volume'
+  let showDFI = true
 
   function install() {
-    const gridOptions = {
+    gridOptions = {
       rowData: [],
       theme: themeGrid,
       suppressCellFocus: true,
@@ -83,26 +86,42 @@ export function setupNetworkAssetsGrid(element, network) {
     grid = createGrid(element, gridOptions)
   }
 
+  function toggleColumn(enabled) {
+    const baseDefs = gridOptions.columnDefs.filter((col) => col.field !== 'fis')
+
+    if (enabled) {
+      baseDefs.push({
+        field: 'fis',
+        headerName: 'Flow Impact Score',
+        maxWidth: 180,
+        valueFormatter: ({ value }) => value.dfi,
+        cellRenderer: fsiCellRenderer,
+      })
+    }
+
+    grid.setGridOption('columnDefs', baseDefs)
+  }
+
   function update(period, type) {
     currentType = type
     currentTimeFrame = period
+    showDFI = type === 'volume'
 
-    if (currentType === 'volume') {
-      getNetworkAssetsSeries(period, network, 'usd').then((newData) => {
-        data = newData
-        grid.setGridOption('rowData', data)
-      })
-    } else if (currentType === 'asset') {
-      getNetworkAssetsSeries(period, network, 'asset').then((newData) => {
-        data = newData
-        grid.setGridOption('rowData', data)
-      })
-    } else {
-      getNetworkAssetsSeries(period, network, 'tx').then((newData) => {
-        data = newData
-        grid.setGridOption('rowData', data)
-      })
-    }
+    const fetchFn = {
+      volume: () => getNetworkAssetsSeries(period, network, 'usd'),
+      asset: () => getNetworkAssetsSeries(period, network, 'asset'),
+      count: () => getNetworkAssetsSeries(period, network, 'tx'),
+    }[type]
+
+    fetchFn().then((newData) => {
+      data = showDFI ? computeFIS(newData, 'total', (row) => +(row.netflow / row.total).toFixed(2)) : newData
+
+      // Toggle DFI column visibility
+      toggleColumn(showDFI)
+
+      // Update row data
+      grid.setGridOption('rowData', data)
+    })
   }
 
   install()
@@ -135,6 +154,7 @@ export function setupNetworkAssetsGrid(element, network) {
       w = nw
       element.textContent = ''
       install()
+      toggleColumn(showDFI)
 
       grid.setGridOption('rowData', data)
     }
