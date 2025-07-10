@@ -12,11 +12,13 @@ export function createFisColumn(
 
     if (showDFI) {
       baseDefs.push({
-        field: 'fis',
         headerName: 'Flow Impact Score',
         maxWidth: 180,
+        sortingOrder: ['desc', null],
+        valueGetter: ({ data }) => data?.fis?.score ?? null,
+        comparator: (a, b) => (a ?? -Infinity) - (b ?? -Infinity),
         valueFormatter: ({ value }) =>
-          value?.fis?.score ?? -Number.MAX_SAFE_INTEGER,
+          typeof value === 'number' ? value.toFixed(2) : '',
         cellRenderer: fsiCellRenderer,
       })
     }
