@@ -1,3 +1,18 @@
+function resolveChainType(networkURN) {
+  switch (networkURN) {
+    case 'urn:ocn:polkadot:0':
+    case 'urn:ocn:kusama:0':
+    case 'urn:ocn:paseo:0':
+      return 'relay'
+    case 'urn:ocn:polkadot:1002':
+    case 'urn:ocn:kusama:1002':
+    case 'urn:ocn:paseo:1002':
+      return 'bridgehub'
+    default:
+      return 'parachain'
+  }
+}
+
 export function computeFIS(data, keys) {
   const { totalKey } = keys
   const computeDFI = computeDFIFrom(keys)
@@ -15,7 +30,10 @@ export function computeFIS(data, keys) {
     const rank = sorted.findIndex((v) => v >= vol)
     const percentile = rank / (sorted.length - 1)
     const dfi = computeDFI(row)
-    const flowLabel = classifyFlow(dfi, percentile, row.chainType)
+    const networkURN =
+      row.network ?? row.key?.substring(0, row.key.indexOf('|'))
+    const chainType = resolveChainType(networkURN)
+    const flowLabel = classifyFlow(dfi, percentile, chainType)
 
     return {
       ...row,
