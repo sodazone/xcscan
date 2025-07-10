@@ -29,7 +29,8 @@ export function computeFIS(data, keys) {
   })
 }
 
-const flowLabels = {
+// Move to cell renderer
+export const flowLabels = {
   up_strong: 'Power Surge',
   up_neutral: 'Strong Uptick',
   up_weak: 'Quiet Accumulation',

@@ -1,4 +1,4 @@
-import { computeFIS } from '../fis'
+import { computeFIS, flowLabels } from '../fis'
 
 function fsiCellRenderer({ data }) {
   const fisLabel = data.fis?.label
