@@ -1,17 +1,18 @@
 import { computeFIS } from '../fis'
 
 const styles = {
-  down_strong: 'bg-rose-500/45 text-white/87',
-  down_neutral: 'bg-orange-500/45 text-white/87',
-  out_strong: 'bg-orange-500/45 text-white/87',
+  down_strong: 'bg-[#332221f2] text-[#f0d6d4f2]',
 
-  up_strong: 'bg-lime-500/45 text-white/87',
-  in_strong: 'bg-lime-500/45 text-white/87',
+  down_neutral: 'bg-[#3b2a1ff2] text-[#f3dfcff2]',
+  out_strong: 'bg-[#3b2a1ff2] text-[#f3dfcff2]',
 
-  up_neutral: 'bg-teal-500/45 text-white/87',
-  in_neutral: 'bg-teal-500/45 text-white/87',
+  up_strong: 'bg-[#1f3322f2] text-[#d2efdbf2]',
+  in_strong: 'bg-[#1f3322f2] text-[#d2efdbf2]',
 
-  eq_strong: 'bg-indigo-500/45 text-white/87',
+  up_neutral: 'bg-[#1e3131f2] text-[#cbeeeef2]',
+  in_neutral: 'bg-[#1e3131f2] text-[#cbeeeef2]',
+
+  eq_strong: 'bg-[#262847f2] text-[#d9daf4f2]',
 }
 
 const hotIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>`
