@@ -113,12 +113,3 @@ function flowScore(label) {
   }
   return map[label] ?? 0
 }
-
-export function fsiCellRenderer({ data }) {
-  const fisLabel = data.fis?.label
-  if (fisLabel == null) {
-    return ''
-  }
-  const label = flowLabels[fisLabel]
-  return `<span class="truncate text-white/80">${label}</span>` // `<span class="flex items-center h-full" title="${label}"><img class="size-6" src="/icons/${prefix}-min.svg" alt="${label}"/></span>`
-}

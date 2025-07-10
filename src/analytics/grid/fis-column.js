@@ -1,4 +1,13 @@
-import { computeFIS, fsiCellRenderer } from '../fis'
+import { computeFIS } from '../fis'
+
+function fsiCellRenderer({ data }) {
+  const fisLabel = data.fis?.label
+  if (fisLabel == null) {
+    return ''
+  }
+  const label = flowLabels[fisLabel]
+  return `<span class="truncate text-white/80">${label}</span>`
+}
 
 export function createFisColumn(
   grid,
