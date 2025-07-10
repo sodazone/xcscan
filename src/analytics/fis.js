@@ -27,8 +27,16 @@ export function computeFIS(data, keys, network) {
       return { ...row, volumePercentile: null }
     }
 
-    const rank = sorted.findIndex((v) => v >= vol)
-    const percentile = rank / (sorted.length - 1)
+    let percentile
+    if (sorted.length === 1) {
+      percentile = 0.5
+    } else {
+      const rank = sorted.findIndex((v) => v >= vol)
+      // if all values are the same, findIndex might return 0 for all, so fallback to last index
+      const adjustedRank = rank === -1 ? sorted.length - 1 : rank
+      percentile = adjustedRank / (sorted.length - 1)
+    }
+
     const dfi = computeDFI(row)
     const networkURN = network ?? row.network
     const chainType = resolveChainType(networkURN)
@@ -40,7 +48,7 @@ export function computeFIS(data, keys, network) {
         percentile: +percentile.toFixed(3),
         dfi,
         label: flowLabel,
-        score: flowScore(flowLabel),
+        score: flowScore(flowLabel.replace('rev_', '')),
       },
     }
   })
@@ -67,14 +75,15 @@ const REVERSE_NETWORK_TYPES = ['relay', 'bridgehub']
 function classifyFlow(dfi, percentile, chainType) {
   if (dfi == null || percentile == null) return null
 
-  let dfiName
+  let dfiName = ''
 
   if (REVERSE_NETWORK_TYPES.includes(chainType)) {
-    if (dfi < -0.5) dfiName = 'up'
-    else if (dfi < -0.1) dfiName = 'in'
-    else if (dfi <= 0.1) dfiName = 'eq'
-    else if (dfi <= 0.5) dfiName = 'out'
-    else dfiName = 'down'
+    dfiName += 'rev_'
+    if (dfi < -0.5) dfiName += 'up'
+    else if (dfi < -0.1) dfiName += 'in'
+    else if (dfi <= 0.1) dfiName += 'eq'
+    else if (dfi <= 0.5) dfiName += 'out'
+    else dfiName += 'down'
   } else {
     if (dfi > 0.5) dfiName = 'up'
     else if (dfi > 0.1) dfiName = 'in'
@@ -96,10 +105,10 @@ function flowScore(label) {
     up_strong: 3,
     up_neutral: 2,
     up_weak: 1,
-    in_strong: 2,
-    in_neutral: 1,
+    in_strong: 3,
+    in_neutral: 2,
     in_weak: 0.5,
-    eq_strong: 0,
+    eq_strong: 1.5,
     eq_neutral: 0,
     eq_weak: 0,
     out_weak: -0.5,
