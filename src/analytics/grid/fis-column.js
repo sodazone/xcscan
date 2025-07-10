@@ -1,17 +1,17 @@
 import { computeFIS } from '../fis'
 
 const styles = {
-  down_strong: 'bg-rose-600/40 text-white/90',
-  down_neutral: 'bg-amber-700/60 text-white/90',
-  out_strong: 'bg-amber-700/60 text-white/90',
+  down_strong: 'bg-rose-500/45 text-white/87',
+  down_neutral: 'bg-orange-500/45 text-white/87',
+  out_strong: 'bg-orange-500/45 text-white/87',
 
-  up_strong: 'bg-lime-500/40 text-white/90',
-  in_strong: 'bg-lime-500/40 text-white/90',
+  up_strong: 'bg-lime-500/45 text-white/87',
+  in_strong: 'bg-lime-500/45 text-white/87',
 
-  up_neutral: 'bg-teal-600/40 text-white/90',
-  in_neutral: 'bg-teal-600/40 text-white/90',
+  up_neutral: 'bg-teal-500/45 text-white/87',
+  in_neutral: 'bg-teal-500/45 text-white/87',
 
-  eq_strong: 'bg-indigo-600/40 text-white/90',
+  eq_strong: 'bg-indigo-500/45 text-white/87',
 }
 
 const hotIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>`
