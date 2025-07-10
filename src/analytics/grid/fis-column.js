@@ -6,8 +6,8 @@ const styles = {
   down_neutral: 'bg-[#3b2a1ff2] text-[#f3dfcff2]',
   out_strong: 'bg-[#3b2a1ff2] text-[#f3dfcff2]',
 
-  up_strong: 'bg-[#1f3322f2] text-[#d2efdbf2]',
-  in_strong: 'bg-[#1f3322f2] text-[#d2efdbf2]',
+  up_strong: 'bg-[#2a331df2] text-[#d3f0a1f2]',
+  in_strong: 'bg-[#2a331df2] text-[#d3f0a1f2]',
 
   up_neutral: 'bg-[#1e3131f2] text-[#cbeeeef2]',
   in_neutral: 'bg-[#1e3131f2] text-[#cbeeeef2]',
