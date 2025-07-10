@@ -1,4 +1,4 @@
-import { computeFIS, flowLabels } from '../fis'
+import { computeFIS } from '../fis'
 
 const styles = {
   down_strong: 'bg-red-500/10 text-red-300',
@@ -10,6 +10,28 @@ const styles = {
   in_neutral: 'bg-emerald-400/10 text-emerald-300',
 
   eq_strong: 'bg-slate-400/10 text-slate-300',
+}
+
+const flowLabels = {
+  up_strong: 'Power Inflow',
+  up_neutral: 'Strong Uptick',
+  up_weak: 'Growing Demand',
+
+  in_strong: 'High Demand',
+  in_neutral: 'Moderate Inflow',
+  in_weak: 'Subtle Interest',
+
+  eq_strong: 'Balanced Flow',
+  eq_neutral: 'Steady State',
+  eq_weak: 'Calm Market',
+
+  out_strong: 'Active Market',
+  out_neutral: 'Light Outflow',
+  out_weak: 'Calm Market',
+
+  down_strong: 'Sustained Outflow',
+  down_neutral: 'Moderate Outflow',
+  down_weak: 'Calm Market',
 }
 
 function fsiCellRenderer({ data }) {

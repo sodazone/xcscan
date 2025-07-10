@@ -47,28 +47,6 @@ export function computeFIS(data, keys) {
   })
 }
 
-const flowLabels = {
-  up_strong: 'Power Inflow',
-  up_neutral: 'Strong Uptick',
-  up_weak: 'Growing Demand',
-
-  in_strong: 'High Demand',
-  in_neutral: 'Moderate Inflow',
-  in_weak: 'Subtle Interest',
-
-  eq_strong: 'Balanced Flow',
-  eq_neutral: 'Steady State',
-  eq_weak: 'Calm Market',
-
-  out_strong: 'Active Market',
-  out_neutral: 'Light Outflow',
-  out_weak: 'Calm Market',
-
-  down_strong: 'Sustained Outflow',
-  down_neutral: 'Moderate Outflow',
-  down_weak: 'Calm Market',
-}
-
 export function computeDFIFrom({
   netflowKey = 'netflow',
   totalKey = 'total',
