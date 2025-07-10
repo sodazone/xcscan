@@ -85,10 +85,15 @@ export function setupNetworkAssetsGrid(element, network) {
     }
 
     grid = createGrid(element, gridOptions)
-    fisColumn = createFisColumn(grid, gridOptions, {
-      totalKey: 'total',
-      netflowKey: 'netflow',
-    })
+    fisColumn = createFisColumn(
+      grid,
+      gridOptions,
+      {
+        totalKey: 'total',
+        netflowKey: 'netflow',
+      },
+      network
+    )
   }
 
   function update(period, type) {
