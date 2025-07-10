@@ -47,27 +47,26 @@ export function computeFIS(data, keys) {
   })
 }
 
-// TODO: Move to cell renderer
-export const flowLabels = {
-  up_strong: 'Power Surge',
+const flowLabels = {
+  up_strong: 'Power Inflow',
   up_neutral: 'Strong Uptick',
-  up_weak: 'Quiet Accumulation',
+  up_weak: 'Growing Demand',
 
-  in_strong: 'Buoyant Demand',
+  in_strong: 'High Demand',
   in_neutral: 'Moderate Inflow',
   in_weak: 'Subtle Interest',
 
-  eq_strong: 'Heavy Equilibrium',
+  eq_strong: 'Balanced Flow',
   eq_neutral: 'Steady State',
-  eq_weak: 'Dormant Market',
+  eq_weak: 'Calm Market',
 
-  out_strong: 'Gentle Unloading',
+  out_strong: 'Active Market',
   out_neutral: 'Light Outflow',
-  out_weak: 'Fading Interest',
+  out_weak: 'Calm Market',
 
-  down_strong: 'Panic Exit',
-  down_neutral: 'Strong Outflow',
-  down_weak: 'Quiet Dumping',
+  down_strong: 'Sustained Outflow',
+  down_neutral: 'Moderate Outflow',
+  down_weak: 'Calm Market',
 }
 
 export function computeDFIFrom({
