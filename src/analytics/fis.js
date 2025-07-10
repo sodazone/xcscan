@@ -7,7 +7,8 @@ function resolveChainType(networkURN) {
     case 'urn:ocn:polkadot:1002':
     case 'urn:ocn:kusama:1002':
     case 'urn:ocn:paseo:1002':
-      return 'bridgehub'
+    case 'urn:ocn:ethereum:1':
+      return 'bridge'
     default:
       return 'parachain'
   }
@@ -85,12 +86,15 @@ export function computeDFIFrom({
   }
 }
 
+// Reverse interpretation
+const REVERSE_NETWORK_TYPES = ['relay', 'bridge']
+
 function classifyFlow(dfi, percentile, chainType) {
   if (dfi == null || percentile == null) return null
 
   let dfiName
 
-  if (chainType === 'relay' || chainType === 'bridgehub') {
+  if (REVERSE_NETWORK_TYPES.includes(chainType)) {
     if (dfi < -0.5) dfiName = 'up'
     else if (dfi < -0.1) dfiName = 'in'
     else if (dfi <= 0.1) dfiName = 'eq'
