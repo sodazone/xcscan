@@ -9,11 +9,13 @@ import {
   loadResources,
   themeGrid,
 } from './common.js'
-import { computeFIS, fsiCellRenderer } from '../fis.js'
+import { createFisColumn } from './fis-column.js'
+import { installResizeHandler } from './resize.js'
 
 export function setupNetworksGrid(element) {
   let grid
   let data
+  let fisColumn
 
   function install() {
     const gridOptions = {
@@ -67,13 +69,6 @@ export function setupNetworksGrid(element) {
           field: 'netFlow',
           cellRenderer: NetFlowCellRenders,
         },
-        {
-          headerName: 'Flow Impact Score',
-          //type: 'numericColumn',
-          field: 'fis',
-          valueFormatter: ({ value }) => value === undefined ? 0 : value.dfi,
-          cellRenderer: fsiCellRenderer,
-        },
       ],
       onRowClicked: (event) => {
         const networkId = event.data.network
@@ -84,12 +79,16 @@ export function setupNetworksGrid(element) {
     }
 
     grid = createGrid(element, gridOptions)
+    fisColumn = createFisColumn(grid, gridOptions, {
+      totalKey: 'volumeUsd',
+      netflowKey: 'netFlow',
+    })
   }
 
   function update(period) {
     loadResources().then(() => {
       getTransfersByNetwork(period).then((newData) => {
-        data = computeFIS(newData, 'volumeUsd', (row) => +(row.netFlow / row.volumeUsd).toFixed(2))
+        data = fisColumn.update(newData)
         grid.setGridOption('rowData', data)
       })
     })
@@ -101,21 +100,11 @@ export function setupNetworksGrid(element) {
     update(e.detail)
   })
 
-  let w =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
-  window.addEventListener('resize', () => {
-    const nw =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth
-    if (w !== nw) {
-      w = nw
-      element.textContent = ''
-      install()
+  installResizeHandler(() => {
+    element.textContent = ''
+    install()
 
-      grid.setGridOption('rowData', data)
-    }
+    fisColumn.onResize()
+    grid.setGridOption('rowData', data)
   })
 }

@@ -11,6 +11,7 @@ import {
   placeholder,
   themeGrid,
 } from './common.js'
+import { installResizeHandler } from './resize.js'
 
 function ChannelIconCellRenders(params) {
   const chains = params.value.split('-')
@@ -122,21 +123,10 @@ export function setupChannelsGrid(element) {
     update(e.detail)
   })
 
-  let w =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
-  window.addEventListener('resize', () => {
-    const nw =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth
-    if (w !== nw) {
-      w = nw
-      element.textContent = ''
-      install()
+  installResizeHandler(() => {
+    element.textContent = ''
+    install()
 
-      grid.setGridOption('rowData', data)
-    }
+    grid.setGridOption('rowData', data)
   })
 }
