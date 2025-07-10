@@ -1,43 +1,44 @@
 import { computeFIS } from '../fis'
 
 const styles = {
-  down_strong: 'bg-red-500/10 text-red-300',
-  down_neutral: 'bg-red-400/10 text-red-300',
-  out_strong: 'bg-orange-400/10 text-orange-300',
+  down_strong: 'bg-red-600/15 text-red-400',
+  down_neutral: 'bg-red-500/10 text-red-300',
+  out_strong: 'bg-amber-500/10 text-amber-400',
 
-  up_strong: 'bg-green-500/10 text-green-300',
-  in_strong: 'bg-emerald-500/10 text-emerald-300',
-  in_neutral: 'bg-emerald-400/10 text-emerald-300',
+  up_strong: 'bg-green-600/15 text-green-400',
+  in_strong: 'bg-teal-500/10 text-teal-300',
+  in_neutral: 'bg-teal-600/15 text-teal-400',
 
-  eq_strong: 'bg-slate-400/10 text-slate-300',
+  eq_strong: 'bg-slate-600/10 text-slate-300',
 }
 
-const hotIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 -960 960 960" fill="currentColor"><path d="M480-80q-66 0-127.5-20.5T240-160l58-58q42 29 88 43.5t94 14.5q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480H80q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 155.5 31.5t127 86q54.5 54.5 86 127T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80ZM159-243l163-163 120 100 198-198v104h80v-240H480v80h104L438-414 318-514 117-313q11 23 19.5 37.5T159-243Zm321-237Z"/></svg>`
-
+const hotIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>`
+const outIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M16 17h6v-6"/><path d="m22 17-8.5-8.5-5 5L2 7"/></svg>`
 const flowIcons = {
   up_strong: hotIcon,
+  down_strong: outIcon,
 }
 
 const flowLabels = {
-  up_strong: 'Power Inflow',
-  up_neutral: 'Strong Uptick',
-  up_weak: 'Growing Demand',
+  up_strong: 'Strong Inflow',
+  up_neutral: 'Increasing Activity',
+  up_weak: 'Gradual Uptick',
 
-  in_strong: 'High Demand',
+  in_strong: 'High Inflow',
   in_neutral: 'Moderate Inflow',
-  in_weak: 'Subtle Interest',
+  in_weak: 'Low Inflow',
 
-  eq_strong: 'Balanced Flow',
-  eq_neutral: 'Steady State',
-  eq_weak: 'Calm Market',
+  eq_strong: 'Stable Balance',
+  eq_neutral: 'Stable Flow',
+  eq_weak: 'Minimal Movement',
 
-  out_strong: 'Active Market',
-  out_neutral: 'Light Outflow',
-  out_weak: 'Calm Market',
+  out_strong: 'High Outflow',
+  out_neutral: 'Moderate Outflow',
+  out_weak: 'Low Outflow',
 
-  down_strong: 'Sustained Outflow',
-  down_neutral: 'Moderate Outflow',
-  down_weak: 'Calm Market',
+  down_strong: 'Strong Outflow',
+  down_neutral: 'Sustained Outflow',
+  down_weak: 'Minimal Outflow',
 }
 
 function fsiCellRenderer({ data }) {
@@ -49,12 +50,14 @@ function fsiCellRenderer({ data }) {
   const icon = flowIcons[flowKey]
 
   return `
-    <span class="inline-flex items-center space-x-0 rounded-full px-2 py-0.5 ${style}">
-      ${icon ? `<span class="flex items-center w-5 h-5 text-inherit">${icon}</span>` : ''}
+  <span class="flex grow h-full items-center">
+    <span class="inline-flex items-center space-x-1 rounded-full px-2 py-0.5 ${style}">
+      ${icon ? `<span class="flex items-center w-4 h-4 text-inherit">${icon}</span>` : ''}
       <span class="inline-flex text-xs">
         ${label}
       </span>
     </span>
+  </span>
   `
 }
 
