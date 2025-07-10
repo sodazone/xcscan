@@ -1,17 +1,17 @@
 import { computeFIS } from '../fis'
 
 const styles = {
-  down_strong: 'bg-rose-600/15 text-rose-300',
-  down_neutral: 'bg-amber-500/10 text-amber-300',
-  out_strong: 'bg-amber-500/10 text-amber-300',
+  down_strong: 'bg-rose-600/40 text-white/90',
+  down_neutral: 'bg-amber-700/60 text-white/90',
+  out_strong: 'bg-amber-700/60 text-white/90',
 
-  up_strong: 'bg-lime-600/15 text-green-300',
-  in_strong: 'bg-lime-600/15 text-green-300',
+  up_strong: 'bg-lime-500/40 text-white/90',
+  in_strong: 'bg-lime-500/40 text-white/90',
 
-  up_neutral: 'bg-teal-800/15 text-teal-300',
-  in_neutral: 'bg-teal-800/15 text-teal-300',
+  up_neutral: 'bg-teal-600/40 text-white/90',
+  in_neutral: 'bg-teal-600/40 text-white/90',
 
-  eq_strong: 'bg-violet-600/10 text-violet-300',
+  eq_strong: 'bg-indigo-600/40 text-white/90',
 }
 
 const hotIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>`
@@ -70,7 +70,7 @@ function fsiCellRenderer({ data }) {
 
   return `
   <span class="flex grow h-full items-center">
-    <span class="inline-flex items-center space-x-1 rounded-full px-2 py-0.5 ${style}">
+    <span class="inline-flex items-center space-x-1 rounded px-2 py-0.5 ${style}">
       ${icon ? `<span class="flex items-center w-4 h-4 text-inherit">${icon}</span>` : ''}
       <span class="inline-flex text-xs">
         ${label}

@@ -8,6 +8,10 @@ function resolveChainType(networkURN) {
     case 'urn:ocn:kusama:1002':
     case 'urn:ocn:paseo:1002':
       return 'bridgehub'
+    case 'urn:ocn:polkadot:1000':
+    case 'urn:ocn:kusama:1000':
+    case 'urn:ocn:paseo:1000':
+      return 'relay'
     default:
       return 'parachain'
   }
@@ -102,21 +106,26 @@ function classifyFlow(dfi, percentile, chainType) {
 
 function flowScore(label) {
   const map = {
-    up_strong: 3,
-    up_neutral: 2,
+    up_strong: 5,
+    in_strong: 5,
+
+    up_neutral: 4,
+    in_neutral: 4,
+
     up_weak: 1,
-    in_strong: 3,
-    in_neutral: 2,
-    in_weak: 0.5,
-    eq_strong: 1.5,
-    eq_neutral: 0,
-    eq_weak: 0,
-    out_weak: -0.5,
-    out_neutral: -1,
-    out_strong: -2,
+    in_weak: 1,
+
+    eq_strong: 3,
+    eq_neutral: 0.5,
+    eq_weak: -1,
+
+    out_strong: 2,
+    out_neutral: 0,
+    out_weak: -1,
+
+    down_strong: 2,
+    down_neutral: 2,
     down_weak: -1,
-    down_neutral: -2,
-    down_strong: -3,
   }
   return map[label] ?? 0
 }
