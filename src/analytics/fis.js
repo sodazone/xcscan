@@ -13,7 +13,7 @@ function resolveChainType(networkURN) {
   }
 }
 
-export function computeFIS(data, keys) {
+export function computeFIS(data, keys, network) {
   const { totalKey } = keys
   const computeDFI = computeDFIFrom(keys)
   const volumes = data
@@ -30,8 +30,7 @@ export function computeFIS(data, keys) {
     const rank = sorted.findIndex((v) => v >= vol)
     const percentile = rank / (sorted.length - 1)
     const dfi = computeDFI(row)
-    const networkURN =
-      row.network ?? row.key?.substring(0, row.key.indexOf('|'))
+    const networkURN = network ?? row.network
     const chainType = resolveChainType(networkURN)
     const flowLabel = classifyFlow(dfi, percentile, chainType)
 
