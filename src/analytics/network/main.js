@@ -33,6 +33,11 @@ function setUpNetworkTitle(network) {
   const iconElements = document.querySelectorAll('[data-network-icon]')
 
   const networkName = resolveNetworkName(network)
+
+  if (networkName == undefined) {
+    throw new Error('network not found')
+  }
+
   const networkIconUrl = resolveNetworkIcon(network)
 
   const imgIcon =
@@ -61,12 +66,25 @@ function loadPage() {
   const network = decodeURIComponent(selectId)
 
   loadExtraInfos().then(() => {
-    setUpNetworkTitle(network)
-    setupCounters(network)
-    setupNetworkSeriesChart(document.querySelector('#chart'), network)
-    setupNetworkAssetsGrid(document.querySelector('#grid-assets'), network)
-    setupNetworkChannelsGrid(document.querySelector('#grid-channels'), network)
-    setupTimeSelector(document.querySelector('#select-time'), 'monthly')
+    try {
+      setUpNetworkTitle(network)
+      setupCounters(network)
+      setupNetworkSeriesChart(document.querySelector('#chart'), network)
+      setupNetworkAssetsGrid(document.querySelector('#grid-assets'), network)
+      setupNetworkChannelsGrid(
+        document.querySelector('#grid-channels'),
+        network
+      )
+      setupTimeSelector(document.querySelector('#select-time'), 'monthly')
+    } catch {
+      document.querySelector('main').innerHTML = `
+      <div class="text-white/80 text-center py-12">
+        <h2 class="text-2xl font-medium mb-4">Network Not Found</h2>
+        <p class="mb-4">We couldn't find the network you're looking for.</p>
+        ← <a href="/analytics/index.html" class="underline underline-offset-2 decoration-white/40 hover:text-white">Back to all networks</a>
+      </div>
+    `
+    }
   })
 }
 
