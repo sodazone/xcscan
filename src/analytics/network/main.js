@@ -81,7 +81,7 @@ function loadPage() {
       <div class="text-white/80 text-center py-12">
         <h2 class="text-2xl font-medium mb-4">Network Not Found</h2>
         <p class="mb-4">We couldn't find the network you're looking for.</p>
-        ← <a href="/analytics/index.html" class="underline underline-offset-2 decoration-white/40 hover:text-white">Back to all networks</a>
+        <a href="/analytics/index.html" class="hover:text-white">← <span class="underline underline-offset-3 decoration-white/40">Back to all networks</span></a>
       </div>
     `
     }
