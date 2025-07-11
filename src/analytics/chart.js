@@ -2,8 +2,8 @@ import { AreaSeries, createChart } from 'lightweight-charts'
 
 import { getTransfersCount } from './api.js'
 import { formatAssetVolume } from '../formats.js'
-import { installResizeHandler } from './grid/resize.js'
 import { createAvgLine } from './avg-line.js'
+import { installResizeHandler } from './grid/resize.js'
 
 export function setupSeriesChart(element) {
   let chart
