@@ -8,11 +8,14 @@ import {
 import { getTransfersByNetworkSeries } from '../api.js'
 import { formatAssetVolume } from '../../formats.js'
 import { setupDropdownSelector } from './dropdown-selector.js'
+import { createAvgLine } from '../avg-line.js'
+import { installResizeHandler } from '../grid/resize.js'
 
 export function setupNetworkSeriesChart(element, network) {
   let chart
   let inflowSeries, outflowSeries, netflowSeries, series
   let data
+  let averageLine
   let flowsData
   let currentTimeFrame
   let currentType = 'volume'
@@ -186,6 +189,7 @@ export function setupNetworkSeriesChart(element, network) {
             data = newData.share.slice(0, -1)
           }
           series.setData(data)
+          averageLine.setData(data)
         }
         chart.timeScale().fitContent()
       })
@@ -199,7 +203,7 @@ export function setupNetworkSeriesChart(element, network) {
     if (currentType === 'count') {
       return Number(data).toFixed(0)
     }
-    return Number(data).toFixed(1)
+    return `${Number(data).toFixed(0)}%`
   }
 
   function formatLabel() {
@@ -209,7 +213,7 @@ export function setupNetworkSeriesChart(element, network) {
     if (currentType === 'count') {
       return 'tx'
     }
-    return '%'
+    return ''
   }
 
   function createSingleSeries() {
@@ -221,10 +225,6 @@ export function setupNetworkSeriesChart(element, network) {
       topColor: 'rgba(102,153,153, 0.25)',
       bottomColor: 'transparent',
       lineWidth: 1.5,
-      priceFormat: {
-        type: 'price',
-        precision: 0,
-      },
       autoscaleInfoProvider: (original) => {
         const res = original()
         if (res !== null) {
@@ -233,6 +233,8 @@ export function setupNetworkSeriesChart(element, network) {
         return res
       },
     })
+
+    averageLine = createAvgLine(series)
   }
 
   function createFlowSeries() {
@@ -330,29 +332,18 @@ export function setupNetworkSeriesChart(element, network) {
     'volume'
   )
 
-  let w =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
-  window.addEventListener('resize', () => {
-    const nw =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth
-    if (w !== nw) {
-      w = nw
+  installResizeHandler(() => {
+    element.textContent = ''
+    install()
 
-      element.textContent = ''
-      install()
-
-      if (currentType === 'flow') {
-        inflowSeries.setData(flowsData.in)
-        outflowSeries.setData(flowsData.out)
-        netflowSeries.setData(flowsData.net)
-      } else {
-        series.setData(data)
-      }
-      chart.timeScale().fitContent()
+    if (currentType === 'flow') {
+      inflowSeries.setData(flowsData.in)
+      outflowSeries.setData(flowsData.out)
+      netflowSeries.setData(flowsData.net)
+    } else {
+      series.setData(data)
+      averageLine.setData(data)
     }
+    chart.timeScale().fitContent()
   })
 }

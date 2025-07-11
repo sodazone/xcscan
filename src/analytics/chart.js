@@ -2,10 +2,13 @@ import { AreaSeries, createChart } from 'lightweight-charts'
 
 import { getTransfersCount } from './api.js'
 import { formatAssetVolume } from '../formats.js'
+import { installResizeHandler } from './grid/resize.js'
+import { createAvgLine } from './avg-line.js'
 
 export function setupSeriesChart(element) {
   let chart
   let series
+  let averageLine
   let data
   let currentTimeFrame
   let currentType = 'volume'
@@ -77,6 +80,8 @@ export function setupSeriesChart(element) {
       },
     })
 
+    averageLine = createAvgLine(series)
+
     chart.timeScale().applyOptions({
       borderColor: 'transparent',
       timeVisible: true,
@@ -146,6 +151,7 @@ export function setupSeriesChart(element) {
         } else {
           data = newData.transfers.slice(0, -1)
         }
+        averageLine.setData(data)
         series.setData(data)
         chart.timeScale().fitContent()
       })
@@ -162,23 +168,12 @@ export function setupSeriesChart(element) {
     update(currentTimeFrame, e.detail)
   })
 
-  let w =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
-  window.addEventListener('resize', () => {
-    const nw =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth
-    if (w !== nw) {
-      w = nw
+  installResizeHandler(() => {
+    element.textContent = ''
+    install()
 
-      element.textContent = ''
-      install()
-
-      series.setData(data)
-      chart.timeScale().fitContent()
-    }
+    averageLine.setData(data)
+    series.setData(data)
+    chart.timeScale().fitContent()
   })
 }
