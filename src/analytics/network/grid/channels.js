@@ -83,9 +83,7 @@ export function setupNetworkChannelsGrid(element, network) {
       onRowClicked: (event) => {
         const networkId = event.data.key
         if (networkId) {
-          window.location.assign(
-            `/network/index.html#${encodeURIComponent(networkId)}`
-          )
+          window.location.hash = encodeURIComponent(networkId)
           window.location.reload()
         }
       },
