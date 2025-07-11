@@ -34,7 +34,7 @@ body {
 }
 
 .chart-series-tooltip {
-  @apply absolute hidden p-1 box-border z-[1000] top-3 left-3 pointer-events-none rounded bg-black/65;
+  @apply absolute hidden p-1 box-border z-[1000] top-3 left-3 pointer-events-none rounded bg-black/90 shadow border-white/20 border;
 }
 
 .pct-positive {

@@ -1,9 +1,10 @@
-import { AreaSeries, createChart } from 'lightweight-charts'
+import { AreaSeries, createChart, CrosshairMode } from 'lightweight-charts'
 
 import { getTransfersCount } from './api.js'
 import { formatAssetVolume } from '../formats.js'
 import { createAvgLine } from './avg-line.js'
 import { installResizeHandler } from './grid/resize.js'
+import { createChartTooltip } from './tooltip.js'
 
 export function setupSeriesChart(element) {
   let chart
@@ -34,6 +35,7 @@ export function setupSeriesChart(element) {
         },
       },
       crosshair: {
+        mode: CrosshairMode.Magnet,
         horzLine: {
           visible: false,
           labelVisible: false,
@@ -88,56 +90,33 @@ export function setupSeriesChart(element) {
       secondsVisible: false,
     })
 
-    const toolTipWidth = 80
-    const toolTipHeight = 80
-    const toolTipMargin = 15
-
-    // Create and style the tooltip html element
-    const toolTip = document.createElement('div')
-    toolTip.className = 'chart-series-tooltip'
-    element.appendChild(toolTip)
-
-    // update tooltip
-    chart.subscribeCrosshairMove((param) => {
-      if (
-        param.point === undefined ||
-        !param.time ||
-        param.point.x < 0 ||
-        param.point.x > element.clientWidth ||
-        param.point.y < 0 ||
-        param.point.y > element.clientHeight
-      ) {
-        toolTip.style.display = 'none'
-      } else {
-        const dateStr = new Date(param.time * 1000).toUTCString()
-        toolTip.style.display = 'block'
+    createChartTooltip({
+      element,
+      chart,
+      onDisplay: (param) => {
+        const dateStr = new Date(param.time * 1000).toLocaleString(undefined, {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
         const dataPoint = param.seriesData.get(series)
         const price =
           dataPoint.value !== undefined ? dataPoint.value : dataPoint.close
-        toolTip.innerHTML = `
-		  <div class="flex flex-col gap-2">
-			<div class="flex gap-1 items-end">
-			  <span class="text-white/80 text-xl font-medium">${currentType === 'volume' ? formatAssetVolume(price) : Number(price).toFixed(0)}</span>
-			  <span class="text-white/50 text-sm">${currentType === 'volume' ? 'usd' : 'tx'}</span>
-			</div>
-			<div class="text-white/50 text-xs">
-			  ${dateStr}
-			</div>
-		  </div>`
-
-        const y = param.point.y
-        let left = param.point.x + toolTipMargin
-        if (left > element.clientWidth - toolTipWidth) {
-          left = param.point.x - toolTipMargin - toolTipWidth
-        }
-
-        let top = y + toolTipMargin
-        if (top > element.clientHeight - toolTipHeight) {
-          top = y - toolTipHeight - toolTipMargin
-        }
-        toolTip.style.left = `${left}px`
-        toolTip.style.top = `${top}px`
-      }
+        return `
+  <div class="flex flex-col gap-1 p-2 text-xs">
+    <div class="flex flex-col gap-1 text-white font-semibold">
+      <span>${currentType === 'volume' ? 'Volume' : 'Transfers'}</span>
+      <span class="flex gap-1 items-baseline">
+      <span class="text-lg">${currentType === 'volume' ? formatAssetVolume(price) : Number(price).toFixed(0)}</span>
+      <span class="text-white/50 text-sm">${currentType === 'volume' ? 'USD' : 'txs'}</span>
+      </span>
+    </div>
+    <div class="text-white/60">${dateStr}</div>
+  </div>
+`
+      },
     })
   }
 
