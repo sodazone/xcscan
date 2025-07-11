@@ -1,10 +1,10 @@
-import { AreaSeries, createChart, CrosshairMode } from 'lightweight-charts'
+import { AreaSeries, createChart } from 'lightweight-charts'
 
 import { getTransfersCount } from './api.js'
-import { formatAssetVolume } from '../formats.js'
+import { formatAssetVolume, formatDateTime } from '../formats.js'
 import { createAvgLine } from './avg-line.js'
-import { installResizeHandler } from './grid/resize.js'
-import { createChartTooltip } from './tooltip.js'
+import { installResizeHandler } from './resize.js'
+import { createChartTooltip, createChartTooltipHTML } from './tooltip.js'
 
 export function setupSeriesChart(element) {
   let chart
@@ -35,7 +35,6 @@ export function setupSeriesChart(element) {
         },
       },
       crosshair: {
-        mode: CrosshairMode.Magnet,
         horzLine: {
           visible: false,
           labelVisible: false,
@@ -94,28 +93,19 @@ export function setupSeriesChart(element) {
       element,
       chart,
       onDisplay: (param) => {
-        const dateStr = new Date(param.time * 1000).toLocaleString(undefined, {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        })
+        const dateStr = formatDateTime(param.time)
         const dataPoint = param.seriesData.get(series)
         const price =
           dataPoint.value !== undefined ? dataPoint.value : dataPoint.close
-        return `
-  <div class="flex flex-col gap-1 p-2 text-xs">
-    <div class="flex flex-col gap-1 text-white font-semibold">
-      <span>${currentType === 'volume' ? 'Volume' : 'Transfers'}</span>
-      <span class="flex gap-1 items-baseline">
-      <span class="text-lg">${currentType === 'volume' ? formatAssetVolume(price) : Number(price).toFixed(0)}</span>
-      <span class="text-white/50 text-sm">${currentType === 'volume' ? 'USD' : 'txs'}</span>
-      </span>
-    </div>
-    <div class="text-white/60">${dateStr}</div>
-  </div>
-`
+        return createChartTooltipHTML({
+          title: currentType === 'volume' ? 'Volume' : 'Transfers',
+          amount:
+            currentType === 'volume'
+              ? formatAssetVolume(price)
+              : Number(price).toFixed(0),
+          unit: currentType === 'volume' ? 'USD' : 'txs',
+          date: dateStr,
+        })
       },
     })
   }

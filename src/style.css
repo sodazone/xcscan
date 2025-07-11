@@ -37,11 +37,11 @@ body {
   @apply absolute hidden p-1 box-border z-[1000] top-3 left-3 pointer-events-none rounded bg-black/90 shadow border-white/20 border;
 }
 
-.pct-positive {
+.pct-positive, .text-positive {
   @apply text-[#bcf4a6];
 }
 
-.pct-negative {
+.pct-negative, .text-negative {
   @apply text-[#ff9793];
 }
 

@@ -6,10 +6,18 @@ import {
 } from 'lightweight-charts'
 
 import { getTransfersByNetworkSeries } from '../api.js'
-import { formatAssetVolume } from '../../formats.js'
+import { formatAssetVolume, formatDateTime } from '../../formats.js'
 import { setupDropdownSelector } from './dropdown-selector.js'
 import { createAvgLine } from '../avg-line.js'
-import { installResizeHandler } from '../grid/resize.js'
+import { installResizeHandler } from '../resize.js'
+import { createChartTooltip, createChartTooltipHTML } from '../tooltip.js'
+
+const TITLES = {
+  volume: 'Volume',
+  count: 'Transfers',
+  share: 'Share',
+  flow: 'Net Flow',
+}
 
 export function setupNetworkSeriesChart(element, network) {
   let chart
@@ -76,31 +84,11 @@ export function setupNetworkSeriesChart(element, network) {
       secondsVisible: false,
     })
 
-    const toolTipWidth = 80
-    const toolTipHeight = 80
-    const toolTipMargin = 15
-
-    // Create and style the tooltip html element
-    const toolTip = document.createElement('div')
-    toolTip.className = 'chart-series-tooltip'
-    element.appendChild(toolTip)
-
-    // update tooltip
-    chart.subscribeCrosshairMove((param) => {
-      if (
-        param === undefined ||
-        param.point === undefined ||
-        !param.time ||
-        param.point.x < 0 ||
-        param.point.x > element.clientWidth ||
-        param.point.y < 0 ||
-        param.point.y > element.clientHeight
-      ) {
-        toolTip.style.display = 'none'
-      } else {
-        const dateStr = new Date(param.time * 1000).toUTCString()
-        toolTip.style.display = 'block'
-
+    createChartTooltip({
+      element,
+      chart,
+      onDisplay: (param) => {
+        const dateStr = formatDateTime(param.time)
         if (currentType === 'flow') {
           const inflowData = param.seriesData.get(inflowSeries)
           const outflowData = param.seriesData.get(outflowSeries)
@@ -111,48 +99,32 @@ export function setupNetworkSeriesChart(element, network) {
             outflowData?.value !== undefined ? Math.abs(outflowData.value) : '-'
           const netflowVal = netflowData?.value ?? '-'
 
-          toolTip.innerHTML = `
-          <div class="flex flex-col gap-2">
-            <div class="flex flex-col gap-1">
-              <div>in: ${formatAssetVolume(inflowVal)}</div>
-              <div>out: ${formatAssetVolume(outflowVal)}</div>
-              <div>net: ${formatAssetVolume(netflowVal)}</div>
-            </div>
-            <div class="text-white/50 text-xs">
-              ${dateStr}
-            </div>
-          </div>`
+          return createChartTooltipHTML({
+            title: TITLES[currentType],
+            amount: `<div class="grid grid-cols-[auto_auto] gap-x-2 gap-y-1 text-xs font-mono">
+      <div class="text-white/40">in</div>
+      <div class="text-positive text-right text-sm">${formatAssetVolume(inflowVal)}</div>
+      <div class="text-white/40">out</div>
+      <div class="text-negative text-right text-sm">${formatAssetVolume(outflowVal)}</div>
+      <div class="text-white/40">net</div>
+      <div class="text-white/90 text-right text-sm">${formatAssetVolume(netflowVal)}</div>
+    </div>`,
+            date: dateStr,
+          })
         } else {
           const dataPoint = param.seriesData.get(series)
           if (dataPoint) {
             const price =
               dataPoint.value !== undefined ? dataPoint.value : dataPoint.close
-            toolTip.innerHTML = `
-              <div class="flex flex-col gap-2">
-              <div class="flex gap-1 items-end">
-                <span class="text-white/80 text-xl font-medium">${formatValue(price)}</span>
-                <span class="text-white/50 text-sm">${formatLabel()}</span>
-              </div>
-              <div class="text-white/50 text-xs">
-                ${dateStr}
-              </div>
-              </div>`
+            return createChartTooltipHTML({
+              title: TITLES[currentType],
+              amount: formatValue(price),
+              unit: formatLabel(),
+              date: dateStr,
+            })
           }
         }
-
-        const y = param.point.y
-        let left = param.point.x + toolTipMargin
-        if (left > element.clientWidth - toolTipWidth) {
-          left = param.point.x - toolTipMargin - toolTipWidth
-        }
-
-        let top = y + toolTipMargin
-        if (top > element.clientHeight - toolTipHeight) {
-          top = y - toolTipHeight - toolTipMargin
-        }
-        toolTip.style.left = `${left}px`
-        toolTip.style.top = `${top}px`
-      }
+      },
     })
   }
 
@@ -274,7 +246,7 @@ export function setupNetworkSeriesChart(element, network) {
       lastValueVisible: false,
       crosshairMarkerVisible: true,
       priceLineVisible: false,
-      color: 'rgba(255, 255, 255, 0.8)',
+      color: 'rgb(244, 202, 198)',
       lineWidth: 2,
       priceScaleId: flowPriceScaleId,
       priceFormat: {

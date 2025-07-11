@@ -52,3 +52,13 @@ export const formatRoundtrip = Intl.NumberFormat('en-US', {
 }).format
 
 export const formatAssetVolume = humanizeNumber
+
+export function formatDateTime(time) {
+  return new Date(time * 1000).toLocaleString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
