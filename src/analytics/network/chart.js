@@ -101,14 +101,14 @@ export function setupNetworkSeriesChart(element, network) {
 
           return createChartTooltipHTML({
             title: TITLES[currentType],
-            amount: `<div class="grid grid-cols-[auto_auto] gap-x-2 gap-y-1 text-xs font-mono">
-      <div class="text-white/40">in</div>
-      <div class="text-positive text-right text-sm">${formatAssetVolume(inflowVal)}</div>
-      <div class="text-white/40">out</div>
-      <div class="text-negative text-right text-sm">${formatAssetVolume(outflowVal)}</div>
-      <div class="text-white/40">net</div>
-      <div class="text-white/90 text-right text-sm">${formatAssetVolume(netflowVal)}</div>
-    </div>`,
+            amount: `<div class="grid grid-cols-[auto_1fr] w-full gap-x-2 gap-y-1 text-xs font-mono">
+  <div class="text-white/40">in</div>
+  <div class="text-positive text-right text-sm tabular-nums">${formatAssetVolume(inflowVal)}</div>
+  <div class="text-white/40">out</div>
+  <div class="text-negative text-right text-sm tabular-nums">${formatAssetVolume(outflowVal)}</div>
+  <div class="text-white/40">net</div>
+  <div class="text-white/90 text-right text-sm tabular-nums">${formatAssetVolume(netflowVal)}</div>
+</div>`,
             date: dateStr,
           })
         } else {

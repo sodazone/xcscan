@@ -2,10 +2,14 @@ export function createChartTooltipHTML({ title, amount, unit, date }) {
   return `<div class="flex flex-col gap-1 p-2 text-xs">
         <div class="flex flex-col gap-1 text-white/90">
           <span class="text-white/60 font-semibold">${title}</span>
-          <span class="flex gap-1 items-baseline">
+          ${
+            unit == null
+              ? amount
+              : `<span class="flex gap-1 items-baseline">
             <span class="text-lg font-semibold">${amount}</span>
-            ${unit == null ? '' : `<span class="text-white/60 text-sm">${unit}</span>`}
-          </span>
+            <span class="text-white/60 text-sm">${unit}</span>
+          </span>`
+          }
         </div>
         <div class="text-white/60">${date}</div>
       </div>`
