@@ -89,8 +89,8 @@ function sliceMax(arr, maxElements) {
 }
 
 export function SparklineCellRenderer(params) {
-  const dataPoints = sliceMax(params.value, 25).map((v) => v.value)
-  const minPoints = 20
+  const dataPoints = sliceMax(params.value, 15).map((v) => v.value)
+  const minPoints = 15
 
   while (dataPoints.length < minPoints) {
     dataPoints.push(0)
