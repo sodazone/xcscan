@@ -27,6 +27,7 @@ import { loadExtraInfos } from '../../extras'
 import { setupNetworkAssetsGrid } from './grid/assets'
 import { setupNetworkChannelsGrid } from './grid/channels'
 import { placeholder } from '../grid/common'
+import { setupDropdownSelectors } from './dropdown-selector'
 
 function setUpNetworkTitle(network) {
   const elements = document.querySelectorAll('[data-network-name]')
@@ -76,7 +77,9 @@ function loadPage() {
         network
       )
       setupTimeSelector(document.querySelector('#select-time'), 'monthly')
-    } catch {
+      setupDropdownSelectors()
+    } catch (e) {
+      console.error(e)
       document.querySelector('main').innerHTML = `
       <div class="text-white/80 text-center py-12">
         <h2 class="text-2xl font-medium mb-4">Network Not Found</h2>

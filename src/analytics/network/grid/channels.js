@@ -9,7 +9,7 @@ import {
   NetworkIconCellRenders,
   NetFlowCellRenders,
 } from '../../grid/common.js'
-import { setupDropdownSelector } from '../dropdown-selector.js'
+import { installResizeHandler } from '../../resize.js'
 
 export function setupNetworkChannelsGrid(element, network) {
   let grid
@@ -123,28 +123,10 @@ export function setupNetworkChannelsGrid(element, network) {
     update(currentTimeFrame, e.detail)
   })
 
-  setupDropdownSelector(
-    document.querySelector('#select-network-channels-type'),
-    document.querySelector('.network-channels-current-type'),
-    'networkChannelsTypeChanged',
-    'volume'
-  )
+  installResizeHandler(() => {
+    element.textContent = ''
+    install()
 
-  let w =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
-  window.addEventListener('resize', () => {
-    const nw =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth
-    if (w !== nw) {
-      w = nw
-      element.textContent = ''
-      install()
-
-      grid.setGridOption('rowData', data)
-    }
+    grid.setGridOption('rowData', data)
   })
 }

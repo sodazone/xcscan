@@ -9,13 +9,15 @@ import {
   themeGrid,
   NetFlowCellRenders,
 } from '../../grid/common.js'
-import { setupDropdownSelector } from '../dropdown-selector.js'
+import { installResizeHandler } from '../../resize.js'
 
 export function setupNetworkAssetsGrid(element, network) {
   let grid
   let data
-  let currentTimeFrame
-  let currentType = 'volume'
+  let currentOpts = {
+    type: 'volume',
+    timeframe: null,
+  }
 
   function install() {
     const gridOptions = {
@@ -87,60 +89,35 @@ export function setupNetworkAssetsGrid(element, network) {
     grid = createGrid(element, gridOptions)
   }
 
-  function update(period, type) {
-    currentType = type
-    currentTimeFrame = period
+  function update({ type, timeframe }) {
+    currentOpts.type = type
+    currentOpts.timeframe = timeframe
 
-    if (currentType === 'volume') {
-      getNetworkAssetsSeries(period, network, 'usd').then((newData) => {
-        data = newData
-        grid.setGridOption('rowData', data)
-      })
-    } else if (currentType === 'asset') {
-      getNetworkAssetsSeries(period, network, 'asset').then((newData) => {
-        data = newData
-        grid.setGridOption('rowData', data)
-      })
-    } else {
-      getNetworkAssetsSeries(period, network, 'tx').then((newData) => {
-        data = newData
-        grid.setGridOption('rowData', data)
-      })
-    }
+    const fetchFn = {
+      volume: () => getNetworkAssetsSeries(timeframe, network, 'usd'),
+      asset: () => getNetworkAssetsSeries(timeframe, network, 'asset'),
+      count: () => getNetworkAssetsSeries(timeframe, network, 'tx'),
+    }[type]
+
+    fetchFn().then((newData) => {
+      data = newData
+      grid.setGridOption('rowData', data)
+    })
   }
 
   install()
 
   window.addEventListener('timeChanged', (e) => {
-    update(e.detail, currentType)
+    update({ ...currentOpts, timeframe: e.detail })
   })
 
   window.addEventListener('networkAssetsTypeChanged', (e) => {
-    update(currentTimeFrame, e.detail)
+    update({ ...currentOpts, type: e.detail })
   })
 
-  setupDropdownSelector(
-    document.querySelector('#select-network-assets-type'),
-    document.querySelector('.network-assets-current-type'),
-    'networkAssetsTypeChanged',
-    'volume'
-  )
-
-  let w =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
-  window.addEventListener('resize', () => {
-    const nw =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth
-    if (w !== nw) {
-      w = nw
-      element.textContent = ''
-      install()
-
-      grid.setGridOption('rowData', data)
-    }
+  installResizeHandler(() => {
+    element.textContent = ''
+    install()
+    grid.setGridOption('rowData', data)
   })
 }

@@ -14,18 +14,20 @@ const labels = {
   asset: 'Amount',
 }
 
-export function setupDropdownSelector(
-  container,
-  labelElement,
-  eventName,
-  initial = 'volume'
-) {
-  const button = container.querySelector('[data-series-button]')
-  const menu = container.querySelector('[data-series-options]')
-  const selection = container.querySelector('.series-label')
+export function setupDropdownSelectors() {
+  document
+    .querySelectorAll('[data-dropdown-selector]')
+    .forEach(setupDropdownSelector)
+}
+
+function setupDropdownSelector(container) {
+  const { eventName, initialValue } = container.dataset
+  const button = container.querySelector('[data-dropdown-button]')
+  const menu = container.querySelector('[data-dropdown-options]')
+  const selection = container.querySelector('[data-dropdown-label]')
   const items = container.querySelectorAll('[data-value]')
 
-  let selected = initial
+  let selected = initialValue
 
   function updateSelection(value) {
     selected = value
@@ -33,8 +35,6 @@ export function setupDropdownSelector(
     menu.classList.add('hidden')
     container.classList.remove('open')
     button.setAttribute('aria-expanded', 'false')
-    const label = descriptions[selected] ?? selected
-    if (labelElement) labelElement.textContent = label
 
     items.forEach((item) => {
       if (item.dataset.value === selected) {

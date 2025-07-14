@@ -9,6 +9,7 @@ import {
   loadResources,
   themeGrid,
 } from './common.js'
+import { installResizeHandler } from '../resize.js'
 
 export function setupNetworksGrid(element) {
   let grid
@@ -93,21 +94,9 @@ export function setupNetworksGrid(element) {
     update(e.detail)
   })
 
-  let w =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
-  window.addEventListener('resize', () => {
-    const nw =
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth
-    if (w !== nw) {
-      w = nw
-      element.textContent = ''
-      install()
+  installResizeHandler(() => {
+    install()
 
-      grid.setGridOption('rowData', data)
-    }
+    grid.setGridOption('rowData', data)
   })
 }

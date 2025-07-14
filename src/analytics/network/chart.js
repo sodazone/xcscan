@@ -7,7 +7,6 @@ import {
 
 import { getTransfersByNetworkSeries } from '../api.js'
 import { formatAssetVolume, formatDateTime } from '../../formats.js'
-import { setupDropdownSelector } from './dropdown-selector.js'
 import { createAvgLine } from '../avg-line.js'
 import { installResizeHandler } from '../resize.js'
 import { createChartTooltip, createChartTooltipHTML } from '../tooltip.js'
@@ -296,13 +295,6 @@ export function setupNetworkSeriesChart(element, network) {
   window.addEventListener('seriesTypeChanged', (e) => {
     update(currentTimeFrame, e.detail)
   })
-
-  setupDropdownSelector(
-    document.querySelector('#select-series-type'),
-    document.querySelector('.current-type'),
-    'seriesTypeChanged',
-    'volume'
-  )
 
   installResizeHandler(() => {
     element.textContent = ''

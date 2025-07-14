@@ -119,17 +119,19 @@
             </div>
             <div class="flex gap-2 items-center text-sm">
               <div
-                id="select-series-type"
+                data-dropdown-selector
+                data-event-name="seriesTypeChanged"
+                data-initial-value="volume"
                 class="dropdown relative inline-block text-left text-sm"
               >
                 <button
                   type="button"
-                  data-series-button
+                  data-dropdown-button
                   class="dropdown-toggle space-x-2"
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  <span class="series-label text-white/80"></span>
+                  <span data-dropdown-label class="text-white/80"></span>
                   <svg
                     class="h-4 w-4 text-white/40"
                     viewBox="0 0 20 20"
@@ -143,7 +145,7 @@
                   </svg>
                 </button>
                 <div
-                  data-series-options
+                  data-dropdown-options
                   class="dropdown-menu hidden flex min-w-40 p-4"
                   role="menu"
                   tabindex="-1"
@@ -240,17 +242,19 @@
             </div>
             <div class="flex gap-2 items-center text-sm">
               <div
-                id="select-network-assets-type"
+                data-dropdown-selector
+                data-event-name="networkAssetsTypeChanged"
+                data-initial-value="volume"
                 class="dropdown relative inline-block text-left text-sm"
               >
                 <button
                   type="button"
-                  data-series-button
+                  data-dropdown-button
                   class="dropdown-toggle space-x-2"
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  <span class="series-label text-white/80"></span>
+                  <span data-dropdown-label class="text-white/80"></span>
                   <svg
                     class="h-4 w-4 text-white/40"
                     viewBox="0 0 20 20"
@@ -265,7 +269,7 @@
                 </button>
 
                 <div
-                  data-series-options
+                  data-dropdown-options
                   class="dropdown-menu hidden flex min-w-40 p-4"
                   role="menu"
                   tabindex="-1"
@@ -351,17 +355,19 @@
             </div>
             <div class="flex gap-2 items-center text-sm">
               <div
-                id="select-network-channels-type"
+                data-dropdown-selector
+                data-event-name="networkChannelsTypeChanged"
+                data-initial-value="volume"
                 class="dropdown relative inline-block text-left text-sm"
               >
                 <button
                   type="button"
-                  data-series-button
+                  data-dropdown-button
                   class="dropdown-toggle space-x-2"
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  <span class="series-label text-white/80"></span>
+                  <span data-dropdown-label class="text-white/80"></span>
                   <svg
                     class="h-4 w-4 text-white/40"
                     viewBox="0 0 20 20"
@@ -376,7 +382,7 @@
                 </button>
 
                 <div
-                  data-series-options
+                  data-dropdown-options
                   class="dropdown-menu hidden flex min-w-40 p-4"
                   role="menu"
                   tabindex="-1"
