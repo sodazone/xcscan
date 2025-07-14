@@ -83,16 +83,11 @@ export function setupChannelsGrid(element) {
           headerName: 'Vol Share %',
           type: 'numericColumn',
           field: 'percentageVol',
+          maxWidth: 150,
+          minWidth: 150,
           cellRenderer: PercentageBarRenderer,
           sort: 'desc',
           sortingOrder: ['desc', 'asc'],
-        },
-        {
-          headerName: 'Tx Share %',
-          type: 'numericColumn',
-          field: 'percentageTx',
-          sortingOrder: ['desc', 'asc'],
-          cellRenderer: PercentageBarRenderer,
         },
         {
           headerName: 'Trend',
