@@ -162,6 +162,10 @@ function createLegStop(stop) {
 }
 
 function getElapsedText(start, end) {
+  if (start >= end) {
+    console.warn('ts discrepancy', start, end)
+    return '(0m 0s)'
+  }
   const deltaSec = Math.floor((end - start) / 1000)
   const minutes = Math.floor(deltaSec / 60)
   const seconds = deltaSec % 60
