@@ -68,6 +68,18 @@ export function NetFlowCellRenders(params) {
       : `<div class="${net > 0 ? 'pct-positive' : 'pct-negative'} text-right">${net > 0 ? '+' : '-'}${formatAssetVolume(Math.abs(net))}</div>`
 }
 
+export function PercentageBarRenderer(params) {
+  const value = Number(params.value)
+  return value === NaN
+    ? `<div class="text-white/30 text-right">N/A</div>`
+    : `
+    <div class="relative w-full h-full flex items-center justify-end text-sm overflow-hidden">
+      <div class="absolute top-0 left-0 bottom-0 bg-[#669999]/20" style="width: ${value.toFixed(2)}%"></div>
+      <span class="relative z-10 pr-1">${value.toFixed(2)}%</span>
+    </div>
+  `
+}
+
 export function isMobile() {
   return window.innerWidth < 800
 }

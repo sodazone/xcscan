@@ -49,23 +49,27 @@ export function setupNetworkAssetsGrid(element, network) {
           type: 'numericColumn',
           cellRenderer: FlowCellRenders,
           sort: 'desc',
+          sortingOrder: ['desc', 'asc'],
         },
         {
           field: 'inflow',
           headerName: 'Inflow',
           type: 'numericColumn',
+          sortingOrder: ['desc', 'asc'],
           cellRenderer: FlowCellRenders,
         },
         {
           field: 'outflow',
           headerName: 'Outflow',
           type: 'numericColumn',
+          sortingOrder: ['desc', 'asc'],
           cellRenderer: FlowCellRenders,
         },
         {
           field: 'netflow',
           headerName: 'Netflow',
           type: 'numericColumn',
+          sortingOrder: ['desc', 'asc'],
           cellRenderer: NetFlowCellRenders,
         },
         {

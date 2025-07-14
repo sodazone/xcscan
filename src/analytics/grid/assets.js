@@ -8,6 +8,7 @@ import {
   isMobile,
   loadResources,
   themeGrid,
+  PercentageBarRenderer,
 } from './common.js'
 
 export function setupAssetsGrid(element) {
@@ -44,36 +45,37 @@ export function setupAssetsGrid(element) {
           field: 'volumeUsd',
           headerName: 'Volume (USD)',
           type: 'numericColumn',
+          sortingOrder: ['desc', 'asc'],
           cellRenderer: FlowCellRenders,
         },
         {
           field: 'volume',
           headerName: 'Volume (Asset)',
           type: 'numericColumn',
+          sortingOrder: ['desc', 'asc'],
           cellRenderer: FlowCellRenders,
         },
         {
           field: 'total',
           headerName: 'Transfers',
           type: 'numericColumn',
+          sortingOrder: ['desc', 'asc'],
           valueFormatter: ({ value }) => formatTxs(value),
         },
         {
           headerName: 'Vol Share %',
           type: 'numericColumn',
           field: 'percentageVol',
-          valueFormatter: ({ value }) => {
-            return `${Number(value).toFixed(2)}%`
-          },
           sort: 'desc',
+          sortingOrder: ['desc', 'asc'],
+          cellRenderer: PercentageBarRenderer,
         },
         {
           headerName: 'Tx Share %',
           type: 'numericColumn',
           field: 'percentageTx',
-          valueFormatter: ({ value }) => {
-            return `${Number(value).toFixed(2)}%`
-          },
+          sortingOrder: ['desc', 'asc'],
+          cellRenderer: PercentageBarRenderer,
         },
         {
           headerName: 'Trend',
