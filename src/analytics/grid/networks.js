@@ -95,6 +95,7 @@ export function setupNetworksGrid(element) {
   })
 
   installResizeHandler(() => {
+    element.textContent = ''
     install()
 
     grid.setGridOption('rowData', data)
