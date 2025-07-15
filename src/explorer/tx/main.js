@@ -81,7 +81,7 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
       <div class="text-white/50 text-xs">Extrinsic</div>
       <div class="flex flex-col space-y-1">
         <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/80 truncate">${extrinsic.module}.${extrinsic.method}</span>
-        <span class="text-xs text-white/60">${blockNumber}-${extrinsic.blockPosition}</span>
+        <span class="text-xs text-white/60">${blockNumber}${extrinsic.blockPosition ? `-${extrinsic.blockPosition}` : ''}</span>
       </div>
     </div>
     `
