@@ -40,6 +40,12 @@ export function withRetry(fn, defaultOptions = {}) {
       try {
         return await fn()
       } catch (err) {
+        const message = err?.message || ''
+        if (message.indexOf('"error":true') > -1) {
+          console.warn('Not retrying due to known error:', message)
+          throw err
+        }
+
         if (attempt === retries) throw err
 
         if (!navigator.onLine) {

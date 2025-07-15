@@ -16,7 +16,11 @@ import {
   createCopyLinkHTML,
   installCopyEventListener,
 } from './components/copy-link.js'
-import { loadSearch, resolveQueryType } from './search.js'
+import {
+  getActiveFiltersSummary,
+  loadSearch,
+  resolveQueryType,
+} from './search.js'
 import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
 
 const pageCursors = [null]
@@ -230,24 +234,47 @@ function createJourneyRow(item) {
   return row
 }
 
-function renderTransactionsTable({ items, pageInfo }) {
-  if (closeSubscription) {
-    closeSubscription()
+function renderNoResults(table) {
+  const filterNote = getActiveFiltersSummary(filters)
+  const div = document.createElement('div')
+  div.className =
+    'text-center text-white/50 py-10 text-sm opacity-0 transition-opacity duration-500'
+  div.id = 'no-results'
+
+  div.appendChild(document.createTextNode('No results found.'))
+
+  if (filterNote) {
+    const note = document.createElement('div')
+    note.className = 'mt-2 text-white/40'
+    note.textContent = filterNote
+    div.appendChild(note)
   }
 
+  table.appendChild(div)
+  requestAnimationFrame(() => {
+    document.querySelector('#no-results')?.classList.add('opacity-100')
+  })
+}
+
+function renderTransactionsTable(results) {
   const table = document.querySelector(
     '.transaction-table .transaction-table-body'
   )
   table.innerHTML = ''
 
+  if (results == null) {
+    renderNoResults(table)
+    return
+  }
+
+  const { items, pageInfo } = results
+
+  if (closeSubscription) {
+    closeSubscription()
+  }
+
   if (items.length === 0) {
-    table.innerHTML = `
-            <div class="text-center text-white/50 py-10 text-sm opacity-0 transition-opacity duration-500" id="no-results">
-                No results found.
-            </div>`
-    requestAnimationFrame(() => {
-      document.querySelector('#no-results')?.classList.add('opacity-100')
-    })
+    renderNoResults(table)
     return
   }
 

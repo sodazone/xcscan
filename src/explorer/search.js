@@ -349,6 +349,37 @@ function loadAmountFilter(ctx) {
   }
 }
 
+export function getActiveFiltersSummary(filters) {
+  const parts = []
+
+  if (filters.selectedOrigins.length > 0) {
+    parts.push(`Origins: ${filters.selectedOrigins.join(', ')}`)
+  }
+  if (filters.selectedDestinations.length > 0) {
+    parts.push(`Destinations: ${filters.selectedDestinations.join(', ')}`)
+  }
+  if (filters.selectedChains.length > 0) {
+    parts.push(`Chains: ${filters.selectedChains.join(', ')}`)
+  }
+  if (filters.selectedStatus.length > 0) {
+    parts.push(`Status: ${filters.selectedStatus.join(', ')}`)
+  }
+  if (filters.selectedActions.length > 0) {
+    parts.push(`Actions: ${filters.selectedActions.join(', ')}`)
+  }
+
+  const { amountPreset, amountGte, amountLte } = filters.selectedUsdAmounts
+  if (amountPreset || amountGte || amountLte) {
+    const partsUsd = []
+    if (amountPreset) partsUsd.push(`preset = ${amountPreset}`)
+    if (amountGte) partsUsd.push(`min = ${amountGte}`)
+    if (amountLte) partsUsd.push(`max = ${amountLte}`)
+    parts.push(`USD amount: ${partsUsd.join(', ')}`)
+  }
+
+  return parts.length > 0 ? parts.join(' and ') : null
+}
+
 export function loadSearch(ctx) {
   const searchForm = document.getElementById('search')
   const inputError = document.getElementById('search-input-error')
