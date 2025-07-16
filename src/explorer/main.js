@@ -159,17 +159,48 @@ function renderTo(item) {
 }
 
 function renderAssets(item) {
-  return Array.isArray(item.assets) && item.assets.length > 0
-    ? item.assets
-        .map((asset) => {
-          const fmtAmount = formatAssetAmount(asset)
-          if (fmtAmount !== '') {
-            return `<div>${fmtAmount}</div>`
-          }
-          return '<div class="text-white/20">-</div>'
-        })
-        .join('')
-    : '<div class="text-white/20">-</div>'
+  if (!Array.isArray(item.assets) || item.assets.length === 0) {
+    return '<div class="text-white/20">-</div>'
+  }
+
+  const mainIns = []
+  const swaps = []
+
+  const swapPairs = {}
+
+  for (const asset of item.assets) {
+    const amountStr = formatAssetAmount(asset)
+    if (!amountStr) continue
+
+    const role = asset.role || 'in'
+
+    if (role === 'in') {
+      mainIns.push(`<div>${amountStr}</div>`)
+    } else if (role === 'swap_in' || role === 'swap_out') {
+      const seq = asset.sequence ?? -1
+      if (!swapPairs[seq]) swapPairs[seq] = {}
+      swapPairs[seq][role] = asset
+    }
+  }
+
+  // Format swaps
+  for (const swap of Object.values(swapPairs)) {
+    const from = formatAssetAmount(swap.swap_in)
+    const to = formatAssetAmount(swap.swap_out)
+
+    if (from && to) {
+      swaps.push(`
+        <div class="text-white/40 text-xs pl-1 flex items-center gap-1">
+          <span class="text-white/50">⇄</span>
+          <span>${from}</span>
+          <span class="text-white/50">→</span>
+          <span>${to}</span>
+        </div>
+      `)
+    }
+  }
+
+  return [...mainIns, ...swaps].join('') || '<div class="text-white/20">-</div>'
 }
 
 function renderTime(item, style) {

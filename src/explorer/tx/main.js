@@ -228,15 +228,51 @@ function assetIconHTML({ asset }) {
   return ''
 }
 
+function renderMainAssets(assets) {
+  return assets
+    .filter((a) => !a.role || a.role === 'in')
+    .map(
+      (a) =>
+        `<div class="flex items-center gap-2">${assetIconHTML(a)}${formatAssetAmount(a)}</div>`
+    )
+    .join('')
+}
+
+function renderSwapBreakdown(assets) {
+  const swapPairs = {}
+  for (const asset of assets) {
+    if (!['swap_in', 'swap_out'].includes(asset.role)) continue
+    const seq = asset.sequence ?? -1
+    if (!swapPairs[seq]) swapPairs[seq] = {}
+    swapPairs[seq][asset.role] = asset
+  }
+
+  return Object.values(swapPairs)
+    .map(({ swap_in: from, swap_out: to }) => {
+      if (!from || !to) return ''
+      return `
+        <div class="flex items-center gap-1 text-sm text-white/70 ml-4">
+          <span class="text-white/50">⇄</span>
+          <div class="flex items-center gap-1">${assetIconHTML(from)}${formatAssetAmount(from)}</div>
+          <span class="opacity-50">→</span>
+          <div class="flex items-center gap-1">${assetIconHTML(to)}${formatAssetAmount(to)}</div>
+        </div>
+      `
+    })
+    .join('')
+}
+
+function renderTrapped(assets) {
+  return ''
+}
+
 function getAmounts({ assets }) {
-  return Array.isArray(assets) && assets.length > 0
-    ? assets
-        .map(
-          (a) =>
-            `<div class="flex items-center gap-2">${assetIconHTML(a)}${formatAssetAmount(a)}</div>`
-        )
-        .join('')
-    : ''
+  if (!Array.isArray(assets) || assets.length === 0) return ''
+  return (
+    renderMainAssets(assets) +
+    renderSwapBreakdown(assets) +
+    renderTrapped(assets)
+  )
 }
 
 function createJourneySummary(journey) {
