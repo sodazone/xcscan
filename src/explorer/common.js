@@ -152,7 +152,7 @@ function safeNormalizeAmount(amount, decimals) {
   return amt / 10 ** dec
 }
 
-export function formatAssetAmount(asset) {
+export function formatAssetAmount(asset, showUsd = true) {
   if (asset.decimals == null) {
     return ''
   }
@@ -166,7 +166,7 @@ export function formatAssetAmount(asset) {
   }
 
   amount += `<div class="flex space-x-1"><span>${humanizeNumber(normalizedAmount)}</span><span class="text-white/60">${asset.symbol}</span></div>`
-  if (usdNumber != null) {
+  if (showUsd && usdNumber != null) {
     amount += `<div class="flex text-xs text-white/60">($${humanizeNumber(asset.usd)})</div>`
   }
   return `<div class="flex flex-wrap items-center space-x-2">${amount}</div>`

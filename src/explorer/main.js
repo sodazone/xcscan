@@ -163,44 +163,60 @@ function renderAssets(item) {
     return '<div class="text-white/20">-</div>'
   }
 
-  const mainIns = []
-  const swaps = []
+  const transfers = item.assets.filter(
+    (a) => (a.role ?? 'transfer') === 'transfer'
+  )
+  const swapsRaw = item.assets.filter(
+    (a) => a.role === 'swap_in' || a.role === 'swap_out'
+  )
 
+  // Group swaps by sequence
   const swapPairs = {}
+  for (const swap of swapsRaw) {
+    const seq = swap.sequence ?? -1
+    if (!swapPairs[seq]) swapPairs[seq] = {}
+    swapPairs[seq][swap.role] = swap
+  }
 
-  for (const asset of item.assets) {
-    const amountStr = formatAssetAmount(asset)
-    if (!amountStr) continue
+  const rendered = []
 
-    const role = asset.role || 'in'
+  for (const transfer of transfers) {
+    const transferStr = formatAssetAmount(transfer)
+    if (transferStr) {
+      rendered.push(`<div>${transferStr}</div>`)
+    }
 
-    if (role === 'in') {
-      mainIns.push(`<div>${amountStr}</div>`)
-    } else if (role === 'swap_in' || role === 'swap_out') {
-      const seq = asset.sequence ?? -1
-      if (!swapPairs[seq]) swapPairs[seq] = {}
-      swapPairs[seq][role] = asset
+    // Find all swaps where swap_in matches this transfer asset
+    const relatedSwaps = Object.values(swapPairs).filter((pair) => {
+      return pair.swap_in?.asset === transfer.asset
+    })
+
+    for (const pair of relatedSwaps) {
+      const from = formatAssetAmount(pair.swap_in, false)
+      const to = formatAssetAmount(pair.swap_out, false)
+
+      if (from && to) {
+        rendered.push(`
+          <div class="text-white text-xs pl-1 flex items-center gap-1">
+            <span class="text-white/50">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 6 H6 V0" stroke="currentColor" stroke-width="1"/>
+              </svg>
+            </span>
+            <span>${from}</span>
+            <span class="text-white/50">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3">
+                <path fill-rule="evenodd" d="M2 8c0 .414.336.75.75.75h8.69l-1.22 1.22a.75.75 0 1 0 1.06 1.06l2.5-2.5a.75.75 0 0 0 0-1.06l-2.5-2.5a.75.75 0 1 0-1.06 1.06l1.22 1.22H2.75A.75.75 0 0 0 2 8Z" clip-rule="evenodd" />
+              </svg>
+            </span>
+            <span>${to}</span>
+          </div>
+        `)
+      }
     }
   }
 
-  // Format swaps
-  for (const swap of Object.values(swapPairs)) {
-    const from = formatAssetAmount(swap.swap_in)
-    const to = formatAssetAmount(swap.swap_out)
-
-    if (from && to) {
-      swaps.push(`
-        <div class="text-white/40 text-xs pl-1 flex items-center gap-1">
-          <span class="text-white/50">⇄</span>
-          <span>${from}</span>
-          <span class="text-white/50">→</span>
-          <span>${to}</span>
-        </div>
-      `)
-    }
-  }
-
-  return [...mainIns, ...swaps].join('') || '<div class="text-white/20">-</div>'
+  return rendered.join('') || '<div class="text-white/20">-</div>'
 }
 
 function renderTime(item, style) {
