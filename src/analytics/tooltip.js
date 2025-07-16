@@ -1,4 +1,4 @@
-export function createChartTooltipHTML({ title, amount, unit, date }) {
+export function createChartTooltipHTML({ title, amount, unit, date, events }) {
   return `<div class="flex flex-col gap-1 p-2 text-xs">
         <div class="flex flex-col gap-1 text-white/90">
           <span class="text-white/60 font-semibold">${title}</span>
@@ -12,13 +12,43 @@ export function createChartTooltipHTML({ title, amount, unit, date }) {
           }
         </div>
         <div class="text-white/60">${date}</div>
+        ${
+          events == null || events.length == 0
+            ? ''
+            : `<div class="flex flex-col mt-2 space-y-4">${events
+                .map((event) => {
+                  return `<div class="flex items-center space-x-2">
+             <span class="size-2 bg-[#ffa500]"></span><span class="text-white/90 truncate">${event.tooltip}</span>
+            </div>`
+                })
+                .join('')}</div>`
+        }
       </div>`
 }
 
-export function createChartTooltip({ element, chart, onDisplay }) {
+function createCachedOnDisplay(onDisplay, currentKey) {
+  const cache = new Map()
+
+  return (param) => {
+    const timeKey =
+      typeof param.time === 'object'
+        ? JSON.stringify(param.time)
+        : String(param.time)
+    const key = `${timeKey}|${currentKey()}`
+
+    if (!cache.has(key)) {
+      cache.set(key, onDisplay(param))
+    }
+    return cache.get(key)
+  }
+}
+
+export function createChartTooltip({ element, chart, onDisplay, currentKey }) {
   const toolTipWidth = 80
   const toolTipHeight = 80
   const toolTipMargin = 15
+
+  const onDisplayWithCache = createCachedOnDisplay(onDisplay, currentKey)
 
   const toolTip = document.createElement('div')
   toolTip.className = 'chart-series-tooltip'
@@ -56,7 +86,7 @@ export function createChartTooltip({ element, chart, onDisplay }) {
       toolTip.style.display = 'none'
     } else {
       toolTip.style.display = 'block'
-      toolTip.innerHTML = onDisplay(param)
+      toolTip.innerHTML = onDisplayWithCache(param)
 
       const y = param.point.y
       let left = param.point.x + toolTipMargin

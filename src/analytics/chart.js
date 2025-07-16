@@ -5,11 +5,14 @@ import { formatAssetVolume, formatDateTime } from '../formats.js'
 import { createAvgLine } from './avg-line.js'
 import { installResizeHandler } from './resize.js'
 import { createChartTooltip, createChartTooltipHTML } from './tooltip.js'
+import { createMarkers } from './markers.js'
+import { GLOBAL_MARKERS } from './markers/data.js'
 
 export function setupSeriesChart(element) {
   let chart
   let series
   let averageLine
+  let markers
   let data
   let currentTimeFrame
   let currentType = 'volume'
@@ -89,14 +92,18 @@ export function setupSeriesChart(element) {
       secondsVisible: false,
     })
 
+    markers = createMarkers(series, GLOBAL_MARKERS)
+
     createChartTooltip({
       element,
       chart,
+      currentKey: () => currentType,
       onDisplay: (param) => {
         const dateStr = formatDateTime(param.time)
         const dataPoint = param.seriesData.get(series)
         const price =
           dataPoint.value !== undefined ? dataPoint.value : dataPoint.close
+        const events = markers.getEventTooltips(param.time)
         return createChartTooltipHTML({
           title: currentType === 'volume' ? 'Volume' : 'Transfers',
           amount:
@@ -105,6 +112,7 @@ export function setupSeriesChart(element) {
               : Number(price).toFixed(0),
           unit: currentType === 'volume' ? 'USD' : 'txs',
           date: dateStr,
+          events,
         })
       },
     })
@@ -122,6 +130,7 @@ export function setupSeriesChart(element) {
         }
         averageLine.setData(data)
         series.setData(data)
+        markers.setData(data)
         chart.timeScale().fitContent()
       })
       .catch(console.error)
@@ -143,6 +152,7 @@ export function setupSeriesChart(element) {
 
     averageLine.setData(data)
     series.setData(data)
+    markers.setData(data)
     chart.timeScale().fitContent()
   })
 }
