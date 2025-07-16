@@ -54,61 +54,85 @@ export function createChartTooltip({ element, chart, onDisplay, currentKey }) {
   toolTip.className = 'chart-series-tooltip'
   element.appendChild(toolTip)
 
-  function handleInteraction(clientX, clientY) {
-    const boundingRect = element.getBoundingClientRect()
-    const x = clientX - boundingRect.left
-    const y = clientY - boundingRect.top
-    chart.setCrosshairPosition(x, y)
-  }
+  let isStickyTooltip = false
 
-  function handleTouch(e) {
-    if (e.touches.length > 0) {
-      e.preventDefault()
-      const touch = e.touches[0]
-      handleInteraction(touch.clientX, touch.clientY)
+  function handleInteraction(x, y) {
+    const boundingRect = element.getBoundingClientRect()
+    const localX = x - boundingRect.left
+    const localY = y - boundingRect.top
+
+    if (
+      localX >= 0 &&
+      localX <= element.clientWidth &&
+      localY >= 0 &&
+      localY <= element.clientHeight
+    ) {
+      chart.setCrosshairPosition(localX, localY)
+      isStickyTooltip = true
     }
   }
 
-  function handleClick(e) {
+  element.addEventListener('click', (e) => {
     handleInteraction(e.clientX, e.clientY)
-  }
+  })
 
-  element.addEventListener('click', handleClick)
-  element.addEventListener('touchstart', handleTouch)
-  element.addEventListener('touchmove', handleTouch)
+  element.addEventListener('touchend', (e) => {
+    if (e.changedTouches.length > 0) {
+      const touch = e.changedTouches[0]
+      handleInteraction(touch.clientX, touch.clientY)
+    }
+  })
 
-  element.addEventListener('touchend', () => {
-    setTimeout(() => {
+  // Listen for outside taps to hide the tooltip
+  document.addEventListener('click', (e) => {
+    if (!element.contains(e.target) && isStickyTooltip) {
       chart.clearCrosshairPosition()
-    }, 400)
+      toolTip.style.display = 'none'
+      isStickyTooltip = false
+    }
+  })
+
+  document.addEventListener('touchstart', (e) => {
+    if (!element.contains(e.target) && isStickyTooltip) {
+      chart.clearCrosshairPosition()
+      toolTip.style.display = 'none'
+      isStickyTooltip = false
+    }
+  })
+
+  element.addEventListener('mouseleave', () => {
+    chart.clearCrosshairPosition()
+    toolTip.style.display = 'none'
   })
 
   chart.subscribeCrosshairMove((param) => {
     if (
-      param.point === undefined ||
+      !param.point ||
       !param.time ||
       param.point.x < 0 ||
       param.point.x > element.clientWidth ||
       param.point.y < 0 ||
       param.point.y > element.clientHeight
     ) {
-      toolTip.style.display = 'none'
-    } else {
-      toolTip.style.display = 'block'
-      toolTip.innerHTML = onDisplayWithCache(param)
-
-      const y = param.point.y
-      let left = param.point.x + toolTipMargin
-      if (left > element.clientWidth - toolTipWidth) {
-        left = param.point.x - toolTipMargin - toolTipWidth
-      }
-
-      let top = y + toolTipMargin
-      if (top > element.clientHeight - toolTipHeight) {
-        top = y - toolTipHeight - toolTipMargin
-      }
-      toolTip.style.left = `${left}px`
-      toolTip.style.top = `${top}px`
+      // leave tooltip visible
+      return
     }
+
+    toolTip.style.display = 'block'
+    toolTip.innerHTML = onDisplayWithCache(param)
+
+    const y = param.point.y
+    let left = param.point.x + toolTipMargin
+    if (left > element.clientWidth - toolTipWidth) {
+      left = param.point.x - toolTipMargin - toolTipWidth
+    }
+
+    let top = y + toolTipMargin
+    if (top > element.clientHeight - toolTipHeight) {
+      top = y - toolTipHeight - toolTipMargin
+    }
+
+    toolTip.style.left = `${left}px`
+    toolTip.style.top = `${top}px`
   })
 }
