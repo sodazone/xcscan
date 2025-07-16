@@ -169,6 +169,7 @@ function renderAssets(item) {
   const swapsRaw = item.assets.filter(
     (a) => a.role === 'swap_in' || a.role === 'swap_out'
   )
+  const trappeds = item.assets.filter((a) => a.role === 'trapped')
 
   // Group swaps by sequence
   const swapPairs = {}
@@ -179,11 +180,19 @@ function renderAssets(item) {
   }
 
   const rendered = []
+  let renderedCount = 0
+  const maxToShow = 2
+  let hiddenCount = 0
 
   for (const transfer of transfers) {
     const transferStr = formatAssetAmount(transfer)
     if (transferStr) {
-      rendered.push(`<div>${transferStr}</div>`)
+      if (renderedCount < maxToShow) {
+        rendered.push(`<div>${transferStr}</div>`)
+        renderedCount++
+      } else {
+        hiddenCount++
+      }
     }
 
     // Find all swaps where swap_in matches this transfer asset
@@ -196,24 +205,50 @@ function renderAssets(item) {
       const to = formatAssetAmount(pair.swap_out, false)
 
       if (from && to) {
-        rendered.push(`
-          <div class="text-white text-xs pl-1 flex items-center gap-1">
-            <span class="text-white/50">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 6 H6 V0" stroke="currentColor" stroke-width="1"/>
-              </svg>
-            </span>
-            <span>${from}</span>
-            <span class="text-white/50">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3">
-                <path fill-rule="evenodd" d="M2 8c0 .414.336.75.75.75h8.69l-1.22 1.22a.75.75 0 1 0 1.06 1.06l2.5-2.5a.75.75 0 0 0 0-1.06l-2.5-2.5a.75.75 0 1 0-1.06 1.06l1.22 1.22H2.75A.75.75 0 0 0 2 8Z" clip-rule="evenodd" />
-              </svg>
-            </span>
-            <span>${to}</span>
-          </div>
-        `)
+        if (renderedCount < maxToShow) {
+          rendered.push(`
+            <div class="text-white text-xs pl-1 flex items-center gap-1">
+              <span class="text-white/50">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 6 H6 V0" stroke="currentColor" stroke-width="1"/>
+                </svg>
+              </span>
+              <span>${from}</span>
+              <span class="text-white/50">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3">
+                  <path fill-rule="evenodd" d="M2 8c0 .414.336.75.75.75h8.69l-1.22 1.22a.75.75 0 1 0 1.06 1.06l2.5-2.5a.75.75 0 0 0 0-1.06l-2.5-2.5a.75.75 0 1 0-1.06 1.06l1.22 1.22H2.75A.75.75 0 0 0 2 8Z" clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span>${to}</span>
+            </div>
+          `)
+          renderedCount++
+        } else {
+          hiddenCount++
+        }
       }
     }
+  }
+
+  for (const trapped of trappeds) {
+    const amoutStr = formatAssetAmount(trapped)
+    if (amoutStr) {
+      if (renderedCount < maxToShow) {
+        rendered.push(`<div class="flex items-center gap-2 bg-red-500/10 w-fit">
+          <div>${amoutStr}</div>
+          <div class="text-red-400/80 font-medium text-xs">trapped</div>
+        </div>`)
+        renderedCount++
+      } else {
+        hiddenCount++
+      }
+    }
+  }
+
+  if (hiddenCount > 0) {
+    rendered.push(
+      `<div class="flex items-center justify-center text-white/60 text-xs rounded-full bg-white/10 px-2 py-0.5 leading-tight h-5 w-fit">+${hiddenCount} more</div>`
+    )
   }
 
   return rendered.join('') || '<div class="text-white/20">-</div>'

@@ -126,13 +126,24 @@ class RichMarkerRenderer {
           }
 
           default: {
-            ctx.roundRect(boxX, boxY, width, height, 4)
+            ctx.roundRect(boxX, boxY, width, height, 2)
             break
           }
         }
 
         ctx.fill()
         ctx.stroke()
+        ctx.restore()
+
+        ctx.save()
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
+        ctx.shadowBlur = 2
+        ctx.shadowOffsetX = 1
+        ctx.shadowOffsetY = 1
+        ctx.beginPath()
+        ctx.fillStyle = 'transparent'
+        ctx.rect(boxX, boxY, width, height)
+        ctx.fill()
         ctx.restore()
 
         // Label text
