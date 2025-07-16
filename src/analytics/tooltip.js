@@ -24,16 +24,24 @@ export function createChartTooltip({ element, chart, onDisplay }) {
   toolTip.className = 'chart-series-tooltip'
   element.appendChild(toolTip)
 
-  element.addEventListener('touchmove', (e) => {
-    const touch = e.touches[0]
-    const boundingRect = element.getBoundingClientRect()
-    const x = touch.clientX - boundingRect.left
-    const y = touch.clientY - boundingRect.top
-    chart.setCrosshairPosition(x, y)
-  })
+  function handleTouch(e) {
+    if (e.touches.length > 0) {
+      e.preventDefault()
+      const touch = e.touches[0]
+      const boundingRect = element.getBoundingClientRect()
+      const x = touch.clientX - boundingRect.left
+      const y = touch.clientY - boundingRect.top
+      chart.setCrosshairPosition(x, y)
+    }
+  }
+
+  element.addEventListener('touchstart', handleTouch)
+  element.addEventListener('touchmove', handleTouch)
 
   element.addEventListener('touchend', () => {
-    chart.clearCrosshairPosition()
+    setTimeout(() => {
+      chart.clearCrosshairPosition()
+    }, 400)
   })
 
   chart.subscribeCrosshairMove((param) => {
