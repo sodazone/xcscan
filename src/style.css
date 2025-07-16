@@ -192,7 +192,7 @@ body {
 
 /* Status */
 .status {
-  @apply inline-flex items-center gap-x-1.5 px-3 py-1 text-xs font-medium rounded-full capitalize whitespace-nowrap select-none;
+  @apply inline-flex items-center gap-x-1.5 px-2 py-0.5 text-xs font-medium rounded-full capitalize whitespace-nowrap select-none h-5;
 }
 .status-bullet {
   @apply w-1.5 h-1.5 rounded-full bg-current shrink-0 relative;
