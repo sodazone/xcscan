@@ -44,15 +44,15 @@ function createCachedOnDisplay(onDisplay, currentKey) {
 }
 
 export function createChartTooltip({ element, chart, onDisplay, currentKey }) {
-  const toolTipWidth = 80;
-  const toolTipHeight = 80;
-  const toolTipMargin = 15;
+  const toolTipWidth = 80
+  const toolTipHeight = 80
+  const toolTipMargin = 15
 
-  const onDisplayWithCache = createCachedOnDisplay(onDisplay, currentKey);
+  const onDisplayWithCache = createCachedOnDisplay(onDisplay, currentKey)
 
-  const toolTip = document.createElement('div');
-  toolTip.className = 'chart-series-tooltip';
-  element.appendChild(toolTip);
+  const toolTip = document.createElement('div')
+  toolTip.className = 'chart-series-tooltip'
+  element.appendChild(toolTip)
 
   chart.subscribeCrosshairMove((param) => {
     if (
@@ -63,25 +63,25 @@ export function createChartTooltip({ element, chart, onDisplay, currentKey }) {
       param.point.y < 0 ||
       param.point.y > element.clientHeight
     ) {
-      toolTip.style.display = 'none';
-      return;
+      toolTip.style.display = 'none'
+      return
     }
 
-    toolTip.style.display = 'block';
-    toolTip.innerHTML = onDisplayWithCache(param);
+    toolTip.style.display = 'block'
+    toolTip.innerHTML = onDisplayWithCache(param)
 
-    const y = param.point.y;
-    let left = param.point.x + toolTipMargin;
+    const y = param.point.y
+    let left = param.point.x + toolTipMargin
     if (left > element.clientWidth - toolTipWidth) {
-      left = param.point.x - toolTipMargin - toolTipWidth;
+      left = param.point.x - toolTipMargin - toolTipWidth
     }
 
-    let top = y + toolTipMargin;
+    let top = y + toolTipMargin
     if (top > element.clientHeight - toolTipHeight) {
-      top = y - toolTipHeight - toolTipMargin;
+      top = y - toolTipHeight - toolTipMargin
     }
 
-    toolTip.style.left = `${left}px`;
-    toolTip.style.top = `${top}px`;
-  });
+    toolTip.style.left = `${left}px`
+    toolTip.style.top = `${top}px`
+  })
 }
