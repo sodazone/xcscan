@@ -54,17 +54,26 @@ export function createChartTooltip({ element, chart, onDisplay, currentKey }) {
   toolTip.className = 'chart-series-tooltip'
   element.appendChild(toolTip)
 
+  function handleInteraction(clientX, clientY) {
+    const boundingRect = element.getBoundingClientRect()
+    const x = clientX - boundingRect.left
+    const y = clientY - boundingRect.top
+    chart.setCrosshairPosition(x, y)
+  }
+
   function handleTouch(e) {
     if (e.touches.length > 0) {
       e.preventDefault()
       const touch = e.touches[0]
-      const boundingRect = element.getBoundingClientRect()
-      const x = touch.clientX - boundingRect.left
-      const y = touch.clientY - boundingRect.top
-      chart.setCrosshairPosition(x, y)
+      handleInteraction(touch.clientX, touch.clientY)
     }
   }
 
+  function handleClick(e) {
+    handleInteraction(e.clientX, e.clientY)
+  }
+
+  element.addEventListener('click', handleClick)
   element.addEventListener('touchstart', handleTouch)
   element.addEventListener('touchmove', handleTouch)
 
