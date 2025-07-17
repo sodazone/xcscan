@@ -48,6 +48,32 @@ function formatLocalAndUTC(dateInput) {
   return `<span title="${utc}">${local}</span>`
 }
 
+function asPositionSuffix(pos) {
+  return pos != null ? `-${pos}` : ''
+}
+
+function formatAssetsTrappedHTML(stop) {
+  if (stop.assetsTrapped) {
+    const assetsNum = stop.assetsTrapped.assets?.length ?? 0
+    const { event } = stop.assetsTrapped
+    const label = `${assetsNum} ${assetsNum > 1 ? 'assets' : 'asset'}`
+    const link =
+      event.blockNumber == null
+        ? ''
+        : createCopyLinkHTML({
+            text: `${event.blockNumber}${asPositionSuffix(event.eventId)}`,
+            url: getSubscanBlockLink(stop.chainId, event.blockNumber),
+          })
+    return `<div class="flex gap-2 text-sm items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 text-yellow-500">
+      <path fill-rule="evenodd" d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 1 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+    </svg>
+    <span class="flex space-x-2 items-center"><span>${label} trapped</span>${link}</span>
+    <div>`
+  }
+  return ''
+}
+
 function formatStatusIconHTML(status) {
   const label = getStatusLabel(status)
   const cls = asClassName(label)
@@ -80,8 +106,8 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
     <div class="flex flex-col space-y-1">
       <div class="text-white/50 text-xs">Extrinsic</div>
       <div class="flex flex-col space-y-1">
-        <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/80 truncate">${extrinsic.module}.${extrinsic.method}</span>
-        <span class="text-xs text-white/60">${blockNumber}${extrinsic.blockPosition ? `-${extrinsic.blockPosition}` : ''}</span>
+        <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/90 truncate">${extrinsic.module}.${extrinsic.method}</span>
+        <span class="text-xs text-white/90">${blockNumber}${asPositionSuffix(extrinsic.blockPosition)}</span>
       </div>
     </div>
     `
@@ -92,8 +118,8 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
     <div class="flex flex-col space-y-1">
       <div class="text-white/50 text-xs">Event</div>
       <div class="flex flex-col space-y-1">
-        <span title="${event.module}.${event.name}" class="text-xs font-medium text-white/80 truncate">${event.module}.${event.name}</span>
-        <span class="text-xs text-white/60">${blockNumber}${event.blockPosition ? `-${event.blockPosition}` : ''}</span>
+        <span title="${event.module}.${event.name}" class="text-xs font-medium truncate">${event.module}.${event.name}</span>
+        <span class="text-xs text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>
       </div>
     </div>
     `
@@ -118,7 +144,7 @@ function createLegStopHTML(stop) {
     : ''
 
   const headerHTML = `
-    <div class="flex items-center justify-between text-sm text-white/70">
+    <div class="flex items-center justify-between text-sm text-white/90">
       ${networkHTML}
       ${statusIconHTML}
     </div>
@@ -132,18 +158,16 @@ function createLegStopHTML(stop) {
         }
       )}</div>`
     : `
-      <div class="flex items-center space-x-2 text-sm text-white/60">
+      <div>
       </div>
     `
 
-  const timestampHTML = stop.timestamp
-    ? formatLocalTimestamp(stop.timestamp)
-    : ''
+  const timestampHTML =
+    stop.timestamp != null ? formatLocalTimestamp(stop.timestamp) : ''
 
   const metaHTML = createLegStopMetaHTML(stop) || ''
-  const trappedHTML = stop.assetsTrapped
-    ? `<div>Trapped ${stop.assetsTrapped.event.blockNumber}<div>`
-    : ''
+
+  const trappedHTML = formatAssetsTrappedHTML(stop)
 
   return `
     <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full ${opacityClass}">
@@ -151,6 +175,7 @@ function createLegStopHTML(stop) {
       ${bodyHTML}
       ${timestampHTML}
       ${metaHTML}
+      ${trappedHTML}
     </div>
   `
 }
@@ -198,7 +223,7 @@ function getTimeDetails({ sentAt, recvAt }) {
         receivedDate
           ? `
       <div class="text-white/50">Received</div>
-      <div>${formattedReceived} <span class="text-white/40">${elapsed}</span></div>
+      <div>${formattedReceived} <span class="text-white/50">${elapsed}</span></div>
       `
           : ''
       }
@@ -254,14 +279,14 @@ function renderTransferAndSwaps(assets) {
 
   for (const transfer of transfers) {
     result.push(
-      `<div class="flex items-center gap-2 text-white/80">${assetIconHTML(transfer)}${formatAssetAmount(transfer)}</div>`
+      `<div class="flex items-center gap-2 text-white/90">${assetIconHTML(transfer)}${formatAssetAmount(transfer)}</div>`
     )
   }
 
   for (const { swap_in: from, swap_out: to } of Object.values(swapPairs)) {
     if (!from || !to) continue
     result.push(`
-        <div class="flex items-center gap-2 text-sm text-white/80 ml-1">
+        <div class="flex items-center gap-2 text-sm text-white/90 ml-1">
           <span class="text-white/40">
             <svg class="size-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 6 H6 V0" stroke="currentColor" stroke-width="1"/>
@@ -289,7 +314,7 @@ function renderTrapped(assets) {
   return trapped
     .map(
       (a) =>
-        `<div class="flex items-center gap-2 bg-red-500/10 rounded-full py-1 pl-1 pr-2 w-fit text-white/80">
+        `<div class="flex items-center gap-2 bg-red-500/10 rounded-full py-1 pl-1 pr-2 w-fit text-white/90">
           ${assetIconHTML(a)}
           ${formatAssetAmount(a)}
           <div class="text-red-400/80 font-medium text-xs">trapped</div>
@@ -316,7 +341,7 @@ function createJourneySummary(journey) {
   summary.className = 'bg-white/5 rounded-xl p-4 space-y-2'
 
   summary.innerHTML = `
-  <div class="flex flex-col md:grid md:grid-cols-[auto_1fr] md:gap-4 text-sm text-white/80 pt-2">
+  <div class="flex flex-col md:grid md:grid-cols-[auto_1fr] md:gap-4 text-sm text-white/90 pt-2">
     <div class="text-white/50">ID</div>
     <div class="truncate" title="${journey.correlationId}">${journey.correlationId}</div>
 
@@ -425,7 +450,7 @@ function createJourneyLeg(stop, index) {
 
   if (elapsedText) {
     const elapsed = document.createElement('span')
-    elapsed.className = 'font-normal text-white/40 text-xs'
+    elapsed.className = 'font-normal text-white/50 text-xs'
     elapsed.textContent = elapsedText
     header.appendChild(elapsed)
   }
@@ -479,7 +504,7 @@ async function loadTransactionDetail() {
     if (items == null || items.length === 0) {
       container.appendChild(
         htmlToElement(`
-  <div class="my-8 p-4 mx-auto text-lg text-white/80">
+  <div class="my-8 p-4 mx-auto text-lg text-white/90">
     <p>Sorry, we couldn't find that journey.</p>
     <p class="mt-2">
       Please <a href="/" class="text-blue-400 underline hover:text-blue-600">go back to transactions</a> and try again.
