@@ -194,19 +194,15 @@ function renderAssets(item) {
         hiddenCount++
       }
     }
+  }
 
-    // Find all swaps where swap_in matches this transfer asset
-    const relatedSwaps = Object.values(swapPairs).filter((pair) => {
-      return pair.swap_in?.asset === transfer.asset
-    })
+  for (const pair of Object.values(swapPairs)) {
+    const from = formatAssetAmount(pair.swap_in, false)
+    const to = formatAssetAmount(pair.swap_out, false)
 
-    for (const pair of relatedSwaps) {
-      const from = formatAssetAmount(pair.swap_in, false)
-      const to = formatAssetAmount(pair.swap_out, false)
-
-      if (from && to) {
-        if (renderedCount < maxToShow) {
-          rendered.push(`
+    if (from && to) {
+      if (renderedCount < maxToShow) {
+        rendered.push(`
             <div class="text-white text-xs pl-1 flex items-center gap-1">
               <span class="text-white/50">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -222,10 +218,9 @@ function renderAssets(item) {
               <span>${to}</span>
             </div>
           `)
-          renderedCount++
-        } else {
-          hiddenCount++
-        }
+        renderedCount++
+      } else {
+        hiddenCount++
       }
     }
   }
