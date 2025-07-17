@@ -86,6 +86,7 @@ export function setupNetworkSeriesChart(element, network) {
     createChartTooltip({
       element,
       chart,
+      currentKey: () => currentType,
       onDisplay: (param) => {
         const dateStr = formatDateTime(param.time)
         if (currentType === 'flow') {
