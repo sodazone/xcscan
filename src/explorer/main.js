@@ -247,7 +247,7 @@ function renderAssets(item) {
 
   if (hiddenCount > 0) {
     rendered.push(
-      `<div class="flex items-center justify-center text-white/60 text-xs rounded-full bg-white/10 px-2 py-0.5 leading-tight h-5 w-fit">+${hiddenCount} more</div>`
+      `<div class="flex items-center justify-center text-white/60 text-xs rounded-full bg-white/10 px-2 py-0.5 leading-tight h-5 w-fit my-2 md:my-0">+${hiddenCount} more</div>`
     )
   }
 

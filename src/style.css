@@ -284,6 +284,14 @@ button.loading .btn-label::after {
   @apply opacity-100;
 }
 
+#journey-summary > div > div:nth-child(odd) {
+  @apply mb-2 md:mb-0 md:text-right;
+}
+
+#journey-summary > div > div:nth-child(even) {
+  @apply mb-4 md:mb-0;
+}
+
 /*
  JSON Viewer
 */

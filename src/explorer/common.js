@@ -152,7 +152,11 @@ function safeNormalizeAmount(amount, decimals) {
   return amt / 10 ** dec
 }
 
-export function formatAssetAmount(asset, showUsd = true) {
+export function formatAssetAmount(
+  asset,
+  showUsd = true,
+  classes = 'flex flex-wrap items-center space-x-2'
+) {
   if (asset.decimals == null) {
     return ''
   }
@@ -169,7 +173,7 @@ export function formatAssetAmount(asset, showUsd = true) {
   if (showUsd && usdNumber != null) {
     amount += `<div class="flex text-xs text-white/60">($${humanizeNumber(asset.usd)})</div>`
   }
-  return `<div class="flex flex-wrap items-center space-x-2">${amount}</div>`
+  return `<div class="${classes}">${amount}</div>`
 }
 
 export const selectableActions = [

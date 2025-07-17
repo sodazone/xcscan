@@ -141,6 +141,9 @@ function createLegStopHTML(stop) {
     : ''
 
   const metaHTML = createLegStopMetaHTML(stop) || ''
+  const trappedHTML = stop.assetsTrapped
+    ? `<div>Trapped ${stop.assetsTrapped.event.blockNumber}<div>`
+    : ''
 
   return `
     <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full ${opacityClass}">
@@ -188,13 +191,13 @@ function getTimeDetails({ sentAt, recvAt }) {
     }
 
     timeDetails = `
-      <div class="text-right text-white/50">Sent</div>
+      <div class="text-white/50">Sent</div>
       <div>${formattedSent}</div>
 
       ${
         receivedDate
           ? `
-      <div class="text-right text-white/50">Received</div>
+      <div class="text-white/50">Received</div>
       <div>${formattedReceived} <span class="text-white/40">${elapsed}</span></div>
       `
           : ''
@@ -253,31 +256,27 @@ function renderTransferAndSwaps(assets) {
     result.push(
       `<div class="flex items-center gap-2 text-white/80">${assetIconHTML(transfer)}${formatAssetAmount(transfer)}</div>`
     )
+  }
 
-    const relatedSwaps = Object.values(swapPairs).filter(
-      (pair) => pair.swap_in?.asset === transfer.asset
-    )
-
-    for (const { swap_in: from, swap_out: to } of relatedSwaps) {
-      if (!from || !to) continue
-      result.push(`
+  for (const { swap_in: from, swap_out: to } of Object.values(swapPairs)) {
+    if (!from || !to) continue
+    result.push(`
         <div class="flex items-center gap-2 text-sm text-white/80 ml-1">
           <span class="text-white/40">
             <svg class="size-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 6 H6 V0" stroke="currentColor" stroke-width="1"/>
               </svg>
           </span>
-          <div>swap</div>
-          <div class="flex items-center gap-1">${assetIconHTML(from)}${formatAssetAmount(from)}</div>
+          <div class="hidden md:inline-block">swap</div>
+          <div class="flex items-center gap-1">${assetIconHTML(from)}${formatAssetAmount(from, true, 'flex flex-col md:flex-row md:gap-2 md:items-center')}</div>
           <span class="text-white/40">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
               <path fill-rule="evenodd" d="M2 8c0 .414.336.75.75.75h8.69l-1.22 1.22a.75.75 0 1 0 1.06 1.06l2.5-2.5a.75.75 0 0 0 0-1.06l-2.5-2.5a.75.75 0 1 0-1.06 1.06l1.22 1.22H2.75A.75.75 0 0 0 2 8Z" clip-rule="evenodd" />
             </svg>
           </span>
-          <div class="flex items-center gap-1">${assetIconHTML(to)}${formatAssetAmount(to)}</div>
+          <div class="flex items-center gap-1">${assetIconHTML(to)}${formatAssetAmount(to, true, 'flex flex-col md:flex-row md:gap-2 md:items-center')}</div>
         </div>
       `)
-    }
   }
 
   return result.join('')
@@ -293,7 +292,7 @@ function renderTrapped(assets) {
         `<div class="flex items-center gap-2 bg-red-500/10 rounded-full py-1 pl-1 pr-2 w-fit text-white/80">
           ${assetIconHTML(a)}
           ${formatAssetAmount(a)}
-          <div class="text-red-400/80 font-medium">trapped</div>
+          <div class="text-red-400/80 font-medium text-xs">trapped</div>
         </div>`
     )
     .join('')
@@ -317,19 +316,19 @@ function createJourneySummary(journey) {
   summary.className = 'bg-white/5 rounded-xl p-4 space-y-2'
 
   summary.innerHTML = `
-  <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 text-sm text-white/80 pt-2">
-    <div class="text-right text-white/50">ID</div>
+  <div class="flex flex-col md:grid md:grid-cols-[auto_1fr] md:gap-4 text-sm text-white/80 pt-2">
+    <div class="text-white/50">ID</div>
     <div class="truncate" title="${journey.correlationId}">${journey.correlationId}</div>
 
-    <div class="text-right text-white/50">Status</div>
+    <div class="text-white/50">Status</div>
     <div>${formatStatusHTML(journey.status)}</div>
 
-    <div class="text-right text-white/50">Action</div>
+    <div class="text-white/50">Action</div>
     <div class="truncate break-all">${actionFormatted}</div>
 
     ${timeDetails}
 
-    <div class="text-right text-white/50">From</div>
+    <div class="text-white/50">From</div>
     <div class="flex flex-col space-y-1">
        ${formatNetworkWithIconHTML(journey.origin)}
        ${
@@ -343,7 +342,7 @@ function createJourneySummary(journey) {
        }
     </div>
 
-    <div class="text-right text-white/50">To</div>
+    <div class="text-white/50">To</div>
         <div class="flex flex-col space-y-1">
        ${formatNetworkWithIconHTML(journey.destination)}
 	   ${
@@ -360,7 +359,7 @@ function createJourneySummary(journey) {
     ${
       amounts === ''
         ? ''
-        : `<div class="text-right text-white/50">Assets</div>
+        : `<div class="text-white/50">Assets</div>
     <div class="flex flex-col space-y-2">${amounts}</div>`
     }
   </div>
