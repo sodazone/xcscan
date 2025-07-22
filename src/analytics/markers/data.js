@@ -20,7 +20,7 @@ export const GLOBAL_MARKERS = [
   },
   {
     time: '2025-06-01',
-    label: 'wBTC',
-    tooltip: 'Stellaswap adds ETH-wBTC bridge',
+    label: 'ETH/WBTC',
+    tooltip: 'Stellaswap supports Snowbridge ETH and WBTC',
   },
 ].map(withTs)
