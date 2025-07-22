@@ -83,16 +83,32 @@
 
           <div
             id="search-indicator"
-            class="text-sm text-white/60 mb-2 flex space-x-2 hidden mr-auto items-center max-w-full"
+            class="hidden text-sm text-white/60 mb-2 flex flex-col mr-auto max-w-full space-y-2 md:flex-row md:space-x-2 md:space-y-0 md:items-center"
           >
-            <span class="text-white/40">Showing results for</span
-            ><span class="italic truncate" id="search-indicator-text"></span>
-            <button
-              id="search-indicator-clear"
-              class="cursor-pointer size-4 flex items-center justify-center p-2 rounded-full bg-white/10 text-black/90 text-lg font-semibold hover:bg-white/20"
-            >
-              <span>&times;</span>
-            </button>
+            <span class="text-white/40">Showing results for</span>
+            <div class="flex space-x-2 items-center">
+              <span class="italic truncate" id="search-indicator-text"></span>
+              <button
+                id="search-indicator-clear"
+                class="cursor-pointer min-w-5 size-5 flex items-center justify-center rounded-full bg-white/10 text-black/90 text-lg font-semibold hover:bg-white/20"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div
