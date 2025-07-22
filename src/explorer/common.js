@@ -182,6 +182,10 @@ export const selectableActions = [
     value: 'transfer',
   },
   {
+    label: 'Swap',
+    value: 'swap',
+  },
+  {
     label: 'Transact',
     value: 'transact',
   },
@@ -195,7 +199,7 @@ export function actionsToQueryValues(actions) {
   const expanded = (Array.isArray(actions) ? actions : [actions]).flatMap(
     (action) => {
       if (action === 'transfer') {
-        return ['transfer', 'teleport']
+        return ['transfer', 'teleport', 'swap']
       }
       if (action === 'query') {
         return ['queryResponse']
