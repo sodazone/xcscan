@@ -133,6 +133,9 @@ export function formatAction(entry) {
 }
 
 export function prettify(str) {
+  if (str == null) {
+    return str
+  }
   return str
     .replace(/([a-z])([A-Z])/g, '$1 $2') // camelCase to space
     .replace(/[_\-]/g, ' ') // snake_case or kebab-case to space
