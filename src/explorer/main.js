@@ -279,7 +279,7 @@ function createJourneyRow(item) {
     </div>
     <div class="cell ${Array.isArray(item.assets) && item.assets.length === 0 ? 'hidden' : 'flex gap-1'}">
       <div class="text-xs text-white/40 w-[2.5rem]"></div>
-      <div>${renderAssets(item)}</div>
+      <div data-label="Assets">${renderAssets(item)}</div>
     </div>
   </div>
 
@@ -298,9 +298,8 @@ function createJourneyRow(item) {
             ${renderTo(item)}
             </div>
         </div>
-        <div class="cell flex md:items-center ${Array.isArray(item.assets) && item.assets.length === 0 ? 'sm-hidden' : ''}"
-             data-label="Assets">
-            <div class="flex flex-col space-y-1">
+        <div class="cell flex md:items-center ${Array.isArray(item.assets) && item.assets.length === 0 ? 'sm-hidden' : ''}">
+            <div class="flex flex-col space-y-1" data-label="Assets">
             ${renderAssets(item)}
             </div>
         </div>
@@ -399,6 +398,15 @@ function renderTransactionsTable(results) {
             text.textContent = statusLabel
           }
         })
+
+        // Update the assets
+        const assetCells = row.querySelectorAll('[data-label="Assets"]')
+        if (assetCells && assetCells.length > 0) {
+          const assetsHTML = renderAssets(journey)
+          assetCells.forEach((assetCell) => {
+            assetCell.innerHTML = assetsHTML
+          })
+        }
       }
     } else {
       console.warn('Journey not found')
