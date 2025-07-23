@@ -126,7 +126,9 @@ export function shortenAddress(address) {
 export function formatAction(entry) {
   if (entry.type === 'transact' && entry.transactCalls?.length) {
     const call = entry.transactCalls[0]
-    return `${prettify(call.module)} · ${prettify(call.method)}`
+    return call.module == null
+      ? prettify(entry.type)
+      : `${prettify(call.module)} · ${prettify(call.method)}`
   }
 
   return prettify(entry.type)
