@@ -4,14 +4,19 @@ function withTs(m) {
 
 export const GLOBAL_MARKERS = [
   {
-    time: '2025-06-26',
-    label: 'GIGA Boost',
-    tooltip: 'GIGAHydration campaign launch',
+    time: '2025-07-18',
+    label: 'Singularity',
+    tooltip: 'Polkadot DeFi Singularity campaign launch',
   },
   {
     time: '2025-07-01',
     label: 'GIGAETH',
     tooltip: 'Launch of GIGAETH token',
+  },
+  {
+    time: '2025-06-26',
+    label: 'GIGA Boost',
+    tooltip: 'GIGAHydration campaign launch',
   },
   {
     time: '2025-06-03',
@@ -20,7 +25,7 @@ export const GLOBAL_MARKERS = [
   },
   {
     time: '2025-06-01',
-    label: 'ETH/WBTC',
+    label: 'Stella',
     tooltip: 'Stellaswap supports Snowbridge ETH and WBTC',
   },
 ].map(withTs)
