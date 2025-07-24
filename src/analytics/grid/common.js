@@ -84,16 +84,30 @@ export function isMobile() {
   return window.innerWidth < 800
 }
 
-function sliceMax(arr, maxElements) {
-  return arr.length > maxElements ? arr.slice(-maxElements) : arr
-}
-
 export function SparklineCellRenderer(params) {
-  const dataPoints = sliceMax(params.value, 25).map((v) => v.value)
   const minPoints = 20
+  const maxPoints = 30
+  const values = params.value.map((v) => v.value)
+  const totalPoints = values.length
 
-  while (dataPoints.length < minPoints) {
-    dataPoints.push(0)
+  let dataPoints = []
+
+  if (totalPoints <= maxPoints) {
+    dataPoints = [...values]
+    while (dataPoints.length < minPoints) {
+      dataPoints.unshift(0)
+    }
+  } else {
+    // Downsample by averaging
+    const targetPoints = maxPoints
+    const binSize = Math.round(totalPoints / targetPoints)
+    for (let i = 0; i < targetPoints; i++) {
+      const start = i * binSize
+      const end = i === targetPoints - 1 ? totalPoints : (i + 1) * binSize
+      const bin = values.slice(start, end)
+      const avg = bin.reduce((sum, v) => sum + v, 0) / bin.length
+      dataPoints.push(avg)
+    }
   }
 
   return drawSparkline({

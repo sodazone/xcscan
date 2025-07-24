@@ -33,7 +33,7 @@ export function drawSparkline(conf) {
   function bar(opts) {
     const { points, width, height, gap, colors, svg } = opts
     const totalBars = points.length
-    const columnWidth = Math.max(3, (width - (totalBars - 1) * gap) / totalBars)
+    const columnWidth = Math.max(2, (width - (totalBars - 1) * gap) / totalBars)
     const maxValue = Math.max(...points) || 1
 
     points.forEach((point, idx) => {

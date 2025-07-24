@@ -46,6 +46,21 @@ function hasLocalStorage() {
   return hasStorage
 }
 
+// For backward compatibility with cached data with field netFlow instead of netflow
+function normalizeDataFields(data) {
+  if (!data || !Array.isArray(data.items)) return data
+
+  const normalizedItems = data.items.map((row) => {
+    if ('netFlow' in row && !('netflow' in row)) {
+      row.netflow = row.netFlow
+      delete row.netFlow
+    }
+    return row
+  })
+
+  return { ...data, items: normalizedItems }
+}
+
 function stableStringify(obj) {
   if (obj === null || typeof obj !== 'object') {
     return String(obj)
@@ -143,16 +158,17 @@ async function _fetch(args) {
     if (cached) {
       const { timestamp, data } = JSON.parse(cached)
       if (Date.now() - timestamp < CACHE_EXPIRY_MS) {
-        return data
+        return normalizeDataFields(data)
       }
     }
 
     const data = await fetchWithRetry(queryUrl, { args })
+    const normalized = normalizeDataFields(data)
     localStorage.setItem(
       cacheKey,
-      JSON.stringify({ timestamp: Date.now(), data })
+      JSON.stringify({ timestamp: Date.now(), data: normalized })
     )
-    return data
+    return normalized
   }
   return await fetchWithRetry(queryUrl, { args })
 }

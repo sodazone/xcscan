@@ -67,7 +67,7 @@ export function setupNetworksGrid(element) {
         {
           headerName: 'Netflow (USD)',
           type: 'numericColumn',
-          field: 'netFlow',
+          field: 'netflow',
           sortingOrder: ['desc', 'asc'],
           cellRenderer: NetFlowCellRenders,
         },
