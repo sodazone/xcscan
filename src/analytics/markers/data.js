@@ -15,7 +15,7 @@ export const GLOBAL_MARKERS = [
   },
   {
     time: '2025-06-26',
-    label: 'GIGA Boost',
+    label: 'GIGAHydration',
     tooltip: 'GIGAHydration campaign launch',
   },
   {
