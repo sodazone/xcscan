@@ -22,7 +22,7 @@ import {
   createCopyLinkHTML,
   installCopyEventListener,
 } from '../components/copy-link.js'
-import { createXcmProgramViewer } from './json.js'
+import { createCollapsibleJsonViewer } from './json.js'
 
 function formatLocalAndUTC(dateInput) {
   const date = new Date(dateInput)
@@ -90,24 +90,24 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
   const extrinsicHTML = extrinsic?.module
     ? `
     <div class="flex items-center space-x-2">
-      <span class="text-white/50 text-xs">Tx Hash</span>
+      <span class="text-white/50">Tx Hash</span>
       ${createCopyLinkHTML({ text: extrinsic.hash, display: shortenAddress(extrinsic.hash), url: getSubscanExtrinsicLink(chainId, extrinsic.hash) })}
     </div>
     ${
       extrinsic.evmTxHash
         ? `
       <div class="flex items-center space-x-2">
-        <span class="text-white/50 text-xs">EVM Tx Hash</span>
+        <span class="text-white/50">EVM Tx Hash</span>
         ${createCopyLinkHTML({ text: extrinsic.evmTxHash, display: shortenAddress(extrinsic.evmTxHash), url: getSubscanExtrinsicLink(chainId, extrinsic.evmTxHash) })}
       </div>
       `
         : ''
     }
     <div class="flex flex-col space-y-1">
-      <div class="text-white/50 text-xs">Extrinsic</div>
+      <div class="text-white/50">Extrinsic</div>
       <div class="flex flex-col space-y-1">
-        <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/90 truncate">${extrinsic.module}.${extrinsic.method}</span>
-        <span class="text-xs text-white/90">${blockNumber}${asPositionSuffix(extrinsic.blockPosition)}</span>
+        <span title="${extrinsic.module}.${extrinsic.method}" class="font-medium text-white/90 truncate">${extrinsic.module}.${extrinsic.method}</span>
+        <span class="text-white/90">${blockNumber}${asPositionSuffix(extrinsic.blockPosition)}</span>
       </div>
     </div>
     `
@@ -116,10 +116,10 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
   const eventHTML = event?.module
     ? `
     <div class="flex flex-col space-y-1">
-      <div class="text-white/50 text-xs">Event</div>
+      <div class="text-white/50">Event</div>
       <div class="flex flex-col space-y-1">
-        <span title="${event.module}.${event.name}" class="text-xs font-medium truncate">${event.module}.${event.name}</span>
-        <span class="text-xs text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>
+        <span title="${event.module}.${event.name}" class="font-medium truncate">${event.module}.${event.name}</span>
+        <span class="text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>
       </div>
     </div>
     `
@@ -427,7 +427,7 @@ function createJourneyLeg(stop, index) {
   arrow.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
   arrow.setAttribute('fill', 'none')
   arrow.setAttribute('viewBox', '0 0 24 24')
-  arrow.setAttribute('stroke-width', '1.5')
+  arrow.setAttribute('stroke-width', '2')
   arrow.setAttribute('stroke', 'currentColor')
   arrow.setAttribute('class', 'size-4 text-white/20')
   arrow.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />`
@@ -479,6 +479,7 @@ function createJourneyLegs(journey) {
 
   const isReceived =
     journey.stops[journey.stops.length - 1].to?.status !== undefined
+
   journey.stops.forEach((stop, index) => {
     if (isReceived && stop.relay?.status === undefined) {
       stop.relay = null
@@ -518,7 +519,10 @@ async function loadTransactionDetail() {
     const journey = items[0]
     const summary = createJourneySummary(journey)
     const legs = createJourneyLegs(journey)
-    const program = createXcmProgramViewer(journey)
+    const program = createCollapsibleJsonViewer(journey, {
+      depth: 0,
+      label: 'XCM Program Code',
+    })
 
     container.appendChild(summary)
     container.appendChild(legs)

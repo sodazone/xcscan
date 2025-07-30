@@ -1,161 +1,236 @@
+function createLucideIcon(name, size = 16) {
+  const icons = {
+    ChevronsDownUp: `<polyline points="7 3 12 8 17 3"></polyline><polyline points="7 21 12 16 17 21"></polyline>`,
+    ChevronsUpDown: `<polyline points="7 7 12 2 17 7"></polyline><polyline points="7 17 12 22 17 17"></polyline>`,
+    Copy: `<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>`,
+    Check: `<polyline points="20 6 9 17 4 12"></polyline>`,
+  }
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+  svg.setAttribute('viewBox', '0 0 24 24')
+  svg.setAttribute('width', size)
+  svg.setAttribute('height', size)
+  svg.setAttribute('fill', 'none')
+  svg.setAttribute('stroke', 'currentColor')
+  svg.setAttribute('stroke-width', '2')
+  svg.setAttribute('stroke-linecap', 'round')
+  svg.setAttribute('stroke-linejoin', 'round')
+  svg.innerHTML = icons[name] || ''
+  return svg
+}
+
 export function createJsonViewer(jsonObj, options = {}) {
   const defaultDepth = options.depth ?? 0
 
   function createNode(key, value, level = 0) {
     const node = document.createElement('div')
-    node.classList.add('json-node')
+    node.className = 'json-node'
+    node.dataset.level = level
 
-    const keySpan = document.createElement('span')
-    keySpan.classList.add('json-key')
-    if (key !== null) {
-      keySpan.textContent = `${key}: `
+    const line = document.createElement('div')
+    line.className = 'json-line'
+    line.tabIndex = 0
+
+    const isObject = value && typeof value === 'object'
+    if (isObject) {
+      const chevron = document.createElement('span')
+      chevron.className = 'json-chevron'
+      line.appendChild(chevron)
+      line.classList.add('clickable')
     }
 
-    if (value && typeof value === 'object') {
-      // Collapsible control
-      const collapsible = document.createElement('span')
-      collapsible.classList.add('json-collapsible')
-      collapsible.textContent = Array.isArray(value) ? '[...]' : '{...}'
-      collapsible.style.cursor = 'pointer'
-      collapsible.style.userSelect = 'none'
+    if (key !== null) {
+      const keySpan = document.createElement('span')
+      keySpan.className = 'json-key'
+      keySpan.textContent = `${key}: `
+      line.appendChild(keySpan)
+    }
 
-      // Child container
+    if (isObject) {
+      const isArray = Array.isArray(value)
+
+      const openBracket = document.createElement('span')
+      openBracket.className = 'json-bracket'
+      openBracket.textContent = isArray ? '[' : '{'
+      line.appendChild(openBracket)
+
+      const previewCount = isArray ? value.length : Object.keys(value).length
+      const preview = document.createElement('span')
+      preview.className = 'json-preview collapsed-only'
+      preview.textContent = `(${previewCount})`
+
+      const closeBracket = document.createElement('span')
+      closeBracket.className = 'json-bracket collapsed-only'
+      closeBracket.textContent = isArray ? ']' : '}'
+
+      line.append(preview, closeBracket)
+      node.appendChild(line)
+
       const childrenContainer = document.createElement('div')
-      childrenContainer.classList.add('json-children')
-      childrenContainer.style.marginLeft = '1.2em'
+      childrenContainer.className = 'json-children'
 
-      // Recursively add children
-      for (const [k, v] of Array.isArray(value)
+      for (const [childKey, childValue] of isArray
         ? value.entries()
         : Object.entries(value)) {
-        childrenContainer.appendChild(createNode(k, v, level + 1))
+        childrenContainer.appendChild(
+          createNode(childKey, childValue, level + 1)
+        )
       }
 
-      // Determine initial state
-      const shouldExpand = level < defaultDepth
-      childrenContainer.style.display = shouldExpand ? 'block' : 'none'
-      collapsible.textContent = shouldExpand
-        ? Array.isArray(value)
-          ? '[-]'
-          : '{-}'
-        : Array.isArray(value)
-          ? '[...]'
-          : '{...}'
+      const closingLine = document.createElement('div')
+      closingLine.className = 'json-closing'
+      closingLine.textContent = isArray ? ']' : '}'
+      childrenContainer.appendChild(closingLine)
 
-      // Click toggle
-      collapsible.addEventListener('click', () => {
-        const isVisible = childrenContainer.style.display === 'block'
-        childrenContainer.style.display = isVisible ? 'none' : 'block'
-        collapsible.textContent = !isVisible
-          ? Array.isArray(value)
-            ? '[-]'
-            : '{-}'
-          : Array.isArray(value)
-            ? '[...]'
-            : '{...}'
-      })
-
-      node.appendChild(keySpan)
-      node.appendChild(collapsible)
       node.appendChild(childrenContainer)
+      node.classList.toggle('collapsed', level >= defaultDepth)
     } else {
-      // Primitive
       const valSpan = document.createElement('span')
-      valSpan.classList.add('json-value')
+      valSpan.className = 'json-value'
 
-      if (typeof value === 'string') {
-        valSpan.textContent = `"${value}"`
-        valSpan.style.color = '#6A9955'
-      } else if (typeof value === 'number') {
-        valSpan.textContent = value
-        valSpan.style.color = '#569CD6'
-      } else if (typeof value === 'boolean') {
-        valSpan.textContent = value
-        valSpan.style.color = '#D16969'
-      } else if (value === null) {
-        valSpan.textContent = 'null'
-        valSpan.style.color = '#808080'
-      } else {
-        valSpan.textContent = String(value)
+      switch (typeof value) {
+        case 'string':
+          valSpan.textContent = `"${value}"`
+          valSpan.dataset.type = 'string'
+          break
+        case 'number':
+          valSpan.textContent = value
+          valSpan.dataset.type = 'number'
+          break
+        case 'boolean':
+          valSpan.textContent = value
+          valSpan.dataset.type = 'boolean'
+          break
+        default:
+          valSpan.textContent = value === null ? 'null' : String(value)
+          valSpan.dataset.type = value === null ? 'null' : 'unknown'
       }
-
-      node.appendChild(keySpan)
-      node.appendChild(valSpan)
+      line.appendChild(valSpan)
+      node.appendChild(line)
     }
 
     return node
   }
 
-  // Container styling
   const container = document.createElement('div')
-  container.classList.add('json-viewer')
-  container.style.fontFamily = 'monospace'
-  container.style.fontSize = '14px'
-  container.style.color = '#d4d4d4'
-  container.style.backgroundColor = '#1e1e1e'
-  container.style.padding = '10px'
-  container.style.borderRadius = '6px'
-  container.style.maxHeight = '400px'
-  container.style.overflow = 'auto'
+  container.className = 'json-viewer'
 
-  // Root rendering
+  const toolbar = document.createElement('div')
+  toolbar.className = 'json-toolbar'
+
+  const expandBtn = document.createElement('button')
+  expandBtn.type = 'button'
+  expandBtn.className = 'json-btn'
+  expandBtn.title = 'Expand All'
+  expandBtn.appendChild(createLucideIcon('ChevronsDownUp'))
+
+  const collapseBtn = document.createElement('button')
+  collapseBtn.type = 'button'
+  collapseBtn.className = 'json-btn'
+  collapseBtn.title = 'Collapse All'
+  collapseBtn.appendChild(createLucideIcon('ChevronsUpDown'))
+
+  const copyBtn = document.createElement('button')
+  copyBtn.type = 'button'
+  copyBtn.className = 'json-btn'
+  copyBtn.title = 'Copy JSON'
+
+  const copyIcon = createLucideIcon('Copy')
+  copyIcon.classList.add('copy-icon')
+  const checkIcon = createLucideIcon('Check')
+  checkIcon.classList.add('check-icon')
+  checkIcon.style.display = 'none'
+
+  copyBtn.append(copyIcon, checkIcon)
+
+  toolbar.append(expandBtn, collapseBtn, copyBtn)
+  container.appendChild(toolbar)
+
+  const content = document.createElement('div')
+  content.className = 'json-content'
+
   if (typeof jsonObj === 'object' && jsonObj !== null) {
-    for (const [k, v] of Object.entries(jsonObj)) {
-      container.appendChild(createNode(k, v, 0))
+    for (const [key, value] of Object.entries(jsonObj)) {
+      content.appendChild(createNode(key, value, 0))
     }
   } else {
-    container.appendChild(createNode(null, jsonObj, 0))
+    content.appendChild(createNode(null, jsonObj, 0))
   }
+  container.appendChild(content)
+
+  container.addEventListener('click', (e) => {
+    const line = e.target.closest('.json-line')
+    if (!line) return
+    const parentNode = line.parentElement
+    if (!parentNode?.classList.contains('json-node')) return
+    if (!line.querySelector('.json-chevron')) return
+    parentNode.classList.toggle('collapsed')
+  })
+
+  expandBtn.addEventListener('click', () => {
+    container
+      .querySelectorAll('.json-node.collapsed')
+      .forEach((node) => node.classList.remove('collapsed'))
+  })
+
+  collapseBtn.addEventListener('click', () => {
+    container
+      .querySelectorAll('.json-node:not(.collapsed)')
+      .forEach((node) => node.classList.add('collapsed'))
+  })
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      const jsonString = JSON.stringify(jsonObj, null, 2)
+      await navigator.clipboard.writeText(jsonString)
+      copyIcon.style.display = 'none'
+      checkIcon.style.display = 'inline'
+      setTimeout(() => {
+        checkIcon.style.display = 'none'
+        copyIcon.style.display = 'inline'
+      }, 1200)
+    } catch (err) {
+      console.error('Failed to copy JSON', err)
+    }
+  })
 
   return container
 }
 
-function buttonHTML(open) {
-  return `<div class="flex space-x-2 items-center">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-  <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
-</svg>
-    Instructions  <svg class="${open ? 'rotate-180' : ''} w-4 h-4 text-white/40 ml-2" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24">
-                <path d="M19 9l-7 7-7-7" />
-              </svg>
-</div>
+export function createCollapsibleJsonViewer(jsonObj, options = {}) {
+  const wrapper = document.createElement('div')
+  wrapper.className = 'json-wrapper'
+
+  const toggleBtn = document.createElement('button')
+  toggleBtn.type = 'button'
+  toggleBtn.className = 'json-wrapper-toggle'
+  toggleBtn.innerHTML = `
+  <div class="flex items-center gap-2 text-sm">
+    <span>${options.label ?? 'JSON'}</span>
+    <svg class="toggle-chevron transition-transform text-white/40 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </div>
 `
-}
 
-export function createXcmProgramViewer(entry) {
-  const instructionsContainerId = 'instructions-json-viewer'
+  const viewer = createJsonViewer(jsonObj, options)
+  viewer.style.display = 'none'
 
-  const instructionsToggleBtn = document.createElement('button')
-  instructionsToggleBtn.innerHTML = buttonHTML(false)
-  instructionsToggleBtn.className =
-    'json-toggle-btn flex w-fit justify-between items-center text-sm text-white/70 hover:text-white'
-  instructionsToggleBtn.style.cursor = 'pointer'
-  instructionsToggleBtn.style.userSelect = 'none'
+  toggleBtn.addEventListener('click', () => {
+    const hidden = viewer.style.display === 'none'
+    viewer.style.display = hidden ? 'block' : 'none'
 
-  const instructionsContainer = document.createElement('div')
-  instructionsContainer.id = instructionsContainerId
-  instructionsContainer.style.display = 'none'
-  instructionsContainer.style.marginTop = '0.5em'
-
-  const viewer = createJsonViewer(entry.instructions, { depth: 2 })
-  instructionsContainer.appendChild(viewer)
-
-  instructionsToggleBtn.addEventListener('click', () => {
-    if (instructionsContainer.style.display === 'none') {
-      instructionsContainer.style.display = 'block'
-      instructionsToggleBtn.innerHTML = buttonHTML(true)
+    const chevron = toggleBtn.querySelector('.toggle-chevron')
+    if (hidden) {
+      chevron.classList.add('rotate-180')
     } else {
-      instructionsContainer.style.display = 'none'
-      instructionsToggleBtn.innerHTML = buttonHTML(false)
+      chevron.classList.remove('rotate-180')
     }
   })
 
-  const programViewer = document.createElement('div')
-  programViewer.className = 'flex flex-col gap-y-2 my-8'
-  programViewer.innerHTML = '<h2>XCM Program</h2>'
-  programViewer.appendChild(instructionsToggleBtn)
-  programViewer.appendChild(instructionsContainer)
-
-  return programViewer
+  wrapper.append(toggleBtn, viewer)
+  return wrapper
 }

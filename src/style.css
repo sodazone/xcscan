@@ -295,21 +295,100 @@ button.loading .btn-label::after {
 /*
  JSON Viewer
 */
+.json-viewer {
+  @apply font-mono text-sm p-2 max-h-120 overflow-hidden bg-white/5 text-white/80 relative rounded-xl;
+}
+
+.json-viewer .json-content {
+  @apply px-4 overflow-auto max-h-110;
+}
+
+.json-toolbar {
+  @apply absolute top-1 right-6 flex gap-1 mb-2 w-fit rounded-lg p-1 bg-black/10 z-10;
+}
+
+.json-btn {
+  @apply text-white/60 hover:text-white/80 p-2 cursor-pointer inline-flex items-center justify-center;
+}
+
+.json-wrapper-toggle {
+  @apply flex items-center text-white/80 hover:text-white py-1 cursor-pointer mb-1.5;
+}
+
+.json-line {
+  @apply flex items-center py-[0.15rem] outline-none;
+}
+
+.json-line.clickable {
+  @apply cursor-pointer;
+}
+
+.json-line:hover {
+  @apply bg-white/5;
+}
+
+.json-chevron::before {
+  content: '▸';
+  @apply inline-block mr-1 transition-transform ease-in-out duration-200;
+}
+
+.json-node:not(.collapsed) > .json-line > .json-chevron::before {
+  @apply rotate-90;
+}
+
 .json-key {
-  color: #9cdcfe; /* light blue */
+  @apply text-sky-300 mr-1;
 }
 
-.json-collapsible {
-  font-weight: bold;
-  color: #569cd6;
-  margin-left: 0.2em;
+.json-value[data-type='string'] {
+  @apply text-orange-300;
+}
+.json-value[data-type='number'] {
+  @apply text-lime-300;
+}
+.json-value[data-type='boolean'] {
+  @apply text-blue-400;
+}
+.json-value[data-type='null'] {
+  @apply text-gray-500;
 }
 
-.json-node {
-  margin-left: 0.6em;
-  line-height: 1.3em;
+.json-bracket,
+.json-closing {
+  @apply text-yellow-200;
+}
+
+.json-closing {
+  @apply -ml-4.5;
+}
+
+.json-preview {
+  @apply text-gray-500 mx-1 hidden;
+}
+
+.json-bracket.collapsed-only {
+  @apply hidden;
+}
+
+.json-node.collapsed > .json-line .json-bracket.collapsed-only {
+  @apply inline;
+}
+
+.json-node.collapsed > .json-line .json-preview {
+  @apply inline;
 }
 
 .json-children {
-  margin-top: 0.15em;
+  @apply relative ml-0.5 pl-4;
+}
+
+.json-children::before {
+  content: '';
+  @apply absolute left-0 w-px bg-white/10;
+  top: 0;
+  bottom: 1.5rem;
+}
+
+.json-node.collapsed > .json-children {
+  @apply hidden;
 }
