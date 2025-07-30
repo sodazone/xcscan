@@ -13,14 +13,11 @@ import {
   pad,
   shortenAddress,
 } from '../common.js'
-import {
-  getSubscanAddressLink,
-} from '../links.js'
+import { getSubscanAddressLink } from '../links.js'
 import {
   createCopyLinkHTML,
   installCopyEventListener,
 } from '../components/copy-link.js'
-import { createCollapsibleJsonViewer } from './json.js'
 import { getSafeLocale } from '../../formats.js'
 import { createJourneyLegs, getElapsedText } from './legs.js'
 
@@ -271,14 +268,9 @@ async function loadTransactionDetail() {
     const journey = items[0]
     const summary = createJourneySummary(journey)
     const legs = createJourneyLegs(journey)
-    const program = createCollapsibleJsonViewer(journey, {
-      depth: 0,
-      label: 'XCM Program Code',
-    })
 
     container.appendChild(summary)
     container.appendChild(legs)
-    container.appendChild(program)
 
     let disconnect
 

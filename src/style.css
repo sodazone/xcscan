@@ -135,7 +135,7 @@ body {
 }
 
 .dropdown-chevron {
-  @apply w-4 h-4 text-white/40 ml-2;
+  @apply w-4 h-4 text-white/40 ml-2 group-hover:text-white/60;
 }
 
 .dropdown-menu {
@@ -144,11 +144,11 @@ body {
          md:backdrop-blur md:mt-2 md:rounded-lg md:shadow;
 }
 
-.dropdown-toggle svg {
+.dropdown-toggle .dropdown-chevron {
   transition: transform 0.3s ease;
 }
 
-.dropdown.open .dropdown-toggle svg {
+.dropdown.open .dropdown-toggle .dropdown-chevron {
   transform: rotate(180deg);
 }
 

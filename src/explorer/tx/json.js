@@ -206,7 +206,7 @@ export function createCollapsibleJsonViewer(jsonObj, options = {}) {
   toggleBtn.type = 'button'
   toggleBtn.className = 'json-wrapper-toggle'
   toggleBtn.innerHTML = `
-  <div class="flex items-center gap-2 text-sm">
+  <div class="flex items-center gap-2 text-sm mt-2">
     <span>${options.label ?? 'JSON'}</span>
     <svg class="toggle-chevron transition-transform text-white/40 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -216,10 +216,7 @@ export function createCollapsibleJsonViewer(jsonObj, options = {}) {
   </div>
 `
 
-  const viewer = createJsonViewer(jsonObj, options)
-  viewer.style.display = 'none'
-
-  toggleBtn.addEventListener('click', () => {
+  function toggle() {
     const hidden = viewer.style.display === 'none'
     viewer.style.display = hidden ? 'block' : 'none'
 
@@ -229,7 +226,16 @@ export function createCollapsibleJsonViewer(jsonObj, options = {}) {
     } else {
       chevron.classList.remove('rotate-180')
     }
-  })
+  }
+
+  const viewer = createJsonViewer(jsonObj, options)
+  viewer.style.display = 'none'
+
+  toggleBtn.addEventListener('click', toggle)
+
+  if (options.isOpen) {
+    toggle()
+  }
 
   wrapper.append(toggleBtn, viewer)
   return wrapper

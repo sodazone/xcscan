@@ -22,6 +22,7 @@ export function createJourneyLegs(journey) {
 
   const isReceived =
     journey.stops[journey.stops.length - 1].to?.status !== undefined
+
   journey.stops.forEach((stop, index) => {
     if (isReceived && stop.relay?.status === undefined) {
       stop.relay = null
@@ -48,7 +49,6 @@ export function getElapsedText(start, end) {
 }
 
 function createJourneyLeg(stop, index) {
-  console.log('leg', stop)
   const from = createLegStop(stop.from)
   const relay = createLegStop(stop.relay)
   const to = createLegStop(stop.to)
@@ -70,14 +70,14 @@ function createJourneyLeg(stop, index) {
   }
 
   const container = document.createElement('div')
-  container.className = 'space-y-3'
+  container.className = 'space-y-3 mb-12'
 
   const header = document.createElement('div')
   header.className =
     'text-sm text-white/50 flex flex-col md:flex-row md:items-center space-x-2 font-semibold'
 
   const labelContainer = document.createElement('div')
-  labelContainer.className = 'flex space-x-2 items-center truncate'
+  labelContainer.className = 'flex flex-wrap space-x-2 items-center truncate'
 
   const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   arrow.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
@@ -129,24 +129,24 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
   const extrinsicHTML = extrinsic?.module
     ? `
     <div class="flex items-center space-x-2">
-      <span class="text-white/50 text-xs">Tx Hash</span>
+      <span class="text-white/50">Tx Hash</span>
       ${createCopyLinkHTML({ text: extrinsic.hash, display: shortenAddress(extrinsic.hash), url: getSubscanExtrinsicLink(chainId, extrinsic.hash) })}
     </div>
     ${
       extrinsic.evmTxHash
         ? `
       <div class="flex items-center space-x-2">
-        <span class="text-white/50 text-xs">EVM Tx Hash</span>
+        <span class="text-white/50">EVM Tx Hash</span>
         ${createCopyLinkHTML({ text: extrinsic.evmTxHash, display: shortenAddress(extrinsic.evmTxHash), url: getSubscanExtrinsicLink(chainId, extrinsic.evmTxHash) })}
       </div>
       `
         : ''
     }
     <div class="flex flex-col space-y-1">
-      <div class="text-white/50 text-xs">Extrinsic</div>
+      <div class="text-white/50">Extrinsic</div>
       <div class="flex flex-col space-y-1">
-        <span title="${extrinsic.module}.${extrinsic.method}" class="text-xs font-medium text-white/90 truncate">${extrinsic.module}.${extrinsic.method}</span>
-        <span class="text-xs text-white/90">${blockNumber}${asPositionSuffix(extrinsic.blockPosition)}</span>
+        <span title="${extrinsic.module}.${extrinsic.method}" class="font-medium text-white/90 truncate">${extrinsic.module}.${extrinsic.method}</span>
+        <span class="text-white/90">${blockNumber}${asPositionSuffix(extrinsic.blockPosition)}</span>
       </div>
     </div>
     `
@@ -155,10 +155,10 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
   const eventHTML = event?.module
     ? `
     <div class="flex flex-col space-y-1">
-      <div class="text-white/50 text-xs">Event</div>
+      <div class="text-white/50">Event</div>
       <div class="flex flex-col space-y-1">
-        <span title="${event.module}.${event.name}" class="text-xs font-medium truncate">${event.module}.${event.name}</span>
-        <span class="text-xs text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>
+        <span title="${event.module}.${event.name}" class="font-medium truncate">${event.module}.${event.name}</span>
+        <span class="text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>
       </div>
     </div>
     `
@@ -268,7 +268,8 @@ function createXcmDetails(stop) {
   wrapper.className = 'dropdown'
 
   const button = document.createElement('button')
-  button.className = 'dropdown-toggle my-2'
+  button.className = 'dropdown-toggle group my-2 items-center'
+  button.style = 'padding: 0;'
   button.setAttribute('aria-expanded', 'false')
 
   // Create the inner flex container for button text
@@ -278,11 +279,11 @@ function createXcmDetails(stop) {
   // Text span
   const btnText = document.createElement('div')
   btnText.innerHTML = `
-    <div class="flex space-x-2 items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+    <div class="flex space-x-2 items-center group-hover:text-white/60">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
         <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
       </svg>
-      <span>XCM Details</span>
+      <span class="text-white/60 group-hover:text-white/80">XCM Details</span>
     </div>`
   innerDiv.appendChild(btnText)
 
@@ -317,22 +318,25 @@ function createXcmDetails(stop) {
 }
 
 function createXcmDetailsContent(stop) {
-  if (!stop.messageHash && !stop.messageId && !stop.to?.instructions) {return null}
+  if (!stop.messageHash && !stop.messageId && !stop.to?.instructions) {
+    return null
+  }
 
   const container = document.createElement('div')
-  container.className = 'flex flex-col bg-white/5 rounded-xl p-4 space-y-2 h-full text-sm hidden'
+  container.className =
+    'flex flex-col bg-white/5 rounded-xl p-4 space-y-2 h-full text-sm hidden'
 
   if (stop.messageHash) {
     const messageHashEl = document.createElement('div')
     messageHashEl.className = 'flex flex-col space-y-1'
-    messageHashEl.innerHTML = `<span class="text-xs text-white/50">Message Hash</span> <span class="break-all text-white/80 text-mono">${stop.messageHash}</span>`
+    messageHashEl.innerHTML = `<span class="text-white/50">Message Hash</span> <span class="break-all text-white/80 text-mono">${stop.messageHash}</span>`
     container.appendChild(messageHashEl)
   }
 
   if (stop.messageId) {
     const messageIdEl = document.createElement('div')
     messageIdEl.className = 'flex flex-col space-y-1'
-    messageIdEl.innerHTML = `<span class="text-xs text-white/50">Topic ID</span> <span class="break-all text-white/80 text-mono">${stop.messageId}</span>`
+    messageIdEl.innerHTML = `<span class="text-white/50">Topic ID</span> <span class="break-all text-white/80 text-mono">${stop.messageId}</span>`
     container.appendChild(messageIdEl)
   }
 
@@ -340,6 +344,7 @@ function createXcmDetailsContent(stop) {
     const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
       depth: 2,
       label: 'XCM Program Code',
+      isOpen: true,
     })
     container.appendChild(xcmViewer)
   }
