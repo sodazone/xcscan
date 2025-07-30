@@ -23,6 +23,7 @@ import {
   installCopyEventListener,
 } from '../components/copy-link.js'
 import { createCollapsibleJsonViewer } from './json.js'
+import { getSafeLocale } from '../../formats.js'
 
 function formatLocalAndUTC(dateInput) {
   const date = new Date(dateInput)
@@ -35,7 +36,7 @@ function formatLocalAndUTC(dateInput) {
   const ss = pad(date.getSeconds())
 
   const timeZoneName =
-    new Intl.DateTimeFormat(undefined, {
+    new Intl.DateTimeFormat(getSafeLocale(), {
       timeZoneName: 'short',
     })
       .formatToParts(date)

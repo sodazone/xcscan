@@ -1,9 +1,30 @@
+let cachedLocale = null
+
+export function getSafeLocale() {
+  if (cachedLocale) {
+    return cachedLocale
+  }
+
+  const rawLocale = navigator.language || 'en-US'
+  cachedLocale = sanitizeLocale(rawLocale)
+  return cachedLocale
+}
+
+function sanitizeLocale(locale) {
+  const safe = locale
+    .split('.')[0] // remove encoding like UTF-8
+    .split('@')[0] // remove modifiers like @posix
+    .replace('_', '-') // normalize underscore to hyphen
+
+  return Intl.NumberFormat.supportedLocalesOf(safe).length > 0 ? safe : 'en-US'
+}
+
 export function humanizeNumber(
   value,
   maximumFractionDigits = 2,
-  siSeparator = '',
-  locale = 'en-US'
+  siSeparator = ''
 ) {
+  const locale = getSafeLocale()
   const absValue = Math.abs(value)
 
   const formatter = new Intl.NumberFormat(locale, {
@@ -36,17 +57,17 @@ export function humanizeNumber(
   return formatterSmall.format(value)
 }
 
-export const formatTxs = Intl.NumberFormat('en-US', {
+export const formatTxs = Intl.NumberFormat(getSafeLocale(), {
   notation: 'compact',
   maximumFractionDigits: 2,
 }).format
 
-export const formatAccounts = Intl.NumberFormat('en-US', {
+export const formatAccounts = Intl.NumberFormat(getSafeLocale(), {
   notation: 'compact',
   maximumFractionDigits: 2,
 }).format
 
-export const formatRoundtrip = Intl.NumberFormat('en-US', {
+export const formatRoundtrip = Intl.NumberFormat(getSafeLocale(), {
   notation: 'compact',
   maximumFractionDigits: 2,
 }).format
@@ -54,7 +75,7 @@ export const formatRoundtrip = Intl.NumberFormat('en-US', {
 export const formatAssetVolume = humanizeNumber
 
 export function formatDateTime(time) {
-  return new Date(time * 1000).toLocaleString(undefined, {
+  return new Date(time * 1000).toLocaleString(getSafeLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
