@@ -300,7 +300,7 @@ button.loading .btn-label::after {
 }
 
 .json-viewer .json-content {
-  @apply px-4 overflow-auto max-h-110;
+  @apply py-2 px-4 overflow-auto max-h-110;
 }
 
 .json-toolbar {
