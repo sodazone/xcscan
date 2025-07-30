@@ -292,6 +292,10 @@ button.loading .btn-label::after {
   @apply mb-4 md:mb-0;
 }
 
+#journey-legs .journey-leg:not(:last-child) {
+  @apply mb-12;
+}
+
 /*
  JSON Viewer
 */

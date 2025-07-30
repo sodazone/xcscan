@@ -13,7 +13,7 @@ import { createCollapsibleJsonViewer } from './json'
 
 export function createJourneyLegs(journey) {
   const container = document.createElement('div')
-  container.className = 'my-8 space-y-6'
+  container.className = 'mt-8 space-y-6'
   container.id = 'journey-legs'
 
   const title = document.createElement('h2')
@@ -70,7 +70,7 @@ function createJourneyLeg(stop, index) {
   }
 
   const container = document.createElement('div')
-  container.className = 'space-y-3 mb-12'
+  container.className = 'journey-leg space-y-3'
 
   const header = document.createElement('div')
   header.className =

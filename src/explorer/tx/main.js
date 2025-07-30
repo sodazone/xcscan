@@ -6,7 +6,6 @@ import {
   decodeWellKnownAddressHTML,
   formatAction,
   formatAssetAmount,
-  formatLocalTimestamp,
   formatNetworkWithIconHTML,
   getStatusLabel,
   loadResources,
@@ -20,6 +19,7 @@ import {
 } from '../components/copy-link.js'
 import { getSafeLocale } from '../../formats.js'
 import { createJourneyLegs, getElapsedText } from './legs.js'
+import { createCollapsibleJsonViewer } from './json.js'
 
 function formatLocalAndUTC(dateInput) {
   const date = new Date(dateInput)
@@ -271,6 +271,14 @@ async function loadTransactionDetail() {
 
     container.appendChild(summary)
     container.appendChild(legs)
+
+    if (journey.stops.every((s) => s.instructions == null)) {
+      const program = createCollapsibleJsonViewer(journey.instructions, {
+        depth: 2,
+        label: 'XCM Program Code',
+      })
+      container.appendChild(program)
+    }
 
     let disconnect
 
