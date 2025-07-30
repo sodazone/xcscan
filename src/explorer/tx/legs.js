@@ -9,7 +9,7 @@ import {
 } from '../common'
 import { createCopyLinkHTML } from '../components/copy-link'
 import { getSubscanBlockLink, getSubscanExtrinsicLink } from '../links'
-import { createXcmProgramViewer } from './json'
+import { createCollapsibleJsonViewer } from './json'
 
 export function createJourneyLegs(journey) {
   const container = document.createElement('div')
@@ -337,7 +337,10 @@ function createXcmDetailsContent(stop) {
   }
 
   if (stop.instructions) {
-    const xcmViewer = createXcmProgramViewer(stop)
+    const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
+      depth: 2,
+      label: 'XCM Program Code',
+    })
     container.appendChild(xcmViewer)
   }
 
