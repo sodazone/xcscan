@@ -333,7 +333,7 @@ function createXcmDetailsContent(stop) {
     container.appendChild(messageHashEl)
   }
 
-  if (stop.messageId) {
+  if (stop.messageId && stop.messageId !== stop.messageHash) {
     const messageIdEl = document.createElement('div')
     messageIdEl.className = 'flex flex-col space-y-1'
     messageIdEl.innerHTML = `<span class="text-white/50">Topic ID</span> <span class="break-all text-white/80 text-mono">${stop.messageId}</span>`
