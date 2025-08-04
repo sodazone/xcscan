@@ -193,7 +193,7 @@
 
                 <div
                   id="filter-chains"
-                  class="dropdown-menu hidden flex h-screen md:h-auto w-screen md:h-auto md:w-auto md:max-w-2xl"
+                  class="dropdown-menu dropdown-left hidden flex h-screen md:h-auto w-screen md:h-auto md:w-auto md:max-w-2xl"
                 >
                   <div
                     class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
@@ -258,6 +258,84 @@
                   <div
                     id="filter-chain-content"
                     class="flex-1 overflow-y-auto flex-col gap-3 pl-4 pr-1 pt-1 pb-4 scroll-pb-6 md:w-[350px]"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- Assets Filter -->
+              <div class="relative dropdown">
+                <button class="dropdown-toggle">
+                  <div class="flex items-start gap-2">
+                    <span>Assets</span>
+                    <span data-dropdown-labels class="text-white text-left"
+                      >All</span
+                    >
+                  </div>
+
+                  <svg
+                    class="dropdown-chevron"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div
+                  id="filter-assets"
+                  class="dropdown-menu hidden flex h-screen md:h-auto w-screen md:h-auto md:w-auto md:max-w-2xl"
+                >
+                  <div
+                    class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
+                  >
+                    <span class="text-xs text-white/80 uppercase">
+                      Select Assets
+                    </span>
+                    <div class="ml-auto flex items-center gap-x-6">
+                      <button
+                        data-dropdown-close
+                        class="md:hidden"
+                        id="close-filter-assets"
+                      >
+                        <div
+                          class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#121212"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-3.5 h-3.5"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="flex gap-6 items-center px-4 pt-4 text-sm justify-between"
+                    >
+                      <span class="text-white/50">Filter by assets</span>
+                      <button
+                        id="clear-filter-assets"
+                        class="cursor-pointer text-white/40 hover:text-white text-sm align-right"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    <div class="fuzzy-search-bar"></div>
+                  </div>
+                  <div
+                    id="filter-assets-content"
+                    class="flex-1 overflow-y-auto grid gap-3 pl-4 pr-1 pt-1 pb-4 scroll-pb-6 md:w-xs"
                   ></div>
                 </div>
               </div>

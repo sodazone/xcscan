@@ -22,7 +22,7 @@ export function AssetIconCellRenders(params) {
 
   const assetImg = url
     ? `<img src="${url}" class="h-6 w-6 rounded-full bg-white border border-white" />`
-    : '<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 h-6 w-6 rounded-full border-2 border-cyan-100/30">?</span>'
+    : placeholder
 
   const chainImg = chainIconUrl
     ? `<img src="${chainIconUrl}" class="absolute -top-1 -left-1 h-4 w-4 rounded-full border border-white bg-white" />`

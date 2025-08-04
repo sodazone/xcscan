@@ -1,6 +1,8 @@
 import { NetworkInfos, resolveNetworkName } from '../extras.js'
 import { humanizeNumber } from '../formats.js'
+import { fetchFilterableAssets } from './api.js'
 import {
+  assetIconHTML,
   enforceNumericInput,
   getStatusLabel,
   selectableActions,
@@ -12,6 +14,8 @@ import {
   setupToggles,
 } from './components/multi-checkbox-dropdown.js'
 import { createSwitch } from './components/switch.js'
+
+let FilterableAssets = []
 
 export function resolveQueryType(value) {
   const trimmed = value.trim()
@@ -34,6 +38,44 @@ export function resolveQueryType(value) {
 
 export function isValidQuery(value) {
   return resolveQueryType(value) !== null
+}
+
+async function loadAssetsFilter(ctx) {
+  FilterableAssets = await fetchFilterableAssets()
+
+  const assetRenderer = (asset) => {
+    return `
+      <div class="flex space-x-2 items-center ml-2">
+        ${assetIconHTML(asset, true)}
+        <span>${asset.symbol}</span>
+      </div>`
+  }
+
+  const dropdown = MultiCheckboxDropdown({
+    containerId: 'filter-assets-content',
+    items: FilterableAssets,
+    labelResolver: (a) => a.symbol,
+    labelRenderer: assetRenderer,
+    valueResolver: (a) => a.asset,
+    resolveCollection: () => ctx.filters.selectedAssets,
+    onUpdate: ctx.update,
+    searchMaxDistance: 1,
+  })
+
+  document
+    .getElementById('clear-filter-assets')
+    .addEventListener('click', () => {
+      ctx.filters.selectedAssets.length = 0
+      dropdown.reset()
+      ctx.update()
+    })
+
+  return {
+    reset: () => {
+      ctx.filters.selectedAssets.length = 0
+      dropdown.reset()
+    },
+  }
 }
 
 function loadStatusFilter(ctx) {
@@ -367,6 +409,11 @@ export function getActiveFiltersSummary(filters) {
   if (filters.selectedActions.length > 0) {
     parts.push(`Actions: ${filters.selectedActions.join(', ')}`)
   }
+  if (filters.selectedAssets.length > 0) {
+    parts.push(
+      `Assets: ${filters.selectedAssets.map((a) => FilterableAssets.find(({ asset }) => a === asset)?.symbol ?? a).join(', ')}`
+    )
+  }
 
   const { amountPreset, amountGte, amountLte } = filters.selectedUsdAmounts
   if (amountPreset || amountGte || amountLte) {
@@ -380,7 +427,7 @@ export function getActiveFiltersSummary(filters) {
   return parts.length > 0 ? parts.join(' and ') : null
 }
 
-export function loadSearch(ctx) {
+export async function loadSearch(ctx) {
   const searchForm = document.getElementById('search')
   const inputError = document.getElementById('search-input-error')
   const input = searchForm.querySelector('input[name="query"]')
@@ -430,12 +477,14 @@ export function loadSearch(ctx) {
   const actionsFilter = loadActionsFilter(ctx)
   const statusFilter = loadStatusFilter(ctx)
   const amountFilter = loadAmountFilter(ctx)
+  const assetsFilter = await loadAssetsFilter(ctx)
 
   function resetAllFilters() {
     chainsFilter.reset()
     actionsFilter.reset()
     statusFilter.reset()
     amountFilter.reset()
+    assetsFilter.reset()
   }
 
   document

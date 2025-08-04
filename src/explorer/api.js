@@ -5,6 +5,27 @@ import { actionsToQueryValues } from './common.js'
 const sseUrl = `${httpUrl}/agents/xcm/sse`
 const queryUrl = `${httpUrl}/query/xcm`
 
+const CACHE_EXPIRY_MS = 3_600_000
+const MAX_ASSETS = 200
+
+let hasStorage = null
+function hasLocalStorage() {
+  if (hasStorage !== null) {
+    return hasStorage
+  }
+
+  try {
+    const testKey = 'test'
+    localStorage.setItem(testKey, testKey)
+    localStorage.removeItem(testKey)
+    hasStorage = true
+  } catch {
+    hasStorage = false
+  }
+
+  return hasStorage
+}
+
 async function _fetch(args) {
   return await fetchWithRetry(queryUrl, args)
 }
@@ -19,6 +40,7 @@ function asCriteria(filters) {
     selectedStatus,
     selectedActions,
     selectedUsdAmounts,
+    selectedAssets,
   } = filters
 
   const criteria = {}
@@ -58,6 +80,9 @@ function asCriteria(filters) {
   if (selectedActions?.length) {
     criteria.actions = [...actionsToQueryValues(selectedActions)]
   }
+  if (selectedAssets?.length) {
+    criteria.assets = [...selectedAssets]
+  }
 
   const { amountPreset, amountGte, amountLte } = selectedUsdAmounts || {}
 
@@ -78,6 +103,49 @@ function asCriteria(filters) {
   }
 
   return criteria
+}
+
+async function _fetchFilerableAssets() {
+  const filterableAssets = []
+  async function _fetchAssets(cursor) {
+    try {
+      const { items, pageInfo } = await _fetch({
+        args: {
+          op: 'assets.list',
+        },
+        pagination: { limit: 100, cursor },
+      })
+      filterableAssets.push(...items)
+      if (pageInfo?.hasNextPage && filterableAssets.length < MAX_ASSETS) {
+        await _fetchAssets(pageInfo.endCursor)
+      }
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+  await _fetchAssets()
+  return filterableAssets
+}
+
+export async function fetchFilterableAssets() {
+  if (hasLocalStorage()) {
+    const cacheKey = 'xcsExplorerCache_filterable_assets'
+    const cached = localStorage.getItem(cacheKey)
+    if (cached) {
+      const { timestamp, data } = JSON.parse(cached)
+      if (Date.now() - timestamp < CACHE_EXPIRY_MS) {
+        return data
+      }
+    }
+
+    const data = await _fetchFilerableAssets()
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify({ timestamp: Date.now(), data })
+    )
+    return data
+  }
+  return _fetchFilerableAssets()
 }
 
 export async function listJourneys({ filters, pagination }) {

@@ -144,6 +144,10 @@ body {
          md:backdrop-blur md:mt-2 md:rounded-lg md:shadow;
 }
 
+.dropdown-left {
+  @apply md:left-0 md:right-auto;
+}
+
 .dropdown-toggle .dropdown-chevron {
   transition: transform 0.3s ease;
 }

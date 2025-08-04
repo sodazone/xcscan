@@ -2,6 +2,7 @@ import '../style.css'
 
 import {
   loadExtraInfos,
+  resolveAssetIcon,
   resolveNetworkIcon,
   resolveNetworkName,
 } from '../extras.js'
@@ -53,7 +54,7 @@ export function formatNetworkWithIconHTML(networkId) {
 
   return `
     <div class="flex items-center gap-2">
-      <img src="${iconUrl}" alt="${name}" class="size-5 rounded-full bg-black/20 border-black/40 border" />
+      <img src="${iconUrl}" alt="${name}" class="size-6 rounded-full bg-black/20 border-black/40 border" />
       <span>${name ?? networkId}</span>
     </div>
   `
@@ -179,6 +180,32 @@ export function formatAssetAmount(
     amount += `<div class="flex text-xs text-white/60">($${humanizeNumber(asset.usd)})</div>`
   }
   return `<div class="${classes}">${amount}</div>`
+}
+
+export function assetIconHTML({ asset }, usePlaceholder = false) {
+  const sources = resolveAssetIcon(asset)
+  if (sources) {
+    const { assetIconUrl, chainIconUrl } = sources
+    if (assetIconUrl) {
+      return `
+      <div class="relative inline-block w-6 h-6">
+        <img class="w-full h-full rounded-full object-cover bg-black/20 border-black/40 border" src="${assetIconUrl}" alt="" />
+        ${
+          chainIconUrl
+            ? `<img
+              class="absolute -top-0.5 -left-1.5 w-4 h-4 rounded-full border border-white bg-white"
+              src="${chainIconUrl}"
+              alt=""
+            />`
+            : ''
+        }
+      </div>
+    `
+    }
+  }
+  return usePlaceholder
+    ? `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 size-6 rounded-full border-2 border-cyan-100/30">?</span>`
+    : ''
 }
 
 export const selectableActions = [

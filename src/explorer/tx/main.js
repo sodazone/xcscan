@@ -1,8 +1,8 @@
-import { resolveAssetIcon, resolveNetworkName } from '../../extras'
 import { htmlToElement } from '../../utils.js'
 import { getJourneyById, subscribeToJourney } from '../api.js'
 import {
   asClassName,
+  assetIconHTML,
   decodeWellKnownAddressHTML,
   formatAction,
   formatAssetAmount,
@@ -81,30 +81,6 @@ function formatStatusHTML(status) {
   const label = getStatusLabel(status)
   const cls = asClassName(label)
   return `<div class="status status-${cls}"><span class="status-bullet"></span><span class="status-label">${label}</span></div>`
-}
-
-function assetIconHTML({ asset }) {
-  const sources = resolveAssetIcon(asset)
-  if (sources) {
-    const { assetIconUrl, chainIconUrl } = sources
-    if (assetIconUrl) {
-      return `
-      <div class="relative inline-block w-5 h-5">
-        <img class="w-full h-full rounded-full object-cover bg-black/20 border-black/40 border" src="${assetIconUrl}" alt="" />
-        ${
-          chainIconUrl
-            ? `<img
-              class="absolute top-0 -left-1 w-3 h-3 rounded-full border border-white bg-white"
-              src="${chainIconUrl}"
-              alt=""
-            />`
-            : ''
-        }
-      </div>
-    `
-    }
-  }
-  return ''
 }
 
 function getAmounts({ assets }) {

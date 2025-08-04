@@ -57,6 +57,8 @@ export function MultiCheckboxDropdown({
   onUpdate,
   maxVisible = 2,
   groupBy = null,
+  labelRenderer = null,
+  searchMaxDistance = null,
 }) {
   const container = document.getElementById(containerId)
   const labelsEl = container
@@ -90,7 +92,7 @@ export function MultiCheckboxDropdown({
           type="checkbox"
           class="accent-white"
         />
-        <span>${labelResolver(item)}</span>
+        ${labelRenderer ? labelRenderer(item) : `<span>${labelResolver(item)}</span>`}
       </label>`
   }
 
@@ -164,14 +166,13 @@ export function MultiCheckboxDropdown({
     searchInput = createFuzzySearch({
       container: fuzzySearch,
       items: items.map(labelResolver),
+      maxDistance: searchMaxDistance,
       onFilter: (matches) => {
         const matchSet = new Set(matches.map((m) => m.toLowerCase()))
         checkboxes.forEach((c) => {
-          if (matchSet.has(c.parentNode.textContent?.trim()?.toLowerCase())) {
-            c.parentNode.classList.remove('hidden')
-          } else {
-            c.parentNode.classList.add('hidden')
-          }
+          const item = items.find((i) => valueResolver(i) === c.value)
+          const label = item ? labelResolver(item).toLowerCase() : ''
+          c.parentNode.classList.toggle('hidden', !matchSet.has(label))
         })
       },
     })

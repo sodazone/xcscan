@@ -35,6 +35,7 @@ const filters = {
   selectedChains: [],
   selectedStatus: [],
   selectedActions: [],
+  selectedAssets: [],
   selectedUsdAmounts: {
     amountPreset: null,
     amountGte: null,
@@ -229,7 +230,7 @@ function renderAssets(item) {
     const amoutStr = formatAssetAmount(trapped)
     if (amoutStr) {
       if (renderedCount < maxToShow) {
-        rendered.push(`<div class="flex items-center gap-2 bg-red-500/10 w-fit">
+        rendered.push(`<div class="flex items-center gap-2 bg-red-500/10 w-fit px-1">
           <div>${amoutStr}</div>
           <div class="text-red-400/80 font-medium text-xs">trapped</div>
         </div>`)
@@ -536,7 +537,7 @@ window.onload = async () => {
   installCopyEventListener()
 
   loadToggles()
-  loadSearch({
+  await loadSearch({
     filters,
     update: debounce(applyFiltersAndRender, 300),
   })
