@@ -126,7 +126,10 @@ export function MultiCheckboxDropdown({
 
   function updateLabels() {
     const checked = checkboxes.filter((c) => c.checked)
-    const labelsList = checked.map((c) => c.parentElement.textContent.trim())
+    const labelsList = checked.map((c) => {
+      const item = items.find((i) => valueResolver(i) === c.value)
+      return labelResolver(item)
+    })
 
     let display = 'All'
 
