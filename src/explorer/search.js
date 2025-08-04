@@ -391,17 +391,23 @@ function loadAmountFilter(ctx) {
   }
 }
 
+function buildChainsSummary(chains) {
+  return chains.map((chain) => resolveNetworkName(chain) ?? chain).join(', ')
+}
+
 export function getActiveFiltersSummary(filters) {
   const parts = []
 
   if (filters.selectedOrigins.length > 0) {
-    parts.push(`Origins: ${filters.selectedOrigins.join(', ')}`)
+    parts.push(`Origins: ${buildChainsSummary(filters.selectedOrigins)}`)
   }
   if (filters.selectedDestinations.length > 0) {
-    parts.push(`Destinations: ${filters.selectedDestinations.join(', ')}`)
+    parts.push(
+      `Destinations: ${buildChainsSummary(filters.selectedDestinations)}`
+    )
   }
   if (filters.selectedChains.length > 0) {
-    parts.push(`Chains: ${filters.selectedChains.join(', ')}`)
+    parts.push(`Chains: ${buildChainsSummary(filters.selectedChains)}`)
   }
   if (filters.selectedStatus.length > 0) {
     parts.push(`Status: ${filters.selectedStatus.join(', ')}`)
