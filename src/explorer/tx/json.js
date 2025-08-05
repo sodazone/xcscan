@@ -123,13 +123,13 @@ export function createJsonViewer(jsonObj, options = {}) {
   expandBtn.type = 'button'
   expandBtn.className = 'json-btn'
   expandBtn.title = 'Expand All'
-  expandBtn.appendChild(createLucideIcon('ChevronsDownUp'))
+  expandBtn.appendChild(createLucideIcon('ChevronsUpDown'))
 
   const collapseBtn = document.createElement('button')
   collapseBtn.type = 'button'
   collapseBtn.className = 'json-btn'
   collapseBtn.title = 'Collapse All'
-  collapseBtn.appendChild(createLucideIcon('ChevronsUpDown'))
+  collapseBtn.appendChild(createLucideIcon('ChevronsDownUp'))
 
   const copyBtn = document.createElement('button')
   copyBtn.type = 'button'
@@ -206,7 +206,7 @@ export function createCollapsibleJsonViewer(jsonObj, options = {}) {
   toggleBtn.type = 'button'
   toggleBtn.className = 'json-wrapper-toggle'
   toggleBtn.innerHTML = `
-  <div class="flex items-center gap-2 text-sm mt-2">
+  <div class="flex items-center gap-2 text-sm">
     <span>${options.label ?? 'JSON'}</span>
     <svg class="toggle-chevron transition-transform text-white/40 size-4" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
