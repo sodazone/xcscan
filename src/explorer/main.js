@@ -366,55 +366,84 @@ function renderTransactionsTable(results) {
 
   renderPaginationFooter(pageInfo)
 
-  function onUpdateJourney(journey) {
+  function isStatusInFilter(journey, filters) {
+    return (
+      filters?.selectedStatus &&
+      filters?.selectedStatus.length > 0 &&
+      filters?.selectedStatus.includes(journey.status)
+    )
+  }
+
+  function isStatusNotInFilter(journey, filters) {
+    return (
+      filters?.selectedStatus &&
+      filters?.selectedStatus.length > 0 &&
+      !filters?.selectedStatus.includes(journey.status)
+    )
+  }
+
+  function onUpdateJourney(journey, filters) {
     const existing = items?.find((item) => item.id === journey.id)
-    if (existing) {
-      if (existing.status === 'sent') {
-        existing.status = journey.status
-
-        const row = document.getElementById(journey.correlationId)
-        if (!row) {
-          console.warn('Row not found for', journey.correlationId)
-          return
+    if (existing && existing.status === 'sent') {
+      if (isStatusNotInFilter(journey, filters)) {
+        // If updated status no longer matches filter, remove it
+        const index = items.findIndex((item) => item.id === journey.id)
+        if (index > -1) {
+          items.splice(index, 1)
+          const row = document.getElementById(journey.correlationId)
+          if (row) row.remove()
         }
-
-        const statusCells = row.querySelectorAll('[data-label="Status"]')
-        if (statusCells == null || statusCells.length < 1) return
-
-        const statusLabel = getStatusLabel(journey.status)
-        const statusCls = asClassName(statusLabel)
-
-        statusCells.forEach((statusCell) => {
-          statusCell.setAttribute('title', statusLabel)
-
-          const img = statusCell.querySelector('img.table-status')
-          if (img) {
-            img.className = `table-status ${statusCls} size-4`
-            img.src = `/icons/${statusCls}.svg`
-            img.alt = statusLabel
-          }
-
-          const text = statusCell.querySelector('span')
-          if (text) {
-            text.textContent = statusLabel
-          }
-        })
-
-        // Update the assets
-        const assetCells = row.querySelectorAll('[data-label="Assets"]')
-        if (assetCells && assetCells.length > 0) {
-          const assetsHTML = renderAssets(journey)
-          assetCells.forEach((assetCell) => {
-            assetCell.innerHTML = assetsHTML
-          })
-        }
+        return
       }
+      existing.status = journey.status
+
+      const row = document.getElementById(journey.correlationId)
+      if (!row) {
+        console.warn('Row not found for', journey.correlationId)
+        return
+      }
+
+      const statusCells = row.querySelectorAll('[data-label="Status"]')
+      if (statusCells == null || statusCells.length < 1) return
+
+      const statusLabel = getStatusLabel(journey.status)
+      const statusCls = asClassName(statusLabel)
+
+      statusCells.forEach((statusCell) => {
+        statusCell.setAttribute('title', statusLabel)
+
+        const img = statusCell.querySelector('img.table-status')
+        if (img) {
+          img.className = `table-status ${statusCls} size-4`
+          img.src = `/icons/${statusCls}.svg`
+          img.alt = statusLabel
+        }
+
+        const text = statusCell.querySelector('span')
+        if (text) {
+          text.textContent = statusLabel
+        }
+      })
+
+      // Update the assets
+      const assetCells = row.querySelectorAll('[data-label="Assets"]')
+      if (assetCells && assetCells.length > 0) {
+        const assetsHTML = renderAssets(journey)
+        assetCells.forEach((assetCell) => {
+          assetCell.innerHTML = assetsHTML
+        })
+      }
+    } else if (isStatusInFilter(journey, filters)) {
+      onNewJourney(journey)
     } else {
       console.warn('Journey not found')
     }
   }
 
-  function onNewJourney(journey) {
+  function onNewJourney(journey, filters) {
+    if (isStatusNotInFilter(journey, filters)) {
+      return
+    }
     if (currentPage === 0) {
       const row = createJourneyRow(journey)
       table.prepend(row)

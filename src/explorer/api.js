@@ -209,16 +209,19 @@ export function subscribeToJourneys(
   filters,
   { onUpdateJourney, onNewJourney, onOpen = () => {}, onError = () => {} }
 ) {
-  const params = new URLSearchParams(asCriteria(filters)).toString()
+  // do not pass status filters to server
+  // we will handle it in onUpdateJourney and onNewJourney
+  const _filters = { ...filters, selectedStatus: [] }
+  const params = new URLSearchParams(asCriteria(_filters)).toString()
   const source = new EventSource(`${sseUrl}?${params}`)
 
   source.onopen = onOpen
 
   source.addEventListener('update_journey', (e) =>
-    onUpdateJourney(JSON.parse(e.data))
+    onUpdateJourney(JSON.parse(e.data), filters)
   )
   source.addEventListener('new_journey', (e) =>
-    onNewJourney(JSON.parse(e.data))
+    onNewJourney(JSON.parse(e.data), filters)
   )
 
   source.onerror = (error) => {
