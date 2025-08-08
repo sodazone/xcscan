@@ -170,26 +170,29 @@
               id="filters"
               class="hidden flex-col md:flex md:flex-row md:items-center md:gap-4"
             >
-              <div class="grid grid-cols-2 gap-4 w-full md:flex md:gap-4">
+              <div
+                class="flex flex-col gap-y-4 w-full md:flex-row md:gap-x-4 md:gap-y-0"
+              >
                 <!-- Chains Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle">
-                    <div class="flex items-start gap-2">
-                      <span>Chains</span>
-                      <span data-dropdown-labels class="text-white text-left"
-                        >All</span
-                      >
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Chains</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
-
-                    <svg
-                      class="dropdown-chevron"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M19 9l-7 7-7-7" />
-                    </svg>
                   </button>
 
                   <div
@@ -265,23 +268,24 @@
 
                 <!-- Assets Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle">
-                    <div class="flex items-start gap-2">
-                      <span>Assets</span>
-                      <span data-dropdown-labels class="text-white text-left"
-                        >All</span
-                      >
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Assets</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
-
-                    <svg
-                      class="dropdown-chevron"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M19 9l-7 7-7-7" />
-                    </svg>
                   </button>
 
                   <div
@@ -343,23 +347,24 @@
 
                 <!-- Actions Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle">
-                    <div class="flex items-start gap-2">
-                      <span>Actions</span>
-                      <span data-dropdown-labels class="text-white text-left"
-                        >All</span
-                      >
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Actions</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
-
-                    <svg
-                      class="dropdown-chevron"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M19 9l-7 7-7-7" />
-                    </svg>
                   </button>
 
                   <div
@@ -405,23 +410,24 @@
 
                 <!-- Status Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle">
-                    <div class="flex items-start gap-2">
-                      <span>Status</span>
-                      <span data-dropdown-labels class="text-white text-left"
-                        >All</span
-                      >
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Status</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
-
-                    <svg
-                      class="dropdown-chevron"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M19 9l-7 7-7-7" />
-                    </svg>
                   </button>
 
                   <div
@@ -467,25 +473,24 @@
 
                 <!-- USD Filter -->
                 <div id="filter-usd-amount" class="relative dropdown">
-                  <button class="dropdown-toggle">
-                    <div class="flex items-start gap-2">
-                      <span>Amounts</span>
-                      <span
-                        data-dropdown-labels
-                        class="text-white text-left truncate max-w-48"
-                        >All</span
-                      >
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Amounts</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
-
-                    <svg
-                      class="dropdown-chevron"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M19 9l-7 7-7-7" />
-                    </svg>
                   </button>
 
                   <div class="dropdown-menu hidden flex w-screen md:w-fit">
@@ -604,7 +609,7 @@
               >
                 <button
                   id="filters-reset-all"
-                  class="text-sm text-white/40 cursor-pointer hover:text-white"
+                  class="text-sm text-white/40 cursor-pointer hover:text-white border border-white/10 rounded-lg w-full p-1 md:border-0"
                 >
                   Reset
                 </button>
