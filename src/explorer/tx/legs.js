@@ -152,7 +152,18 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
     `
     : ''
 
-  const eventHTML = event?.module
+  const eventHTML = createEventMetaHTML({ event, blockNumber })
+
+  return `
+    <div class="text-sm space-y-2">
+      ${extrinsicHTML}
+      ${eventHTML}
+    </div>
+  `
+}
+
+function createEventMetaHTML({ event, blockNumber }) {
+  return event?.module
     ? `
     <div class="flex flex-col space-y-1">
       <div class="text-white/50">Event</div>
@@ -163,13 +174,6 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
     </div>
     `
     : ''
-
-  return `
-    <div class="text-sm space-y-2">
-      ${extrinsicHTML}
-      ${eventHTML}
-    </div>
-  `
 }
 
 function createLegStopHTML(stop) {
@@ -318,27 +322,46 @@ function createXcmDetails(stop) {
 }
 
 function createXcmDetailsContent(stop) {
-  if (!stop.messageHash && !stop.messageId && !stop.to?.instructions) {
+  if (!stop.messageHash && !stop.messageId && !stop.instructions) {
     return null
   }
 
   const container = document.createElement('div')
   container.className =
-    'flex flex-col bg-white/5 rounded-xl p-4 space-y-2 h-full text-sm hidden'
+    'flex flex-col bg-white/5 rounded-xl p-4 space-y-4 h-full text-sm hidden'
 
-  if (stop.messageHash) {
-    const messageHashEl = document.createElement('div')
-    messageHashEl.className = 'flex flex-col space-y-1'
-    messageHashEl.innerHTML = `<span class="text-white/50">Message Hash</span> <span class="break-all text-white/80 text-mono">${stop.messageHash}</span>`
-    container.appendChild(messageHashEl)
-  }
+  const executeLocationEl = document.createElement('div')
+  const networkHTML = formatNetworkWithIconHTML(stop.to.chainId)
+  const eventHTML = createEventMetaHTML({
+    event: stop.to.event,
+    blockNumber: stop.to.blockNumber,
+  })
 
-  if (stop.messageId && stop.messageId !== stop.messageHash) {
-    const messageIdEl = document.createElement('div')
-    messageIdEl.className = 'flex flex-col space-y-1'
-    messageIdEl.innerHTML = `<span class="text-white/50">Topic ID</span> <span class="break-all text-white/80 text-mono">${stop.messageId}</span>`
-    container.appendChild(messageIdEl)
-  }
+  const topicIdHTML =
+    stop.messageId && stop.messageId !== stop.messageHash
+      ? `
+    <div class="flex flex-col space-y-1">
+      <span class="text-white/50">Topic ID</span>
+      <span class="break-all text-white/80 text-mono">${stop.messageId}</span>
+    </div>`
+      : ''
+
+  const messageHashHTML = `
+    <div class="flex flex-col space-y-1">
+      <span class="text-white/50">Message Hash</span>
+      <span class="break-all text-white/80 text-mono">${stop.messageHash}</span>
+    </div>
+  `
+
+  executeLocationEl.className = 'flex flex-col space-y-4'
+  executeLocationEl.innerHTML = `
+    ${networkHTML}
+    ${eventHTML}
+    ${topicIdHTML}
+    ${messageHashHTML}
+  `
+
+  container.appendChild(executeLocationEl)
 
   if (stop.instructions) {
     const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
