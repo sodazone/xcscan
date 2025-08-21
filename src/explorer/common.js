@@ -163,7 +163,7 @@ export function formatAssetAmount(
   showUsd = true,
   classes = 'flex flex-wrap items-center space-x-2'
 ) {
-  if (asset.decimals == null) {
+  if (asset == null || asset.decimals == null) {
     return ''
   }
 
