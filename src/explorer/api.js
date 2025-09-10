@@ -1,8 +1,9 @@
-import { fetchWithRetry } from '../api.js'
+import { getWithRetry, postWithRetry } from '../api.js'
 import { httpUrl } from '../env.js'
 import { actionsToQueryValues } from './common.js'
 
-const sseUrl = `${httpUrl}/agents/xcm/sse`
+const sseUrl = `${httpUrl}/sse/xcm/default`
+const sseNodUrl = `${httpUrl}/sse/nod/xcm/default`
 const queryUrl = `${httpUrl}/query/xcm`
 
 const CACHE_EXPIRY_MS = 3_600_000
@@ -26,8 +27,8 @@ function hasLocalStorage() {
   return hasStorage
 }
 
-async function _fetch(args) {
-  return await fetchWithRetry(queryUrl, args)
+async function _fetchQuery(args) {
+  return await postWithRetry(queryUrl, args)
 }
 
 function asCriteria(filters) {
@@ -109,7 +110,7 @@ async function _fetchFilerableAssets() {
   const filterableAssets = []
   async function _fetchAssets(cursor) {
     try {
-      const { items, pageInfo } = await _fetch({
+      const { items, pageInfo } = await _fetchQuery({
         args: {
           op: 'assets.list',
         },
@@ -151,7 +152,7 @@ export async function fetchFilterableAssets() {
 export async function listJourneys({ filters, pagination }) {
   try {
     const criteria = asCriteria(filters)
-    return await _fetch({
+    return await _fetchQuery({
       args: {
         op: 'journeys.list',
         criteria,
@@ -165,7 +166,7 @@ export async function listJourneys({ filters, pagination }) {
 
 export async function getJourneyById(id) {
   try {
-    return await _fetch({
+    return await _fetchQuery({
       args: {
         op: 'journeys.by_id',
         criteria: {
@@ -178,63 +179,74 @@ export async function getJourneyById(id) {
   }
 }
 
-export function subscribeToJourney(
+async function requestNodToken() {
+  const { token } = await getWithRetry(sseNodUrl)
+  if (token == null) {
+    throw new Error('Failed to get NOD token')
+  }
+  return token
+}
+
+async function buildSseUrl(paramsObj = {}) {
+  const nodToken = await requestNodToken()
+  const params = new URLSearchParams({
+    ...paramsObj,
+    nod: nodToken,
+  })
+  return `${sseUrl}?${params}`
+}
+
+function createEventSource(url, { onOpen, onError, eventHandlers = {} }) {
+  const source = new EventSource(url)
+
+  if (onOpen) {
+    source.onopen = onOpen
+  }
+
+  // attach all custom event handlers
+  for (const [eventName, handler] of Object.entries(eventHandlers)) {
+    source.addEventListener(eventName, (e) => handler(JSON.parse(e.data)))
+  }
+
+  source.onerror = (error) => {
+    console.error('SSE error:', error)
+    onError?.(error)
+
+    if (source.readyState === EventSource.CLOSED) {
+      console.warn('SSE connection closed by server.')
+    }
+  }
+
+  return () => source.close()
+}
+
+export async function subscribeToJourney(
   id,
   { onUpdateJourney, onOpen = () => {}, onError = () => {} }
 ) {
-  const source = new EventSource(`${sseUrl}?id=${id}`)
-
-  source.onopen = onOpen
-
-  source.addEventListener('update_journey', (e) =>
-    onUpdateJourney(JSON.parse(e.data))
-  )
-
-  source.onerror = (error) => {
-    console.error('SSE error:', error)
-    onError(error)
-
-    if (source.readyState === EventSource.CLOSED) {
-      // TODO: exponential retry
-      console.warn('SSE connection closed by server.')
-    }
-  }
-
-  return () => {
-    source.close()
-  }
+  const url = await buildSseUrl({ id })
+  return createEventSource(url, {
+    onOpen,
+    onError,
+    eventHandlers: {
+      update_journey: onUpdateJourney,
+    },
+  })
 }
 
-export function subscribeToJourneys(
+export async function subscribeToJourneys(
   filters,
   { onUpdateJourney, onNewJourney, onOpen = () => {}, onError = () => {} }
 ) {
-  // do not pass status filters to server
-  // we will handle it in onUpdateJourney and onNewJourney
   const _filters = { ...filters, selectedStatus: [] }
-  const params = new URLSearchParams(asCriteria(_filters)).toString()
-  const source = new EventSource(`${sseUrl}?${params}`)
+  const url = await buildSseUrl(asCriteria(_filters))
 
-  source.onopen = onOpen
-
-  source.addEventListener('update_journey', (e) =>
-    onUpdateJourney(JSON.parse(e.data), filters)
-  )
-  source.addEventListener('new_journey', (e) =>
-    onNewJourney(JSON.parse(e.data), filters)
-  )
-
-  source.onerror = (error) => {
-    console.error('SSE error:', error)
-    onError(error)
-
-    if (source.readyState === EventSource.CLOSED) {
-      // TODO: exponential retry
-      console.warn('SSE connection closed by server.')
-    }
-  }
-
-  return () => {
-    source.close()
-  }
+  return createEventSource(url, {
+    onOpen,
+    onError,
+    eventHandlers: {
+      update_journey: (data) => onUpdateJourney(data, filters),
+      new_journey: (data) => onNewJourney(data, filters),
+    },
+  })
 }

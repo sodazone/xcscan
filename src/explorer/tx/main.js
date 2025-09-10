@@ -277,10 +277,12 @@ async function loadTransactionDetail() {
     }
 
     if (journey.status === 'sent') {
-      disconnect = subscribeToJourney(journey.correlationId, {
+      subscribeToJourney(journey.correlationId, {
         onUpdateJourney,
         onError: console.error,
       })
+        .then((disconnectHandler) => (disconnect = disconnectHandler))
+        .catch(console.error)
     }
   } catch (err) {
     console.error('Error loading transaction:', err)

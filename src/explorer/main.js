@@ -497,12 +497,14 @@ function renderTransactionsTable(results) {
   }
 
   const { onError, onOpen } = liveStatus()
-  closeSubscription = subscribeToJourneys(filters, {
+  subscribeToJourneys(filters, {
     onNewJourney,
     onUpdateJourney,
     onOpen,
     onError,
   })
+    .then((closeHandler) => (closeSubscription = closeHandler))
+    .catch(console.error)
 }
 
 const searchIndicator = document.getElementById('search-indicator')

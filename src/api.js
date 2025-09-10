@@ -8,16 +8,27 @@ const headers = Object.assign(
   apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
 )
 
-export async function fetchWithRetry(queryUrl, body) {
-  return withRetry(() => _fetch(queryUrl, body))()
+export async function postWithRetry(url, body) {
+  return withRetry(() =>
+    _fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    })
+  )()
 }
 
-async function _fetch(queryUrl, body) {
-  const response = await fetch(queryUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  })
+export async function getWithRetry(url) {
+  return withRetry(() =>
+    _fetch(url, {
+      method: 'GET',
+      headers,
+    })
+  )()
+}
+
+async function _fetch(url, params) {
+  const response = await fetch(url, params)
   if (!response.ok) {
     const text = await response.text()
     throw new Error(`Response status: ${response.status} ${text}`)
