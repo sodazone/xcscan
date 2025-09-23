@@ -162,6 +162,7 @@ function createJourneySummary(journey) {
       shortenAddress(journey.toFormatted ?? journey.to))
 
   const actionFormatted = formatAction(journey)
+  const protocol = journey.originProtocol
 
   const summary = document.createElement('div')
   summary.id = 'journey-summary'
@@ -174,6 +175,9 @@ function createJourneySummary(journey) {
 
     <div class="text-white/50">Status</div>
     <div>${formatStatusHTML(journey.status)}</div>
+
+    <div class="text-white/50">Protocols</div>
+    <div>${protocol}</div>
 
     <div class="text-white/50">Action</div>
     <div class="truncate break-all">${actionFormatted}</div>
