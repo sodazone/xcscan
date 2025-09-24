@@ -20,6 +20,7 @@ import {
 import { getSafeLocale } from '../../formats.js'
 import { createJourneyLegs, getElapsedText } from './legs.js'
 import { createCollapsibleJsonViewer } from './json.js'
+import { resolveProtocols } from '../../protocols.js'
 
 function formatLocalAndUTC(dateInput) {
   const date = new Date(dateInput)
@@ -162,7 +163,10 @@ function createJourneySummary(journey) {
       shortenAddress(journey.toFormatted ?? journey.to))
 
   const actionFormatted = formatAction(journey)
-  const protocol = journey.originProtocol
+  const protocols = resolveProtocols([
+    journey.originProtocol,
+    journey.destinationProtocol,
+  ])
 
   const summary = document.createElement('div')
   summary.id = 'journey-summary'
@@ -177,7 +181,7 @@ function createJourneySummary(journey) {
     <div>${formatStatusHTML(journey.status)}</div>
 
     <div class="text-white/50">Protocols</div>
-    <div>${protocol}</div>
+    <div class="flex items-center">${protocols}</div>
 
     <div class="text-white/50">Action</div>
     <div class="truncate break-all">${actionFormatted}</div>
