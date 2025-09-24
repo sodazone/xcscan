@@ -44,6 +44,12 @@ const filters = {
   chainPairMode: false,
 }
 
+function encodeCursor(item) {
+  const timestamp =
+    typeof item.sentAt === 'number' ? item.sentAt : item.sentAt.getTime()
+  return btoa(`${timestamp}|${item.id}`)
+}
+
 function renderPaginationFooter({ hasNextPage, endCursor }) {
   const paginationFooter = document.querySelector('#pagination-footer')
 
@@ -457,7 +463,7 @@ function renderTransactionsTable(results) {
         // update pagination cursor
         const lastItem = items[items.length - 1]
         pageCursors.length = 1
-        pageCursors.push(btoa(lastItem.sentAt.toString()))
+        pageCursors.push(encodeCursor(lastItem))
 
         const lastRow = table.lastElementChild
         if (lastRow) {

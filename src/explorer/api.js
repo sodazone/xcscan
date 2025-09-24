@@ -2,8 +2,8 @@ import { fetchWithRetry } from '../api.js'
 import { httpUrl } from '../env.js'
 import { actionsToQueryValues } from './common.js'
 
-const sseUrl = `${httpUrl}/agents/xcm/sse`
-const queryUrl = `${httpUrl}/query/xcm`
+const sseUrl = `${httpUrl}/agents/crosschain/sse`
+const queryUrl = `${httpUrl}/query/crosschain`
 
 const CACHE_EXPIRY_MS = 3_600_000
 const MAX_ASSETS = 200
