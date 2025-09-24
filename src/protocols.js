@@ -23,7 +23,7 @@ export function resolveProtocol(
   const label = showLabels
     ? `<span class="leading-none">${entry?.label || name}</span>`
     : ''
-  return `<span class="flex items-center space-x-1">${icon}${label}</span>`
+  return `<span class="flex items-center space-x-2">${icon}${label}</span>`
 }
 
 export function resolveProtocols(names = [], opts = {}) {
@@ -41,7 +41,7 @@ export function resolveProtocols(names = [], opts = {}) {
           .map((n) => protocolIcons[n.toLowerCase()]?.label || n)
           .join(' + ')
       : ''
-  return `<span class="flex items-center space-x-1">
+  return `<span class="flex items-center space-x-2">
     <span class="flex -space-x-1">${icons.join('')}</span>
     ${labels ? `<span class="leading-none">${labels}</span>` : ''}
   </span>`
