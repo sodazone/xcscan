@@ -7,7 +7,7 @@ const RENDER = {
 }
 
 function toProtocol(stop) {
-  if (['hrmp', 'ump', 'dmp', 'xcmp'].includes(stop.type)) {
+  if (['hrmp', 'ump', 'dmp', 'vmp', 'xcmp'].includes(stop.type)) {
     return 'xcm'
   }
   return stop.type
