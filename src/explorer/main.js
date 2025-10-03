@@ -1,8 +1,8 @@
 import { debounce } from '../utils.js'
+import { resolveAddress } from './addresses.js'
 import { listJourneys, subscribeToJourneys } from './api.js'
 import {
   asClassName,
-  decodeWellKnownAddressHTML,
   formatAssetAmount,
   formatLocalTimestamp,
   formatNetworkWithIconHTML,
@@ -10,7 +10,6 @@ import {
   loadResources,
   makeGuardedClickHandler,
   prettify,
-  shortenAddress,
 } from './common.js'
 import {
   createCopyLinkHTML,
@@ -140,9 +139,10 @@ function addressHTML({ display, text }) {
 
 function renderFrom(item) {
   const fromChain = item.origin
-  const fromAddress = item.from.startsWith('urn')
-    ? null
-    : shortenAddress(item.fromFormatted ?? item.from)
+  const fromAddress = resolveAddress({
+    address: item.from,
+    formatted: item.fromFormatted,
+  })
 
   return `${formatNetworkWithIconHTML(fromChain)}
             ${addressHTML({
@@ -153,10 +153,10 @@ function renderFrom(item) {
 
 function renderTo(item) {
   const toChain = item.destination
-  const toAddress = item.to.startsWith('urn')
-    ? null
-    : (decodeWellKnownAddressHTML(item.to) ??
-      shortenAddress(item.toFormatted ?? item.to))
+  const toAddress = resolveAddress({
+    address: item.to,
+    formatted: item.toFormatted,
+  })
 
   return `${formatNetworkWithIconHTML(toChain)}
             ${addressHTML({

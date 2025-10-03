@@ -1,38 +1,166 @@
-const SUBSCAN = {
-  'urn:ocn:polkadot:0': 'https://polkadot.subscan.io',
-  'urn:ocn:polkadot:1000': 'https://assethub-polkadot.subscan.io',
-  'urn:ocn:polkadot:1002': 'https://bridgehub-polkadot.subscan.io',
-  'urn:ocn:polkadot:1005': 'https://coretime-polkadot.subscan.io',
-  'urn:ocn:polkadot:2000': 'https://acala.subscan.io',
-  'urn:ocn:polkadot:2004': 'https://moonbeam.subscan.io',
-  'urn:ocn:polkadot:2006': 'https://astar.subscan.io',
-  'urn:ocn:polkadot:2030': 'https://bifrost.subscan.io',
-  'urn:ocn:polkadot:2031': 'https://centrifuge.subscan.io',
-  'urn:ocn:polkadot:2034': 'https://hydration.subscan.io',
-  'urn:ocn:polkadot:2035': 'https://phala.subscan.io',
-  'urn:ocn:polkadot:3369': 'https://mythos.subscan.io',
-  'urn:ocn:kusama:0': 'https://kusama.subscan.io',
-  'urn:ocn:kusama:1000': 'https://assethub-kusama.subscan.io',
-  'urn:ocn:kusama:1002': 'https://bridgehub-kusama.subscan.io',
-  'urn:ocn:kusama:1005': 'https://coretime-kusama.subscan.io',
+const EXPLORERS = {
+  'urn:ocn:polkadot:0': {
+    type: 'subscan',
+    url: 'https://polkadot.subscan.io',
+  },
+  'urn:ocn:polkadot:1000': {
+    type: 'subscan',
+    url: 'https://assethub-polkadot.subscan.io',
+  },
+  'urn:ocn:polkadot:1002': {
+    type: 'subscan',
+    url: 'https://bridgehub-polkadot.subscan.io',
+  },
+  'urn:ocn:polkadot:1005': {
+    type: 'subscan',
+    url: 'https://coretime-polkadot.subscan.io',
+  },
+  'urn:ocn:polkadot:2000': {
+    type: 'subscan',
+    url: 'https://acala.subscan.io',
+  },
+  'urn:ocn:polkadot:2004': [
+    {
+      type: 'subscan',
+      url: 'https://moonbeam.subscan.io',
+    },
+    {
+      type: 'etherscan',
+      url: 'https://moonscan.io',
+    },
+  ],
+  'urn:ocn:polkadot:2006': {
+    type: 'subscan',
+    url: 'https://astar.subscan.io',
+  },
+  'urn:ocn:polkadot:2030': {
+    type: 'subscan',
+    url: 'https://bifrost.subscan.io',
+  },
+  'urn:ocn:polkadot:2031': {
+    type: 'subscan',
+    url: 'https://centrifuge.subscan.io',
+  },
+  'urn:ocn:polkadot:2034': {
+    type: 'subscan',
+    url: 'https://hydration.subscan.io',
+  },
+  'urn:ocn:polkadot:2035': {
+    type: 'subscan',
+    url: 'https://phala.subscan.io',
+  },
+  'urn:ocn:polkadot:3369': {
+    type: 'subscan',
+    url: 'https://mythos.subscan.io',
+  },
+  'urn:ocn:kusama:0': {
+    type: 'subscan',
+    url: 'https://kusama.subscan.io',
+  },
+  'urn:ocn:kusama:1000': {
+    type: 'subscan',
+    url: 'https://assethub-kusama.subscan.io',
+  },
+  'urn:ocn:kusama:1002': {
+    type: 'subscan',
+    url: 'https://bridgehub-kusama.subscan.io',
+  },
+  'urn:ocn:kusama:1005': {
+    type: 'subscan',
+    url: 'https://coretime-kusama.subscan.io',
+  },
+  'urn:ocn:ethereum:8453': {
+    type: 'etherscan',
+    url: 'https://basescan.io',
+  },
+  'urn:ocn:ethereum:56': {
+    type: 'etherscan',
+    url: 'https://bscscan.io',
+  },
+  'urn:ocn:ethereum:42161': {
+    type: 'etherscan',
+    url: 'https://arbiscan.io',
+  },
+  'urn:ocn:ethereum:42220': {
+    type: 'etherscan',
+    url: 'https://celoscan.io',
+  },
+  'urn:ocn:ethereum:137': {
+    type: 'etherscan',
+    url: 'https://polygonscan.com',
+  },
+  'urn:ocn:ethereum:1': {
+    type: 'etherscan',
+    url: 'https://etherscan.io',
+  },
+  'urn:ocn:ethereum:10': {
+    type: 'etherscan',
+    url: 'https://optimistic.etherscan.io',
+  },
+  'urn:ocn:solana:101': {
+    type: 'solscan',
+    url: 'https://solscan.io',
+  },
+  'urn:ocn:sui:0x35834a8a': {
+    type: 'suivision',
+    url: 'https://suivision.xyz',
+  },
 }
 
-function resolveURL(chainId, path, param) {
-  const base = SUBSCAN[chainId]
-  if (base) {
-    return `${base}/${path}/${param}`
+const EXPLORER_VERBS = {
+  subscan: {
+    address: 'address',
+    block: 'block',
+    tx: 'extrinsic',
+  },
+  etherscan: {
+    address: 'address',
+    block: 'block',
+    tx: 'tx',
+  },
+  solscan: {
+    address: 'account',
+    block: 'block',
+    tx: 'tx',
+  },
+  suivision: {
+    address: 'account',
+    block: 'block',
+    tx: 'txblock',
+  },
+}
+
+function resolveURL(chainId, verb, param, pref) {
+  const explorers = EXPLORERS[chainId]
+  let resolved = null
+  if (Array.isArray(explorers)) {
+    resolved =
+      pref == null
+        ? explorers[0]
+        : (explorers.find((x) => x.type == pref) ?? explorers[0])
+  } else {
+    resolved = explorers
+  }
+  if (resolved) {
+    switch (resolved.type) {
+      case 'subscan':
+      case 'etherscan':
+      case 'solscan':
+      case 'suivision':
+        return `${resolved.url}/${EXPLORER_VERBS[resolved.type][verb]}/${param}`
+    }
   }
   return null
 }
 
-export function getSubscanExtrinsicLink(chainId, hash) {
-  return resolveURL(chainId, 'extrinsic', hash)
+export function getExplorerTxLink(chainId, hash, pref) {
+  return resolveURL(chainId, 'tx', hash, pref)
 }
 
-export function getSubscanBlockLink(chainId, blockNumber) {
-  return resolveURL(chainId, 'block', blockNumber)
+export function getExplorerBlockLink(chainId, blockNumber, pref) {
+  return resolveURL(chainId, 'block', blockNumber, pref)
 }
 
-export function getSubscanAddressLink(chainId, address) {
-  return resolveURL(chainId, 'address', address)
+export function getExplorerAddressLink(chainId, address, pref) {
+  return resolveURL(chainId, 'address', address, pref)
 }

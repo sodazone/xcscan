@@ -3,10 +3,10 @@ import {
   formatLocalTimestamp,
   formatNetworkWithIconHTML,
   formatStatusIconHTML,
-  shortenAddress,
+  shortHash,
 } from '../../common'
 import { createCopyLinkHTML } from '../../components/copy-link'
-import { getSubscanBlockLink, getSubscanExtrinsicLink } from '../../links'
+import { getExplorerBlockLink, getExplorerTxLink } from '../../links'
 import { createCollapsibleJsonViewer } from '../json'
 import { createStopDetails } from './common'
 
@@ -31,7 +31,7 @@ function createLegStopHTML(stop) {
     ? `<div class="flex space-x-2 font-mono text-sm"><span class="text-white/50">Block</span> ${createCopyLinkHTML(
         {
           text: stop.blockNumber,
-          url: getSubscanBlockLink(stop.chainId, stop.blockNumber),
+          url: getExplorerBlockLink(stop.chainId, stop.blockNumber),
         }
       )}</div>`
     : `
@@ -67,7 +67,7 @@ function formatAssetsTrappedHTML(stop) {
         ? ''
         : createCopyLinkHTML({
             text: `${event.blockNumber}${asPositionSuffix(event.eventId)}`,
-            url: getSubscanBlockLink(stop.chainId, event.blockNumber),
+            url: getExplorerBlockLink(stop.chainId, event.blockNumber),
           })
     return `<div class="flex gap-2 text-sm items-center">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 text-yellow-500">
@@ -142,14 +142,14 @@ function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
     ? `
     <div class="flex items-center space-x-2">
       <span class="text-white/50">Tx Hash</span>
-      ${createCopyLinkHTML({ text: extrinsic.hash, display: shortenAddress(extrinsic.hash), url: getSubscanExtrinsicLink(chainId, extrinsic.hash) })}
+      ${createCopyLinkHTML({ text: extrinsic.hash, display: shortHash(extrinsic.hash), url: getExplorerTxLink(chainId, extrinsic.hash) })}
     </div>
     ${
       extrinsic.evmTxHash
         ? `
       <div class="flex items-center space-x-2">
         <span class="text-white/50">EVM Tx Hash</span>
-        ${createCopyLinkHTML({ text: extrinsic.evmTxHash, display: shortenAddress(extrinsic.evmTxHash), url: getSubscanExtrinsicLink(chainId, extrinsic.evmTxHash) })}
+        ${createCopyLinkHTML({ text: extrinsic.evmTxHash, display: shortHash(extrinsic.evmTxHash), url: getExplorerTxLink(chainId, extrinsic.evmTxHash) })}
       </div>
       `
         : ''

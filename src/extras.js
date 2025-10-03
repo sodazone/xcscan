@@ -33,7 +33,7 @@ const ExtraChains = [
     urn: 'urn:ocn:wormhole:1',
   },
   {
-    runtimeChain: 'Sui Network',
+    runtimeChain: 'Sui',
     urn: 'urn:ocn:sui:0x35834a8a',
   },
   {

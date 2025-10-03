@@ -3,16 +3,14 @@ import { getJourneyById, subscribeToJourney } from '../api.js'
 import {
   asClassName,
   assetIconHTML,
-  decodeWellKnownAddressHTML,
   formatAction,
   formatAssetAmount,
   formatNetworkWithIconHTML,
   getStatusLabel,
   loadResources,
   pad,
-  shortenAddress,
 } from '../common.js'
-import { getSubscanAddressLink } from '../links.js'
+import { getExplorerAddressLink } from '../links.js'
 import {
   createCopyLinkHTML,
   installCopyEventListener,
@@ -21,6 +19,7 @@ import { getSafeLocale } from '../../formats.js'
 import { createJourneyLegs, getElapsedText } from './legs.js'
 import { createCollapsibleJsonViewer } from './json.js'
 import { resolveProtocols } from '../../protocols.js'
+import { resolveAddress } from '../addresses.js'
 
 function formatLocalAndUTC(dateInput) {
   const date = new Date(dateInput)
@@ -154,13 +153,14 @@ function renderTrapped(assets) {
 function createJourneySummary(journey) {
   const amounts = getAmounts(journey)
   const timeDetails = getTimeDetails(journey)
-  const fromAddress = journey.from.startsWith('urn')
-    ? null
-    : shortenAddress(journey.fromFormatted ?? journey.from)
-  const toAddress = journey.to.startsWith('urn')
-    ? null
-    : (decodeWellKnownAddressHTML(journey.to) ??
-      shortenAddress(journey.toFormatted ?? journey.to))
+  const fromAddress = resolveAddress({
+    address: journey.from,
+    formatted: journey.fromFormatted,
+  })
+  const toAddress = resolveAddress({
+    address: journey.to,
+    formatted: journey.toFormatted,
+  })
 
   const actionFormatted = formatAction(journey)
   const protocols = resolveProtocols([
@@ -197,7 +197,7 @@ function createJourneySummary(journey) {
            : `<div class="break-all">${createCopyLinkHTML({
                text: journey.fromFormatted ?? journey.from,
                display: fromAddress,
-               url: getSubscanAddressLink(journey.origin, journey.from),
+               url: getExplorerAddressLink(journey.origin, journey.from),
              })}</div>`
        }
     </div>
@@ -211,7 +211,7 @@ function createJourneySummary(journey) {
          : `<div class="break-all">${createCopyLinkHTML({
              text: journey.toFormatted ?? journey.to,
              display: toAddress,
-             url: getSubscanAddressLink(journey.destination, journey.to),
+             url: getExplorerAddressLink(journey.destination, journey.to),
            })}</div>`
      }
     </div>

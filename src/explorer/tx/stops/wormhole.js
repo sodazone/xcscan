@@ -3,8 +3,10 @@ import {
   formatLocalTimestamp,
   formatNetworkWithIconHTML,
   formatStatusIconHTML,
+  shortHash,
 } from '../../common'
 import { createCopyLinkHTML } from '../../components/copy-link'
+import { getExplorerTxLink } from '../../links'
 import { createCollapsibleJsonViewer } from '../json'
 import { createStopDetails } from './common'
 
@@ -70,7 +72,8 @@ function createLegStopHTML(stop) {
     ? `<div class="flex space-x-2 font-mono text-sm"><span class="text-white/50">Transaction</span> ${createCopyLinkHTML(
         {
           text: stop.tx.txHash,
-          url: 'xxx',
+          display: shortHash(stop.tx.txHash),
+          url: getExplorerTxLink(stop.chainId, stop.tx.txHash, 'etherscan'),
         }
       )}</div>`
     : isVaa
