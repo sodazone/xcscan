@@ -160,6 +160,7 @@ export function actionsToQueryValues(actions) {
 export const selectableStatus = ['sent', 'received', 'failed']
 const statusLabels = {
   sent: 'In Progress',
+  pending: 'In Progress',
   received: 'Completed',
   success: 'Completed',
   completed: 'Completed',

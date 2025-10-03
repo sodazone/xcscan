@@ -46,18 +46,26 @@ function asCriteria(filters) {
   const criteria = {}
 
   // Text search
-  if (currentSearchTerm != null) {
+  if (currentSearchTerm) {
     const trimmed = currentSearchTerm.trim()
     if (trimmed.length > 2 && trimmed.length < 100) {
-      if (trimmed.startsWith('0x')) {
-        const len = (trimmed.length - 2) / 2
-        if (len === 20) {
-          criteria.address = trimmed
-        } else if (len === 32) {
+      // Prefix qualifier
+      const prefixMatch = /^([at]):(.+)$/.exec(trimmed)
+      if (prefixMatch) {
+        const [, prefix, value] = prefixMatch
+        if (prefix === 'a') criteria.address = value
+        else if (prefix === 't') criteria.txHash = value.toLowerCase()
+        // 0x
+      } else if (trimmed.startsWith('0x')) {
+        const byteLength = (trimmed.length - 2) / 2
+        if (byteLength === 20) {
+          criteria.address = trimmed.toLowerCase()
+        } else if (byteLength === 32) {
           criteria.txHash = trimmed.toLowerCase()
         }
       } else {
-        criteria.address = trimmed
+        // Fallback: treat as address
+        criteria.address = trimmed.toLowerCase()
       }
     }
   }

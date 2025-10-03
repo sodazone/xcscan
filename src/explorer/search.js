@@ -20,17 +20,25 @@ let FilterableAssets = []
 export function resolveQueryType(value) {
   const trimmed = value.trim()
 
+  if (trimmed.startsWith('a:')) {
+    return 'address'
+  }
+
+  if (trimmed.startsWith('t:')) {
+    return 'tx'
+  }
+
   // EVM address (0x-prefixed, 40 hex chars)
   if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) {
-    return 'address-evm'
+    return 'address'
   }
   // SS58 address (47-48 chars typical, base58)
   if (/^[1-9A-HJ-NP-Za-km-z]{38,60}$/.test(trimmed)) {
-    return 'address-ss58'
+    return 'address'
   }
   // Tx hash (usually 0x + 64 hex chars)
   if (/^0x[a-fA-F0-9]{64}$/.test(trimmed)) {
-    return 'tx-hash'
+    return 'tx'
   }
 
   return null

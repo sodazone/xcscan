@@ -133,7 +133,7 @@ function addressHTML({ display, text }) {
   return `<div class="break-all">${createCopyLinkHTML({
     text,
     display,
-    url: `/?search=${text}`,
+    url: `/?search=a:${text}`,
   })}</div>`
 }
 
@@ -591,7 +591,7 @@ window.onload = async () => {
       },
     })
       .then((results) => {
-        if (queryType.startsWith('tx') && results.items.length === 1) {
+        if (queryType === 'tx' && results.items.length === 1) {
           window.location.href = `/tx/index.html#${results.items[0].correlationId}`
         } else {
           currentPage = 0
