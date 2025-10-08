@@ -2,7 +2,7 @@ import { fetchWithRetry } from '../api.js'
 import { httpUrl } from '../env.js'
 import { actionsToQueryValues } from './common.js'
 
-const sseUrl = `${httpUrl}/agents/crosschain/sse`
+const sseUrl = `${httpUrl}/sse/crosschain/default`
 const queryUrl = `${httpUrl}/query/crosschain`
 
 const CACHE_EXPIRY_MS = 3_600_000
