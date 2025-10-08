@@ -197,7 +197,7 @@
 
                   <div
                     id="filter-chains"
-                    class="dropdown-menu dropdown-left hidden flex h-screen md:h-auto w-screen md:h-auto md:w-auto md:max-w-2xl"
+                    class="dropdown-menu dropdown-left hidden flex h-screen w-screen md:h-auto md:w-auto md:max-w-2xl"
                   >
                     <div
                       class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
@@ -290,7 +290,7 @@
 
                   <div
                     id="filter-assets"
-                    class="dropdown-menu hidden flex h-screen md:h-auto w-screen md:h-auto md:w-auto md:max-w-2xl"
+                    class="dropdown-menu hidden flex h-screen md:h-auto w-screen md:w-auto md:max-w-2xl"
                   >
                     <div
                       class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
@@ -379,7 +379,7 @@
                       >
                       <button
                         data-dropdown-close
-                        class="flex items-center ml-auto flex space-x-1"
+                        class="flex items-center ml-auto space-x-1"
                         id="close-filter-actions"
                       >
                         <div
@@ -403,6 +403,69 @@
                     </div>
                     <div
                       id="filter-actions-content"
+                      class="grid gap-3 px-4 md:py-4"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Protocols Filter -->
+                <div class="relative dropdown">
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Protocols</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+
+                  <div
+                    id="filter-protocols"
+                    class="dropdown-menu hidden flex w-screen md:w-48"
+                  >
+                    <div
+                      class="flex items-center md:hidden border-b border-white/5 p-4"
+                    >
+                      <span class="text-xs text-white/80 uppercase"
+                        >Select Protocols</span
+                      >
+                      <button
+                        data-dropdown-close
+                        class="flex items-center ml-auto space-x-1"
+                        id="close-filter-protocols"
+                      >
+                        <div
+                          class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#121212"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-3.5 h-3.5"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </div>
+                      </button>
+                    </div>
+                    <div
+                      id="filter-protocols-content"
                       class="grid gap-3 px-4 md:py-4"
                     ></div>
                   </div>
@@ -442,7 +505,7 @@
                       >
                       <button
                         data-dropdown-close
-                        class="flex items-center ml-auto flex space-x-1"
+                        class="flex items-center ml-auto space-x-1"
                         id="close-filter-status"
                       >
                         <div
@@ -502,7 +565,7 @@
                       >
                       <button
                         data-dropdown-close
-                        class="flex items-center ml-auto flex space-x-1"
+                        class="flex items-center ml-auto space-x-1"
                         id="close-filter-usd-amount"
                       >
                         <div
@@ -557,7 +620,7 @@
                           pattern="[0-9]*"
                           inputmode="numeric"
                           autocomplete="off"
-                          class="w-full bg-black/20 text-white px-2 py-3 rounded w-full focus:outline-none"
+                          class="w-full bg-black/20 text-white px-2 py-3 rounded focus:outline-none"
                           placeholder="e.g. 10000000"
                         />
                       </div>

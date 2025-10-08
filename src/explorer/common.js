@@ -122,6 +122,30 @@ export function assetIconHTML({ asset }, usePlaceholder = false) {
     : ''
 }
 
+export const selectableProtocols = [
+  {
+    label: 'XCM',
+    value: 'xcm',
+  },
+  {
+    label: 'Wormhole',
+    value: 'wormhole',
+  },
+]
+
+export function protocolsToQueryValues(protocols) {
+  const expanded = (Array.isArray(protocols) ? protocols : [protocols]).flatMap(
+    (protocol) => {
+      if (protocol === 'wormhole') {
+        return ['wh', 'wh_portal', 'wh_relayer']
+      }
+      return [protocol]
+    }
+  )
+
+  return expanded
+}
+
 export const selectableActions = [
   {
     label: 'Transfer',

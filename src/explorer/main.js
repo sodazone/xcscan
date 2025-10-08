@@ -35,6 +35,7 @@ const filters = {
   selectedStatus: [],
   selectedActions: [],
   selectedAssets: [],
+  selectedProtocols: [],
   selectedUsdAmounts: {
     amountPreset: null,
     amountGte: null,

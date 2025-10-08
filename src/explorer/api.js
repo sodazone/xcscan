@@ -1,6 +1,6 @@
 import { fetchWithRetry } from '../api.js'
 import { httpUrl } from '../env.js'
-import { actionsToQueryValues } from './common.js'
+import { actionsToQueryValues, protocolsToQueryValues } from './common.js'
 
 const sseUrl = `${httpUrl}/sse/crosschain/default`
 const queryUrl = `${httpUrl}/query/crosschain`
@@ -41,6 +41,7 @@ function asCriteria(filters) {
     selectedActions,
     selectedUsdAmounts,
     selectedAssets,
+    selectedProtocols,
   } = filters
 
   const criteria = {}
@@ -90,6 +91,9 @@ function asCriteria(filters) {
   }
   if (selectedAssets?.length) {
     criteria.assets = [...selectedAssets]
+  }
+  if (selectedProtocols?.length) {
+    criteria.protocols = [...protocolsToQueryValues(selectedProtocols)]
   }
 
   const { amountPreset, amountGte, amountLte } = selectedUsdAmounts || {}
