@@ -98,7 +98,7 @@ body {
 }
 
 .transaction-row {
-  @apply rounded-lg pt-2 gap-y-2 md:py-3 md:gap-y-4 transition hover:bg-teal-300/10 bg-white/5 rounded-xl focus:outline-none focus:bg-teal-300/10;
+  @apply rounded-lg pt-2 gap-y-2 md:py-3 md:gap-y-4 transition hover:bg-teal-300/10 bg-white/5 focus:outline-none focus:bg-teal-300/10;
   opacity: 0;
   transform: translateY(10px);
   transition:
