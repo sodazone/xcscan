@@ -239,7 +239,8 @@ body {
   @apply bg-white/5 text-zinc-400;
 }
 
-img.table-status.in_progress {
+img.table-status.in_progress,
+img.in_progress {
   @apply animate-spin z-0;
 }
 
