@@ -7,6 +7,7 @@ import {
   getStatusLabel,
   selectableActions,
   selectableStatus,
+  selectableProtocols,
 } from './common.js'
 
 import {
@@ -15,22 +16,30 @@ import {
 } from './components/multi-checkbox-dropdown.js'
 import { createSwitch } from './components/switch.js'
 
-let FilterableAssets = []
+let filterableAssets = []
 
 export function resolveQueryType(value) {
   const trimmed = value.trim()
 
+  if (trimmed.startsWith('a:')) {
+    return 'address'
+  }
+
+  if (trimmed.startsWith('t:')) {
+    return 'tx'
+  }
+
   // EVM address (0x-prefixed, 40 hex chars)
   if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) {
-    return 'address-evm'
+    return 'address'
   }
   // SS58 address (47-48 chars typical, base58)
   if (/^[1-9A-HJ-NP-Za-km-z]{38,60}$/.test(trimmed)) {
-    return 'address-ss58'
+    return 'address'
   }
   // Tx hash (usually 0x + 64 hex chars)
   if (/^0x[a-fA-F0-9]{64}$/.test(trimmed)) {
-    return 'tx-hash'
+    return 'tx'
   }
 
   return null
@@ -41,7 +50,7 @@ export function isValidQuery(value) {
 }
 
 async function loadAssetsFilter(ctx) {
-  FilterableAssets = await fetchFilterableAssets()
+  filterableAssets = await fetchFilterableAssets()
 
   const assetRenderer = (asset) => {
     return `
@@ -53,7 +62,7 @@ async function loadAssetsFilter(ctx) {
 
   const dropdown = MultiCheckboxDropdown({
     containerId: 'filter-assets-content',
-    items: FilterableAssets,
+    items: filterableAssets,
     labelResolver: (a) => a.symbol,
     labelRenderer: assetRenderer,
     valueResolver: (a) => a.asset,
@@ -91,6 +100,22 @@ function loadStatusFilter(ctx) {
   return {
     reset: () => {
       ctx.filters.selectedStatus.length = 0
+      dropdown.reset()
+    },
+  }
+}
+
+function loadProtocolsFilter(ctx) {
+  const dropdown = MultiCheckboxDropdown({
+    containerId: 'filter-protocols-content',
+    items: selectableProtocols,
+    resolveCollection: () => ctx.filters.selectedProtocols,
+    onUpdate: ctx.update,
+  })
+
+  return {
+    reset: () => {
+      ctx.filters.selectedProtocols.length = 0
       dropdown.reset()
     },
   }
@@ -417,7 +442,7 @@ export function getActiveFiltersSummary(filters) {
   }
   if (filters.selectedAssets.length > 0) {
     parts.push(
-      `Assets: ${filters.selectedAssets.map((a) => FilterableAssets.find(({ asset }) => a === asset)?.symbol ?? a).join(', ')}`
+      `Assets: ${filters.selectedAssets.map((a) => filterableAssets.find(({ asset }) => a === asset)?.symbol ?? a).join(', ')}`
     )
   }
 
@@ -483,11 +508,13 @@ export async function loadSearch(ctx) {
   const actionsFilter = loadActionsFilter(ctx)
   const statusFilter = loadStatusFilter(ctx)
   const amountFilter = loadAmountFilter(ctx)
+  const protocolsFilter = loadProtocolsFilter(ctx)
   const assetsFilter = await loadAssetsFilter(ctx)
 
   function resetAllFilters() {
     chainsFilter.reset()
     actionsFilter.reset()
+    protocolsFilter.reset()
     statusFilter.reset()
     amountFilter.reset()
     assetsFilter.reset()

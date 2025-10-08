@@ -1,8 +1,8 @@
 import { debounce } from '../utils.js'
+import { resolveAddress } from './addresses.js'
 import { listJourneys, subscribeToJourneys } from './api.js'
 import {
   asClassName,
-  decodeWellKnownAddressHTML,
   formatAssetAmount,
   formatLocalTimestamp,
   formatNetworkWithIconHTML,
@@ -10,7 +10,6 @@ import {
   loadResources,
   makeGuardedClickHandler,
   prettify,
-  shortenAddress,
 } from './common.js'
 import {
   createCopyLinkHTML,
@@ -36,6 +35,7 @@ const filters = {
   selectedStatus: [],
   selectedActions: [],
   selectedAssets: [],
+  selectedProtocols: [],
   selectedUsdAmounts: {
     amountPreset: null,
     amountGte: null,
@@ -134,15 +134,16 @@ function addressHTML({ display, text }) {
   return `<div class="break-all">${createCopyLinkHTML({
     text,
     display,
-    url: `/?search=${text}`,
+    url: `/?search=a:${text}`,
   })}</div>`
 }
 
 function renderFrom(item) {
   const fromChain = item.origin
-  const fromAddress = item.from.startsWith('urn')
-    ? null
-    : shortenAddress(item.fromFormatted ?? item.from)
+  const fromAddress = resolveAddress({
+    address: item.from,
+    formatted: item.fromFormatted,
+  })
 
   return `${formatNetworkWithIconHTML(fromChain)}
             ${addressHTML({
@@ -153,10 +154,10 @@ function renderFrom(item) {
 
 function renderTo(item) {
   const toChain = item.destination
-  const toAddress = item.to.startsWith('urn')
-    ? null
-    : (decodeWellKnownAddressHTML(item.to) ??
-      shortenAddress(item.toFormatted ?? item.to))
+  const toAddress = resolveAddress({
+    address: item.to,
+    formatted: item.toFormatted,
+  })
 
   return `${formatNetworkWithIconHTML(toChain)}
             ${addressHTML({
@@ -591,7 +592,7 @@ window.onload = async () => {
       },
     })
       .then((results) => {
-        if (queryType.startsWith('tx') && results.items.length === 1) {
+        if (queryType === 'tx' && results.items.length === 1) {
           window.location.href = `/tx/index.html#${results.items[0].correlationId}`
         } else {
           currentPage = 0

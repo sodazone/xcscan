@@ -39,19 +39,23 @@
 <meta property="og:image" content="https://xcscan.io/og_1200x628.png" />
 <meta property="og:site_name" content="XCSCAN" />
 
+<script>
+  // polyfill
+  if (typeof Object.hasOwn !== 'function') {
+    Object.hasOwn = function (obj, prop) {
+      return Object.prototype.hasOwnProperty.call(obj, prop)
+    }
+  }
+</script>
 <!-- Sentry -->
 <script
   src="https://js.sentry-cdn.com/2d31cff0cf30447ab80d682a8da2d995.min.js"
   crossorigin="anonymous"
 ></script>
 <script>
-  Sentry.onLoad(function () {
-    Sentry.init({})
-  })
-  // polyfill
-  if (typeof Object.hasOwn !== 'function') {
-    Object.hasOwn = function (obj, prop) {
-      return Object.prototype.hasOwnProperty.call(obj, prop)
-    }
+  if (typeof Sentry !== 'undefined') {
+    Sentry.onLoad(function () {
+      Sentry.init({})
+    })
   }
 </script>

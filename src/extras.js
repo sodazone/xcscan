@@ -15,22 +15,54 @@ let ChainIcons
 
 export let NetworkInfos
 
-const EthereumChains = [
+const ExtraChains = [
   {
     runtimeChain: 'Ethereum Mainnet',
-    ss58Prefix: 0,
     chainDecimals: [18],
     chainTokens: ['ETH'],
-    existentialDeposit: '0',
     urn: 'urn:ocn:ethereum:1',
   },
   {
     runtimeChain: 'Ethereum Sepolia (Testnet)',
-    ss58Prefix: 0,
     chainDecimals: [18],
     chainTokens: ['ETH'],
-    existentialDeposit: '0',
     urn: 'urn:ocn:ethereum:11155111',
+  },
+  {
+    runtimeChain: 'Wormhole',
+    urn: 'urn:ocn:wormhole:1',
+  },
+  {
+    runtimeChain: 'Sui',
+    urn: 'urn:ocn:sui:0x35834a8a',
+  },
+  {
+    runtimeChain: 'Solana',
+    urn: 'urn:ocn:solana:101',
+  },
+  {
+    runtimeChain: 'Celo',
+    urn: 'urn:ocn:ethereum:42220',
+  },
+  {
+    runtimeChain: 'Base',
+    urn: 'urn:ocn:ethereum:8453',
+  },
+  {
+    runtimeChain: 'Arbitrum',
+    urn: 'urn:ocn:ethereum:42161',
+  },
+  {
+    runtimeChain: 'Optimism',
+    urn: 'urn:ocn:ethereum:10',
+  },
+  {
+    runtimeChain: 'BNB Chain',
+    urn: 'urn:ocn:ethereum:56',
+  },
+  {
+    runtimeChain: 'Polygon',
+    urn: 'urn:ocn:ethereum:137',
   },
 ]
 
@@ -54,8 +86,8 @@ async function fetchNetworkInfos() {
     if (pageInfo?.hasNextPage) {
       await withRetry(async () => _stewardFetch(pageInfo.endCursor))
     }
-    for (const ethChain of EthereumChains) {
-      networkMap[ethChain.urn] = ethChain
+    for (const chain of ExtraChains) {
+      networkMap[chain.urn] = chain
     }
     return networkMap
   }
