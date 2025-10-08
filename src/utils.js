@@ -28,7 +28,7 @@ export function htmlToElement(html) {
   return template.content.firstChild
 }
 
-export function withRetry(fn, defaultOptions = {}) {
+export function withRetry(fetchFn, defaultOptions = {}) {
   return async function retryWrapper(customOptions = {}) {
     const {
       retries = 5,
@@ -38,14 +38,49 @@ export function withRetry(fn, defaultOptions = {}) {
 
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        return await fn()
-      } catch (err) {
-        const message = err?.message || ''
-        if (message.indexOf('"error":true') > -1) {
-          console.warn('Not retrying due to known error:', message)
-          throw err
+        const res = await fetchFn()
+
+        // Honor HTTP 429 (Too Many Requests)
+        if (res.status === 429) {
+          if (attempt === retries) throw new Error('Too many retries (429)')
+
+          const retryAfterHeader = res.headers.get('Retry-After')
+          let retryDelay
+
+          if (retryAfterHeader) {
+            // Retry-After can be either a number (seconds) or a date
+            const parsed = isNaN(retryAfterHeader)
+              ? Math.max(0, new Date(retryAfterHeader).getTime() - Date.now())
+              : parseInt(retryAfterHeader, 10) * 1000
+            retryDelay = parsed || delay
+            console.warn(`Received 429. Honoring Retry-After: ${retryDelay}ms`)
+          } else {
+            retryDelay = exponential ? delay * Math.pow(2, attempt) : delay
+            console.warn(
+              `Received 429 (no Retry-After header). Backing off ${retryDelay}ms`
+            )
+          }
+
+          await new Promise((r) => setTimeout(r, retryDelay))
+          continue
         }
 
+        // Retry on transient 5xx errors
+        if (res.status >= 500 && res.status < 600) {
+          if (attempt === retries)
+            throw new Error(`Server error: ${res.status}`)
+          const retryDelay = exponential ? delay * Math.pow(2, attempt) : delay
+          console.warn(
+            `Retrying (${attempt + 1}/${retries}) after ${retryDelay}ms due to ${res.status}`
+          )
+          await new Promise((r) => setTimeout(r, retryDelay))
+          continue
+        }
+
+        // Ok
+        return res
+      } catch (err) {
+        // Handle network-level errors
         if (attempt === retries) throw err
 
         if (!navigator.onLine) {
@@ -58,12 +93,10 @@ export function withRetry(fn, defaultOptions = {}) {
         }
 
         const retryDelay = exponential ? delay * Math.pow(2, attempt) : delay
-
         console.warn(
-          `Retrying (${attempt + 1}/${retries}) after ${retryDelay}ms...`,
+          `Network error. Retrying (${attempt + 1}/${retries}) after ${retryDelay}ms...`,
           err.message
         )
-
         await new Promise((r) => setTimeout(r, retryDelay))
       }
     }
