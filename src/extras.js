@@ -64,6 +64,26 @@ const ExtraChains = [
     runtimeChain: 'Polygon',
     urn: 'urn:ocn:ethereum:137',
   },
+  {
+    runtimeChain: 'Avalanche',
+    urn: 'urn:ocn:ethereum:43114',
+  },
+  {
+    runtimeChain: 'Fantom',
+    urn: 'urn:ocn:ethereum:250',
+  },
+  {
+    runtimeChain: 'Moonbeam',
+    urn: 'urn:ocn:ethereum:1284',
+  },
+  {
+    runtimeChain: 'Moonriver',
+    urn: 'urn:ocn:ethereum:1285',
+  },
+  {
+    runtimeChain: 'Harmony',
+    urn: 'urn:ocn:ethereum:1666600000',
+  },
 ]
 
 async function fetchNetworkInfos() {
@@ -84,15 +104,18 @@ async function fetchNetworkInfos() {
       networkMap[chainInfo.urn] = chainInfo
     }
     if (pageInfo?.hasNextPage) {
-      await withRetry(async () => _stewardFetch(pageInfo.endCursor))
-    }
-    for (const chain of ExtraChains) {
-      networkMap[chain.urn] = chain
+      await withRetry(async () => _stewardFetch(pageInfo.endCursor))()
     }
     return networkMap
   }
 
-  return withRetry(_stewardFetch)()
+  await withRetry(_stewardFetch)()
+
+  for (const chain of ExtraChains) {
+    networkMap[chain.urn] = chain
+  }
+
+  return networkMap
 }
 
 export async function loadExtraInfos() {
