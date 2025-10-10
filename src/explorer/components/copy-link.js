@@ -12,6 +12,14 @@ const okSVG = `
 
 export function createCopyLink({ text, display = null, url = null }) {
   const container = document.createElement('div')
+
+  if (
+    (text == null || text.trim() == '') &&
+    (display == null || display.trim() == '')
+  ) {
+    return container
+  }
+
   container.className =
     'flex w-fit items-center space-x-1 group text-sm text-white/80'
 

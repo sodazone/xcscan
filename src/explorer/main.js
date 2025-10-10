@@ -281,10 +281,16 @@ function createJourneyRow(item) {
       <div class="text-xs text-white/40 w-[2.5rem]">from</div>
       <div>${renderFrom(item)}</div>
     </div>
+    ${
+      item.destination && item.destination != item.origin
+        ? `
     <div class="cell flex gap-1">
       <div class="text-xs text-white/40 w-[2.5rem]">to</div>
       <div>${renderTo(item)}</div>
     </div>
+    `
+        : ''
+    }
     <div class="cell ${Array.isArray(item.assets) && item.assets.length === 0 ? 'hidden' : 'flex gap-1'}">
       <div class="text-xs text-white/40 w-[2.5rem]"></div>
       <div data-label="Assets">${renderAssets(item)}</div>
@@ -302,9 +308,15 @@ function createJourneyRow(item) {
           </div>
         </div>
         <div class="cell flex md:items-center" data-label="To">
+        ${
+          item.destination && item.destination != item.origin
+            ? `
             <div class="flex flex-col space-y-1">
             ${renderTo(item)}
             </div>
+        `
+            : '<div class="text-white/20">-</div>'
+        }
         </div>
         <div class="cell flex md:items-center ${Array.isArray(item.assets) && item.assets.length === 0 ? 'sm-hidden' : ''}">
             <div class="flex flex-col space-y-1" data-label="Assets">
