@@ -62,11 +62,11 @@ function asCriteria(filters) {
         if (byteLength === 20) {
           criteria.address = trimmed.toLowerCase()
         } else if (byteLength === 32) {
-          criteria.txHash = trimmed.toLowerCase()
+          criteria.txHash = trimmed
         }
       } else {
         // Fallback: treat as address
-        criteria.address = trimmed.toLowerCase()
+        criteria.address = trimmed
       }
     }
   }
