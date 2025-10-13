@@ -11,6 +11,7 @@ import { createCollapsibleJsonViewer } from '../json'
 import { createStopDetails } from './common'
 
 function createLegStopHTML(stop) {
+  console.log('stop', stop)
   if (stop == null) return null
 
   const opacityClass = stop.blockNumber ? '' : ' opacity-60'
@@ -138,12 +139,19 @@ function asPositionSuffix(pos) {
 }
 
 function createLegStopMetaHTML({ blockNumber, extrinsic, event, chainId }) {
+  console.log('extrinsic', extrinsic)
   const extrinsicHTML = extrinsic?.module
     ? `
-    <div class="flex items-center space-x-2">
-      <span class="text-white/50">Tx Hash</span>
-      ${createCopyLinkHTML({ text: extrinsic.hash, display: shortHash(extrinsic.hash), url: getExplorerTxLink(chainId, extrinsic.hash) })}
-    </div>
+    ${
+      extrinsic.hash
+        ? `
+      <div class="flex items-center space-x-2">
+        <span class="text-white/50">Tx Hash</span>
+        ${createCopyLinkHTML({ text: extrinsic.hash, display: shortHash(extrinsic.hash), url: getExplorerTxLink(chainId, extrinsic.hash) })}
+      </div>
+      `
+        : ''
+    }
     ${
       extrinsic.evmTxHash
         ? `
