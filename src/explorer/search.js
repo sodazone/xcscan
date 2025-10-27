@@ -45,6 +45,45 @@ export function resolveQueryType(value) {
   return null
 }
 
+export function resolveDeeplinkFilters(filters, params) {
+  if (!Array.isArray(params) || params.length === 0) return
+
+  for (const rawParam of params) {
+    const param = rawParam.trim()
+    if (!param) continue
+
+    const match = /^([p]):(.+)$/.exec(param)
+    if (!match) continue
+
+    const [, prefix, value] = match
+
+    switch (prefix) {
+      case 'p':
+        handleProtocolParam(filters, value)
+        break
+      default:
+        console.warn(`Unknown deeplink prefix: ${prefix}`)
+        break
+    }
+  }
+}
+
+function handleProtocolParam(filters, value) {
+  const normalizedValue = value.toLowerCase()
+
+  if (normalizedValue === 'pkbridge') {
+    filters.chainPairMode = true
+
+    const polkadot = 'urn:ocn:polkadot:1000'
+    const kusama = 'urn:ocn:kusama:1000'
+
+    filters.selectedOrigins.push(polkadot, kusama)
+    filters.selectedDestinations.push(polkadot, kusama)
+  } else {
+    filters.selectedProtocols.push(normalizedValue)
+  }
+}
+
 export function isValidQuery(value) {
   return resolveQueryType(value) !== null
 }

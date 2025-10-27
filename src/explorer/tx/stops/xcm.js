@@ -193,7 +193,7 @@ function createXcmDetailsContent(stop) {
   `
 
   container.appendChild(executeLocationEl)
-  console.log(stop.instructions)
+
   if (stop.instructions) {
     const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
       depth: 2,

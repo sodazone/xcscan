@@ -19,6 +19,7 @@ import {
   getActiveFiltersSummary,
   loadSearch,
   resolveQueryType,
+  resolveDeeplinkFilters,
 } from './search.js'
 import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
 
@@ -582,6 +583,10 @@ window.onload = async () => {
     Object.assign(filters, savedFilters)
   }
 
+  const urlParams = new URLSearchParams(window.location.search)
+  const deepLinkFilters = urlParams.getAll('filterBy')
+  resolveDeeplinkFilters(filters, deepLinkFilters)
+
   installCopyEventListener()
 
   loadToggles()
@@ -590,7 +595,6 @@ window.onload = async () => {
     update: debounce(applyFiltersAndRender, 300),
   })
 
-  const urlParams = new URLSearchParams(window.location.search)
   const deepSearch = urlParams.get('search')
   const queryType = deepSearch != null ? resolveQueryType(deepSearch) : null
 
