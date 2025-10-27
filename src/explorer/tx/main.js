@@ -256,7 +256,11 @@ async function loadTransactionDetail() {
     container.appendChild(summary)
     container.appendChild(legs)
 
-    if (journey.stops.every((s) => s.instructions == null)) {
+    if (
+      journey.stops.every((s) => s.instructions == null) &&
+      journey.instructions.length > 0
+    ) {
+      console.log(journey.instructions)
       const program = createCollapsibleJsonViewer(journey.instructions, {
         depth: 2,
         label: 'XCM Program Code',

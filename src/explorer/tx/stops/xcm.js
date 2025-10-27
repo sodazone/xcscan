@@ -121,7 +121,7 @@ function createBridgeDetailsContent(stop) {
     stop.from?.bridge?.bridgeName ?? stop.to?.bridge?.bridgeName
   const bicon = bridgeIcons[bridgeName]
   const bridgeNameHTML = `
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 text-white/80">
       ${bicon ? bicon.icon() : ''}
       <div>${bicon ? bicon.name : bridgeName}</div>
     </div>
@@ -193,7 +193,7 @@ function createXcmDetailsContent(stop) {
   `
 
   container.appendChild(executeLocationEl)
-
+  console.log(stop.instructions)
   if (stop.instructions) {
     const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
       depth: 2,
