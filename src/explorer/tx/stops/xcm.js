@@ -1,3 +1,4 @@
+import { resolveProtocol } from '../../../protocols'
 import { htmlToElement } from '../../../utils'
 import {
   formatLocalTimestamp,
@@ -106,6 +107,13 @@ function formatAssetsTrappedHTML(stop) {
   return ''
 }
 
+function normaliseBridgeName(name) {
+  if (name === 'pkbridge' || name === 'pk-bridge') {
+    return 'pkbridge'
+  }
+  return name
+}
+
 function createBridgeDetailsContent(stop) {
   if (!stop.from?.bridge && !stop.to?.bridge) {
     return null
@@ -117,19 +125,14 @@ function createBridgeDetailsContent(stop) {
 
   const executeLocationEl = document.createElement('div')
 
-  const bridgeName =
+  const bridgeName = normaliseBridgeName(
     stop.from?.bridge?.bridgeName ?? stop.to?.bridge?.bridgeName
-  const bicon = bridgeIcons[bridgeName]
-  const bridgeNameHTML = `
-    <div class="flex items-center gap-2 text-white/80">
-      ${bicon ? bicon.icon() : ''}
-      <div>${bicon ? bicon.name : bridgeName}</div>
-    </div>
-  `
+  )
+  const bridgeNameHTML = `<div class= "text-white/80">${resolveProtocol(bridgeName)}</div>`
 
   const channelIdHTML = `
     <div class="flex flex-col space-y-1">
-      <span class="text-white/50">${bridgeName === 'pk-bridge' ? 'Lane ID' : 'Channel ID'}</span>
+      <span class="text-white/50">${bridgeName === 'pkbridge' ? 'Lane ID' : 'Channel ID'}</span>
       <span class="break-all text-white/80 text-mono">${stop.from?.bridge?.channelId ?? stop.to?.bridge?.channelId ?? '-'}</span>
     </div>
   `

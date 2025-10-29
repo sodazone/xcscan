@@ -26,6 +26,7 @@ import { setupNetworksGrid } from './grid/networks.js'
 import { setupCounters } from './indicators.js'
 import { setupTimeSelector } from './time-selector.js'
 import { setupSeriesSelector } from './series-selector.js'
+import { setupProtocolsGrid } from './grid/protocols.js'
 
 // TODO: improve wiring on part loaded events (if needed)
 function setupSekeletons() {
@@ -55,6 +56,7 @@ window.onload = () => {
   setupAssetsGrid(document.querySelector('#grid-assets'))
   setupChannelsGrid(document.querySelector('#grid-channels'))
   setupNetworksGrid(document.querySelector('#grid-networks'))
+  setupProtocolsGrid(document.querySelector('#grid-protocols'))
   setupCounters()
   setupTimeSelector(document.querySelector('#select-time'), 'monthly')
   setupSeriesSelector(document.querySelector('#select-series-type'), 'volume')

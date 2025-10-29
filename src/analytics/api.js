@@ -361,3 +361,19 @@ export async function getNetworkChannelsSeries(period, network, type = 'usd') {
     console.error(error.message)
   }
 }
+
+export async function getTransfersByProtocol(period) {
+  try {
+    const opts = TIME_PERIODS[period]
+    const criteria = opts.trend ? opts.trend : opts
+
+    return (
+      await _fetch({
+        op: 'transfers_by_protocol',
+        criteria,
+      })
+    ).items
+  } catch (error) {
+    console.error(error.message)
+  }
+}
