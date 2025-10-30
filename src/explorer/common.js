@@ -131,6 +131,10 @@ export const selectableProtocols = [
     label: 'Wormhole',
     value: 'wormhole',
   },
+  {
+    label: 'Snowbridge',
+    value: 'snowbridge',
+  },
 ]
 
 export function protocolsToQueryValues(protocols) {

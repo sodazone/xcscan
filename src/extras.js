@@ -29,10 +29,6 @@ const ExtraChains = [
     urn: 'urn:ocn:ethereum:11155111',
   },
   {
-    runtimeChain: 'Wormhole',
-    urn: 'urn:ocn:wormhole:1',
-  },
-  {
     runtimeChain: 'Sui',
     urn: 'urn:ocn:sui:0x35834a8a',
   },
@@ -73,18 +69,14 @@ const ExtraChains = [
     urn: 'urn:ocn:ethereum:250',
   },
   {
-    runtimeChain: 'Moonbeam',
-    urn: 'urn:ocn:ethereum:1284',
-  },
-  {
-    runtimeChain: 'Moonriver',
-    urn: 'urn:ocn:ethereum:1285',
-  },
-  {
     runtimeChain: 'Harmony',
     urn: 'urn:ocn:ethereum:1666600000',
   },
 ]
+
+const ExtraStops = {
+  'urn:ocn:wormhole:1': 'Wormhole',
+}
 
 async function fetchNetworkInfos() {
   const networkMap = {}
@@ -157,7 +149,7 @@ export function resolveNetworkIcon(networkUrn) {
 }
 
 export function resolveNetworkName(networkUrn) {
-  return NetworkInfos[networkUrn]?.runtimeChain
+  return NetworkInfos[networkUrn]?.runtimeChain ?? ExtraStops[networkUrn]
 }
 
 export function resolveAssetIcon(key) {

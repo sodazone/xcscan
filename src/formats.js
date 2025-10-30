@@ -83,3 +83,22 @@ export function formatDateTime(time) {
     minute: '2-digit',
   })
 }
+
+export function formatDuration(seconds) {
+  if (seconds === null || isNaN(seconds)) return '-'
+
+  let remaining = Math.floor(seconds)
+  const hours = Math.floor(remaining / 3600)
+  remaining %= 3600
+  const minutes = Math.floor(remaining / 60)
+  remaining %= 60
+
+  const secs = remaining
+
+  const parts = []
+  if (hours > 0) parts.push(`${hours}h`)
+  if (minutes > 0 || hours > 0) parts.push(`${minutes}m`)
+  parts.push(`${secs}${hours === 0 && minutes === 0 ? '.0s' : 's'}`)
+
+  return parts.join(' ')
+}

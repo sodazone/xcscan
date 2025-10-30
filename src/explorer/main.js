@@ -19,6 +19,7 @@ import {
   getActiveFiltersSummary,
   loadSearch,
   resolveQueryType,
+  resolveDeeplinkFilters,
 } from './search.js'
 import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
 
@@ -577,9 +578,15 @@ export function loadToggles() {
 window.onload = async () => {
   await loadResources()
 
-  const savedFilters = loadFiltersFromSession()
-  if (savedFilters) {
-    Object.assign(filters, savedFilters)
+  const urlParams = new URLSearchParams(window.location.search)
+  const deepLinkFilters = urlParams.getAll('filterBy')
+  if (deepLinkFilters.length > 0) {
+    resolveDeeplinkFilters(filters, deepLinkFilters)
+  } else {
+    const savedFilters = loadFiltersFromSession()
+    if (savedFilters) {
+      Object.assign(filters, savedFilters)
+    }
   }
 
   installCopyEventListener()
@@ -590,7 +597,6 @@ window.onload = async () => {
     update: debounce(applyFiltersAndRender, 300),
   })
 
-  const urlParams = new URLSearchParams(window.location.search)
   const deepSearch = urlParams.get('search')
   const queryType = deepSearch != null ? resolveQueryType(deepSearch) : null
 
