@@ -8,7 +8,7 @@ import {
   themeGrid,
 } from './common.js'
 import { installResizeHandler } from '../resize.js'
-import { formatDuration } from '../../formats.js'
+import { formatDuration, formatTxs, formatAccounts } from '../../formats.js'
 import { resolveProtocol } from '../../protocols.js'
 
 export function setupProtocolsGrid(element) {
@@ -55,12 +55,14 @@ export function setupProtocolsGrid(element) {
           headerName: 'Tx Count',
           type: 'numericColumn',
           sortingOrder: ['desc', 'asc'],
+          valueFormatter: ({ value }) => formatTxs(value),
         },
         {
           field: 'accounts',
           headerName: 'Unique Accounts',
           type: 'numericColumn',
           sortingOrder: ['desc', 'asc'],
+          valueFormatter: ({ value }) => formatAccounts(value),
         },
         {
           field: 'avgTimeSpent',
