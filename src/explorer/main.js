@@ -578,14 +578,16 @@ export function loadToggles() {
 window.onload = async () => {
   await loadResources()
 
-  const savedFilters = loadFiltersFromSession()
-  if (savedFilters) {
-    Object.assign(filters, savedFilters)
-  }
-
   const urlParams = new URLSearchParams(window.location.search)
   const deepLinkFilters = urlParams.getAll('filterBy')
-  resolveDeeplinkFilters(filters, deepLinkFilters)
+  if (deepLinkFilters.length > 0) {
+    resolveDeeplinkFilters(filters, deepLinkFilters)
+  } else {
+    const savedFilters = loadFiltersFromSession()
+    if (savedFilters) {
+      Object.assign(filters, savedFilters)
+    }
+  }
 
   installCopyEventListener()
 
