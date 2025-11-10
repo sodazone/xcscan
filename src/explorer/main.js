@@ -626,9 +626,4 @@ window.onload = async () => {
   } else {
     applyFiltersAndRender()
   }
-
-  if (window.history.replaceState) {
-    const cleanUrl = window.location.origin + window.location.pathname
-    window.history.replaceState(null, '', cleanUrl)
-  }
 }
