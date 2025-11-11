@@ -193,6 +193,7 @@ const statusLabels = {
   success: 'Completed',
   completed: 'Completed',
   confirmed: 'Completed',
+  waiting: 'Waiting',
   fail: 'Failed',
   failed: 'Failed',
   timeout: 'Timeout',
@@ -201,7 +202,7 @@ const statusLabels = {
 export function formatStatusIconHTML(status) {
   const label = getStatusLabel(status)
   const cls = asClassName(label)
-  return `<img class="${cls} size-3" src="/icons/${cls}.svg" alt="${cls}" title="${label}" />`
+  return `<img class="${cls} size-3" src="/icons/${cls}.svg" title="${label}" />`
 }
 
 export function getStatusLabel(status) {

@@ -58,7 +58,8 @@ function createLegStopHTML(stop) {
 
   const networkHTML = formatNetworkWithIconHTML(stop.chainId)
   const statusIconHTML = stop.status
-    ? formatStatusIconHTML(stop.status) || ''
+    ? (formatStatusIconHTML(isVaa && stop.vaaId ? 'confirmed' : stop.status) ??
+      '')
     : ''
 
   const headerHTML = `

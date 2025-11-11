@@ -231,8 +231,9 @@ body {
   @apply bg-amber-400/10 text-amber-400;
 }
 
-.status-info {
-  @apply bg-blue-500/10 text-blue-500;
+.status-info,
+.status-waiting {
+  @apply bg-[#F2D394]/10 text-[#F2D394];
 }
 
 .status-neutral {

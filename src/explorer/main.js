@@ -23,6 +23,8 @@ import {
 } from './search.js'
 import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
 
+const PENDING_STATUS = ['sent', 'waiting']
+
 const pageCursors = [null]
 let currentPage = 0
 const pageSize = 15
@@ -404,7 +406,7 @@ function renderTransactionsTable(results) {
 
   function onUpdateJourney(journey, filters) {
     const existing = items?.find((item) => item.id === journey.id)
-    if (existing && existing.status === 'sent') {
+    if (existing && PENDING_STATUS.includes(existing.status)) {
       if (isStatusNotInFilter(journey, filters)) {
         // If updated status no longer matches filter, remove it
         const index = items.findIndex((item) => item.id === journey.id)
