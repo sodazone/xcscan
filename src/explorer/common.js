@@ -89,7 +89,7 @@ export function formatAssetAmount(
     return ''
   }
 
-  amount += `<div class="flex space-x-1"><span>${humanizeNumber(normalizedAmount)}</span><span class="text-white/60">${asset.symbol}</span></div>`
+  amount += `<div class="flex space-x-1"><span>${humanizeNumber(normalizedAmount)}</span><span class="text-white/60">${asset.symbol ?? 'UNIT'}</span></div>`
   if (showUsd && usdNumber != null) {
     amount += `<div class="flex text-xs text-white/60">($${humanizeNumber(asset.usd)})</div>`
   }
