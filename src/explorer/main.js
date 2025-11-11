@@ -541,8 +541,52 @@ function updateSearchIndicator() {
   }
 }
 
+function countAppliedFilters() {
+  let count = 0
+  const arrayKeys = [
+    'selectedDestinations',
+    'selectedOrigins',
+    'selectedChains',
+    'selectedStatus',
+    'selectedActions',
+    'selectedAssets',
+    'selectedProtocols',
+  ]
+
+  arrayKeys.forEach((key) => {
+    if (Array.isArray(filters[key]) && filters[key].length > 0) {
+      count++
+    }
+  })
+
+  const amounts = filters.selectedUsdAmounts
+  if (
+    amounts.amountPreset !== null ||
+    amounts.amountGte !== null ||
+    amounts.amountLte !== null
+  ) {
+    count++
+  }
+
+  return count
+}
+
+function updateFiltersCounter() {
+  const filtersCounter = document.getElementById('filters-counter')
+
+  if (filtersCounter) {
+    const count = countAppliedFilters()
+    if (count === 0) {
+      filtersCounter.innerText = ''
+    } else {
+      filtersCounter.innerText = `(${count})`
+    }
+  }
+}
+
 function applyFiltersAndRender() {
   saveFiltersToSession(filters)
+  updateFiltersCounter()
 
   const promise = listJourneys({
     filters,
