@@ -197,7 +197,11 @@ function createJourneySummary(journey) {
            : `<div class="break-all">${createCopyLinkHTML({
                text: journey.fromFormatted ?? journey.from,
                display: fromAddress,
-               url: getExplorerAddressLink(journey.origin, journey.from),
+               url: getExplorerAddressLink(
+                 journey.origin,
+                 journey.from,
+                 journey.fromFormatted
+               ),
              })}</div>`
        }
     </div>
@@ -211,7 +215,11 @@ function createJourneySummary(journey) {
          : `<div class="break-all">${createCopyLinkHTML({
              text: journey.toFormatted ?? journey.to,
              display: toAddress,
-             url: getExplorerAddressLink(journey.destination, journey.to),
+             url: getExplorerAddressLink(
+               journey.destination,
+               journey.to,
+               journey.toFormatted
+             ),
            })}</div>`
      }
     </div>

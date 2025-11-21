@@ -75,7 +75,7 @@ const EXPLORERS = {
   },
   'urn:ocn:ethereum:56': {
     type: 'etherscan',
-    url: 'https://bscscan.io',
+    url: 'https://bscscan.com',
   },
   'urn:ocn:ethereum:42161': {
     type: 'etherscan',
@@ -147,7 +147,7 @@ function resolveURL(chainId, verb, param, pref) {
       case 'etherscan':
       case 'solscan':
       case 'suivision':
-        return `${resolved.url}/${EXPLORER_VERBS[resolved.type][verb]}/${param}`
+        return `${resolved.url}/${EXPLORER_VERBS[resolved.type][verb]}/${param ?? '#'}`
     }
   }
   return null
@@ -161,6 +161,18 @@ export function getExplorerBlockLink(chainId, blockNumber, pref) {
   return resolveURL(chainId, 'block', blockNumber, pref)
 }
 
-export function getExplorerAddressLink(chainId, address, pref) {
-  return resolveURL(chainId, 'address', address, pref)
+const USE_FORMATTED_ADDRESS = ['urn:ocn:solana:101']
+
+export function getExplorerAddressLink(
+  chainId,
+  address,
+  addressFormatted,
+  pref
+) {
+  return resolveURL(
+    chainId,
+    'address',
+    USE_FORMATTED_ADDRESS.includes(chainId) ? addressFormatted : address,
+    pref
+  )
 }
