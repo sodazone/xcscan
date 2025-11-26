@@ -268,7 +268,6 @@ async function loadTransactionDetail() {
       journey.stops.every((s) => s.instructions == null) &&
       journey.instructions.length > 0
     ) {
-      console.log(journey.instructions)
       const program = createCollapsibleJsonViewer(journey.instructions, {
         depth: 2,
         label: 'XCM Program Code',

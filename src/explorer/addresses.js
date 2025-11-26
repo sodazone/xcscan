@@ -85,6 +85,10 @@ export function shortenAddress(address) {
     return `${address.slice(0, 6)}…${address.slice(-4)}`
   }
 
+  if (address.length < 20) {
+    return address
+  }
+
   if (address.length >= 40) {
     return `${address.slice(0, 8)}…${address.slice(-8)}`
   }

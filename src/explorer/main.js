@@ -406,7 +406,10 @@ function renderTransactionsTable(results) {
 
   function onUpdateJourney(journey, filters) {
     const existing = items?.find((item) => item.id === journey.id)
-    if (existing && PENDING_STATUS.includes(existing.status)) {
+    if (
+      existing &&
+      (PENDING_STATUS.includes(existing.status) || existing.status === 'failed') // include failed since some messages can be retried
+    ) {
       if (isStatusNotInFilter(journey, filters)) {
         // If updated status no longer matches filter, remove it
         const index = items.findIndex((item) => item.id === journey.id)

@@ -1,4 +1,5 @@
 import { htmlToElement } from '../../../utils'
+import { resolveAddress } from '../../addresses'
 import {
   formatLocalTimestamp,
   formatNetworkWithIconHTML,
@@ -6,56 +7,68 @@ import {
   shortHash,
 } from '../../common'
 import { createCopyLinkHTML } from '../../components/copy-link'
-import { getExplorerBlockLink, getExplorerTxLink } from '../../links'
+import {
+  getExplorerAddressLink,
+  getExplorerBlockLink,
+  getExplorerTxLink,
+} from '../../links'
 import { createCollapsibleJsonViewer } from '../json'
 import { asPositionSuffix, createStopDetails } from './common'
 
 function createLegStopHTML(stop) {
-  if (stop == null) return null
+  if (!stop) return null
 
-  const opacityClass = stop.blockNumber ? '' : ' opacity-60'
+  const isTimeout = Boolean(stop.timeout)
+  const context = isTimeout ? stop.timeout : stop // unified object
+  const opacityClass = context.blockNumber && !isTimeout ? '' : ' opacity-60'
 
-  const networkHTML = formatNetworkWithIconHTML(stop.chainId)
-  const statusIconHTML = stop.status
-    ? formatStatusIconHTML(stop.status) || ''
-    : ''
+  const blockHTML = context.blockNumber
+    ? `<div class="flex space-x-2 font-mono text-sm">
+         <span class="text-white/50">Block</span>
+         ${createCopyLinkHTML({
+           text: context.blockNumber,
+           url: getExplorerBlockLink(context.chainId, context.blockNumber),
+         })}
+       </div>`
+    : `<div></div>`
+
+  const timestampHTML =
+    context.timestamp != null ? formatLocalTimestamp(context.timestamp) : ''
+
+  const metaHTML = createLegStopMetaHTML(context) || ''
+
+  const statusIconHTML = stop.timeout
+    ? formatStatusIconHTML('timeout')
+    : (context.status && formatStatusIconHTML(context.status)) || ''
 
   const headerHTML = `
     <div class="flex items-center justify-between text-sm text-white/90">
-      ${networkHTML}
+      ${formatNetworkWithIconHTML(stop.chainId)}
       ${statusIconHTML}
     </div>
   `
 
-  const bodyHTML = stop.blockNumber
-    ? `<div class="flex space-x-2 font-mono text-sm"><span class="text-white/50">Block</span> ${createCopyLinkHTML(
-        {
-          text: stop.blockNumber,
-          url: getExplorerBlockLink(stop.chainId, stop.blockNumber),
-        }
-      )}</div>`
-    : `
-      <div>
+  const timeoutExtraHTML = isTimeout
+    ? `
+      <div class="flex space-x-2 items-center text-sm text-white/90">
+        <span>Timeout on</span>
+        ${formatNetworkWithIconHTML(context.chainId)}
       </div>
     `
-
-  const timestampHTML =
-    stop.timestamp != null ? formatLocalTimestamp(stop.timestamp) : ''
-
-  const metaHTML = createLegStopMetaHTML(stop) || ''
+    : ''
 
   return `
     <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full ${opacityClass}">
       ${headerHTML}
-      ${bodyHTML}
+      ${timeoutExtraHTML}
+      ${blockHTML}
       ${timestampHTML}
       ${metaHTML}
     </div>
   `
 }
 
-function createLegStopMetaHTML({ blockNumber, tx = {}, event, chainId }) {
-  const hasModule = tx.module && tx.method
+function createTxHashHTML(chainId, blockNumber, tx) {
   const hasTxHash = tx.hash || tx.hashSecondary
 
   const txHashHTML = hasTxHash
@@ -95,6 +108,21 @@ function createLegStopMetaHTML({ blockNumber, tx = {}, event, chainId }) {
     `
     : ''
 
+  return txHashHTML
+}
+
+function createLegStopMetaHTML({
+  blockNumber,
+  tx = {},
+  event,
+  chainId,
+  relayer,
+  timeout,
+}) {
+  const hasModule = tx.module && tx.method
+
+  const txHashHTML = createTxHashHTML(chainId, blockNumber, tx)
+
   const extrinsicInfoHTML = hasModule
     ? `
       <div class="flex flex-col space-y-1">
@@ -109,11 +137,31 @@ function createLegStopMetaHTML({ blockNumber, tx = {}, event, chainId }) {
 
   const eventHTML = createEventMetaHTML({ event, blockNumber })
 
+  const relayerAddress = relayer
+    ? resolveAddress({
+        address: relayer.key,
+        formatted: relayer.formatted,
+      })
+    : null
+  const relayerHTML = relayerAddress
+    ? `
+    <div class="flex flex-col space-y-1">
+      <div class="text-white/50">Relayer</div>
+      ${createCopyLinkHTML({
+        text: relayerAddress,
+        display: relayerAddress,
+        url: getExplorerAddressLink(chainId, relayer.formatted ?? relayer.key),
+      })}
+    </div>
+  `
+    : ''
+
   return `
     <div class="text-sm space-y-2">
       ${txHashHTML}
       ${extrinsicInfoHTML}
       ${eventHTML}
+      ${relayerHTML}
     </div>
   `
 }
@@ -125,7 +173,7 @@ function createEventMetaHTML({ event, blockNumber }) {
       <div class="text-white/50">Event</div>
       <div class="flex flex-col space-y-1">
         <span title="${event.module}.${event.name}" class="font-medium truncate">${event.module}.${event.name}</span>
-        <span class="text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>
+        ${blockNumber && event.blockPosition ? `<span class="text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>` : ''}
       </div>
     </div>
     `
@@ -151,23 +199,32 @@ function createIsmpDetailsContent(stop) {
     </div>`
     : ''
 
-  const relayerHTML = stop.relayer
+  const nonceHTML = stop.nonce
     ? `
     <div class="flex flex-col space-y-1">
-      <span class="text-white/50">Relayer</span>
-      <span class="break-all text-white/80 text-mono">${stop.relayer}</span>
+      <span class="text-white/50">Nonce</span>
+      <span class="break-all text-white/80 text-mono">${stop.nonce}</span>
+    </div>`
+    : ''
+
+  const payloadHTML = stop.payload
+    ? `
+    <div class="flex flex-col space-y-1">
+      <span class="text-white/50">Payload</span>
+      <span class="break-all text-white/80 text-mono">${stop.payload}</span>
     </div>`
     : ''
 
   executeLocationEl.className = 'flex flex-col space-y-4'
   executeLocationEl.innerHTML = `
     ${commitmentIdHTML}
-    ${relayerHTML}
+    ${nonceHTML}
+    ${payloadHTML}
   `
 
   container.appendChild(executeLocationEl)
 
-  if (stop.instructions) {
+  if (stop.instructions && Object.keys(stop.instructions).length > 0) {
     const requestViewer = createCollapsibleJsonViewer(stop.instructions, {
       depth: 2,
       label: 'ISMP POST Request',
