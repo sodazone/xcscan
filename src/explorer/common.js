@@ -41,9 +41,12 @@ export function formatNetworkWithIconHTML(networkId) {
 export function formatAction(entry) {
   if (entry.type === 'transact' && entry.transactCalls?.length) {
     const call = entry.transactCalls[0]
-    return call.module == null
-      ? prettify(entry.type)
-      : `${prettify(call.module)} · ${prettify(call.method)}`
+    if (call.module && call.method) {
+      return `${prettify(call.module)} · ${prettify(call.method)}`
+    }
+    if (call.method) {
+      return prettify(call.method)
+    }
   }
 
   return prettify(entry.type)
@@ -51,11 +54,12 @@ export function formatAction(entry) {
 
 export function prettify(str) {
   if (str == null) {
-    return str
+    return str.toLowerCase()
   }
   return str
     .replace(/([a-z])([A-Z])/g, '$1 $2') // camelCase to space
     .replace(/[_\-]/g, ' ') // snake_case or kebab-case to space
+    .toLowerCase()
 }
 
 function safeNumber(num) {
