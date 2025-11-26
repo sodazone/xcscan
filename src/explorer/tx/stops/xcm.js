@@ -9,34 +9,7 @@ import {
 import { createCopyLinkHTML } from '../../components/copy-link'
 import { getExplorerBlockLink, getExplorerTxLink } from '../../links'
 import { createCollapsibleJsonViewer } from '../json'
-import { createStopDetails } from './common'
-
-const bridgeIcons = {
-  'pk-bridge': {
-    name: 'Polkadot-Kusama Bridge',
-    icon: ({ size = 5, color = '#000000' } = {}) => `
-      <svg class="size-${size} align-middle" viewBox="0 0 10.054 10.054" xmlns="http://www.w3.org/2000/svg" style="color:${color};">
-        <g transform="matrix(1.1805 0 0 1.1805 -1.0598 -2.1088)" stroke-width=".26458" fill="currentColor" fill-opacity="0.5">
-          <path d="m5.6853 3.6381h1.0583c0.89916 0 1.5875 0.68834 1.5875 1.5875s-0.68834 1.5875-1.5875 1.5875h-1.0583v1.0583h1.0583c1.4821 0 2.6458-1.1637 2.6458-2.6458s-1.1637-2.6458-2.6458-2.6458h-1.0583"/>
-          <path d="m4.6269 6.8131h-1.0583c-0.89916 0-1.5875-0.68834-1.5875-1.5875s0.68834-1.5875 1.5875-1.5875h1.0583v-1.0583h-1.0583c-1.4821 0-2.6458 1.1637-2.6458 2.6458s1.1637 2.6458 2.6458 2.6458h1.0583"/>
-          <path d="m6.7436 5.7547v-1.0583h-3.175v1.0583z"/>
-        </g>
-      </svg>
-    `,
-  },
-  snowbridge: {
-    name: 'Snowbridge',
-    icon: ({ size = 5, color = '#FFFFFF' } = {}) => `
-        <svg class="size-${size} align-middle" viewBox="0 0 10.054 10.054" xmlns="http://www.w3.org/2000/svg" style="color:${color};">
-          <g transform="matrix(1.1805 0 0 1.1805 -1.0598 -2.1088)" stroke-width=".26458" fill="currentColor" fill-opacity="0.5">
-            <path d="m5.6853 3.6381h1.0583c0.89916 0 1.5875 0.68834 1.5875 1.5875s-0.68834 1.5875-1.5875 1.5875h-1.0583v1.0583h1.0583c1.4821 0 2.6458-1.1637 2.6458-2.6458s-1.1637-2.6458-2.6458-2.6458h-1.0583"/>
-            <path d="m4.6269 6.8131h-1.0583c-0.89916 0-1.5875-0.68834-1.5875-1.5875s0.68834-1.5875 1.5875-1.5875h1.0583v-1.0583h-1.0583c-1.4821 0-2.6458 1.1637-2.6458 2.6458s1.1637 2.6458 2.6458 2.6458h1.0583"/>
-            <path d="m6.7436 5.7547v-1.0583h-3.175v1.0583z"/>
-          </g>
-        </svg>
-      `,
-  },
-}
+import { asPositionSuffix, createStopDetails } from './common'
 
 function createLegStopHTML(stop) {
   if (stop == null) return null
@@ -209,10 +182,6 @@ function createXcmDetailsContent(stop) {
   return container
 }
 
-function asPositionSuffix(pos) {
-  return pos != null ? `-${pos}` : ''
-}
-
 function createLegStopMetaHTML({
   blockNumber,
   extrinsic = {},
@@ -232,7 +201,11 @@ function createLegStopMetaHTML({
           ${createCopyLinkHTML({
             text: extrinsic.hash,
             display: shortHash(extrinsic.hash),
-            url: getExplorerTxLink(chainId, extrinsic.hash),
+            url: getExplorerTxLink(chainId, {
+              hash: extrinsic.hash,
+              blockNumber,
+              extrinsicIndex: extrinsic.blockPosition,
+            }),
           })}
         </div>
       `
@@ -246,7 +219,7 @@ function createLegStopMetaHTML({
           ${createCopyLinkHTML({
             text: extrinsic.evmTxHash,
             display: shortHash(extrinsic.evmTxHash),
-            url: getExplorerTxLink(chainId, extrinsic.evmTxHash),
+            url: getExplorerTxLink(chainId, { hash: extrinsic.evmTxHash }),
           })}
         </div>
       `

@@ -135,6 +135,10 @@ export const selectableProtocols = [
     label: 'Snowbridge',
     value: 'snowbridge',
   },
+  {
+    label: 'Hyperbridge',
+    value: 'hyperbridge',
+  },
 ]
 
 export function protocolsToQueryValues(protocols) {

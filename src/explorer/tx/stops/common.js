@@ -57,3 +57,7 @@ export function createStopDetails(title, detailsContent) {
 
   return wrapper
 }
+
+export function asPositionSuffix(pos) {
+  return pos != null ? `-${pos}` : ''
+}

@@ -49,6 +49,10 @@ const EXPLORERS = {
     type: 'subscan',
     url: 'https://phala.subscan.io',
   },
+  'urn:ocn:polkadot:3367': {
+    type: 'statescan',
+    url: 'https://nexus.statescan.io',
+  },
   'urn:ocn:polkadot:3369': {
     type: 'subscan',
     url: 'https://mythos.subscan.io',
@@ -113,6 +117,11 @@ const EXPLORER_VERBS = {
     block: 'block',
     tx: 'extrinsic',
   },
+  statescan: {
+    address: '#/accounts',
+    block: '#/blocks',
+    tx: '#/extrinsics',
+  },
   etherscan: {
     address: 'address',
     block: 'block',
@@ -132,29 +141,32 @@ const EXPLORER_VERBS = {
 
 function resolveURL(chainId, verb, param, pref) {
   const explorers = EXPLORERS[chainId]
-  let resolved = null
-  if (Array.isArray(explorers)) {
-    resolved =
-      pref == null
-        ? explorers[0]
-        : (explorers.find((x) => x.type == pref) ?? explorers[0])
-  } else {
-    resolved = explorers
+
+  let resolved = Array.isArray(explorers)
+    ? pref == null
+      ? explorers[0]
+      : (explorers.find((x) => x.type === pref) ?? explorers[0])
+    : explorers
+
+  if (!resolved) return null
+
+  const base = resolved.url
+  const path = EXPLORER_VERBS[resolved.type][verb]
+
+  if (resolved.type === 'statescan' && verb === 'tx') {
+    if (typeof param === 'string') return null
+    const { blockNumber, extrinsicIndex } = param
+    return `${base}/${path}/${blockNumber}-${extrinsicIndex}`
   }
-  if (resolved) {
-    switch (resolved.type) {
-      case 'subscan':
-      case 'etherscan':
-      case 'solscan':
-      case 'suivision':
-        return `${resolved.url}/${EXPLORER_VERBS[resolved.type][verb]}/${param ?? '#'}`
-    }
-  }
-  return null
+
+  const value =
+    typeof param === 'object' && 'hash' in param ? param.hash : param
+
+  return `${resolved.url}/${EXPLORER_VERBS[resolved.type][verb]}/${value ?? '#'}`
 }
 
-export function getExplorerTxLink(chainId, hash, pref) {
-  return resolveURL(chainId, 'tx', hash, pref)
+export function getExplorerTxLink(chainId, tx, pref) {
+  return resolveURL(chainId, 'tx', tx, pref)
 }
 
 export function getExplorerBlockLink(chainId, blockNumber, pref) {

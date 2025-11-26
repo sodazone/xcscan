@@ -74,7 +74,13 @@ function createLegStopHTML(stop) {
         {
           text: stop.tx.txHash,
           display: shortHash(stop.tx.txHash),
-          url: getExplorerTxLink(stop.chainId, stop.tx.txHash, 'etherscan'),
+          url: getExplorerTxLink(
+            stop.chainId,
+            {
+              hash: stop.tx.txHash,
+            },
+            'etherscan'
+          ),
         }
       )}</div>`
     : isVaa

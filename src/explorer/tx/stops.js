@@ -1,9 +1,11 @@
+import { hyperbridgeRenderer } from './stops/hyperbridge'
 import { wormholeRenderer } from './stops/wormhole'
 import { xcmRenderer } from './stops/xcm'
 
 const RENDER = {
   xcm: xcmRenderer,
   wormhole: wormholeRenderer,
+  ismp: hyperbridgeRenderer,
 }
 
 function toProtocol(stop) {
