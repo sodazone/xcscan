@@ -72,6 +72,10 @@ const ExtraChains = [
     runtimeChain: 'Harmony',
     urn: 'urn:ocn:ethereum:1666600000',
   },
+  {
+    runtimeChain: 'Aptos',
+    urn: 'urn:ocn:aptos:1',
+  },
 ]
 
 const ExtraStops = {
