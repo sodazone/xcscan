@@ -15,11 +15,11 @@ import {
   createCopyLinkHTML,
   installCopyEventListener,
 } from './components/copy-link.js'
+import { updateUrlFromFilters, resolveDeeplinkFilters } from './deeplink.js'
 import {
   getActiveFiltersSummary,
   loadSearch,
   resolveQueryType,
-  resolveDeeplinkFilters,
 } from './search.js'
 import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
 
@@ -590,6 +590,7 @@ function updateFiltersCounter() {
 function applyFiltersAndRender() {
   saveFiltersToSession(filters)
   updateFiltersCounter()
+  updateUrlFromFilters(filters)
 
   const promise = listJourneys({
     filters,
@@ -666,6 +667,7 @@ window.onload = async () => {
           pageCursors.length = 1
 
           saveFiltersToSession(filters)
+          updateUrlFromFilters(filters)
           renderTransactionsTable(results)
         }
       })
