@@ -47,6 +47,12 @@ const protocolIcons = {
       </svg>
     `,
   },
+  hyperbridge: {
+    label: 'ISMP',
+    icon: ({ size = 5 } = {}) => `
+      <img src='/ismp.svg' class="h-${size} w-${size} rounded-full" />
+    `,
+  },
 }
 
 export function resolveProtocol(name, { size, color, showLabels = true } = {}) {
