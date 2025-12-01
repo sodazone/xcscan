@@ -103,12 +103,15 @@ function createBridgeDetailsContent(stop) {
   )
   const bridgeNameHTML = `<div class= "text-white/80">${resolveProtocol(bridgeName)}</div>`
 
-  const channelIdHTML = `
+  const channelIdHTML =
+    stop.from?.bridge?.channelId || stop.to?.bridge?.channelId
+      ? `
     <div class="flex flex-col space-y-1">
       <span class="text-white/50">${bridgeName === 'pkbridge' ? 'Lane ID' : 'Channel ID'}</span>
-      <span class="break-all text-white/80 text-mono">${stop.from?.bridge?.channelId ?? stop.to?.bridge?.channelId ?? '-'}</span>
+      <span class="break-all text-white/80 text-mono">${stop.from?.bridge?.channelId ?? stop.to?.bridge?.channelId}</span>
     </div>
   `
+      : ''
 
   const nonceHTML = `
     <div class="flex flex-col space-y-1">
@@ -117,14 +120,33 @@ function createBridgeDetailsContent(stop) {
     </div>
   `
 
+  const topicIdHTML = stop.messageId
+    ? `
+    <div class="flex flex-col space-y-1">
+      <span class="text-white/50">Topic ID</span>
+      <span class="break-all text-white/80 text-mono">${stop.messageId}</span>
+    </div>`
+    : ''
+
   executeLocationEl.className = 'flex flex-col space-y-4'
   executeLocationEl.innerHTML = `
     ${bridgeNameHTML}
     ${channelIdHTML}
     ${nonceHTML}
+    ${topicIdHTML}
   `
 
   container.appendChild(executeLocationEl)
+
+  if (stop.instructions) {
+    const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
+      depth: 2,
+      label: 'XCM Program Code',
+      isOpen: true,
+    })
+    container.appendChild(xcmViewer)
+  }
+
   return container
 }
 
