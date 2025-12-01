@@ -124,7 +124,14 @@ function renderAction(item) {
       <span class="text-xs text-white/70 font-medium truncate">${action.method}</span>
     </div>
     `
-    : `<div class="text-sm text-white tracking-wide capitalize">
+    : action.method !== undefined
+      ? `
+      <div class="flex space-x-2 md:flex-col md:space-y-0.5 text-sm text-white leading-tight tracking-wide break-words">
+        <span class="text-white truncate capitalize">${action.type}</span>
+        <span class="text-xs text-white/70 font-medium truncate">${action.method}</span>
+      </div>
+      `
+      : `<div class="text-sm text-white tracking-wide capitalize">
     ${action.type}
   </div>`
 }
