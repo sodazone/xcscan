@@ -54,7 +54,7 @@ export function formatAction(entry) {
 
 export function prettify(str) {
   if (str == null) {
-    return str.toLowerCase()
+    return ''
   }
   return str
     .replace(/([a-z])([A-Z])/g, '$1 $2') // camelCase to space
