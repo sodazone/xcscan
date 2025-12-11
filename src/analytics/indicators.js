@@ -23,12 +23,13 @@ export function setupCounters(network) {
     format,
     showPrev = true,
   }) {
-    const pct = current == 0 ? 0 : (diff / current) * 100.0
+    const pct =
+      current == 0 ? 0 : previous == 0 ? null : (diff / previous) * 100.0
     element.innerHTML = `
       <div class="flex justify-between items-center">
   <span class="text-white/70 font-medium">${title}</span>
   ${
-    showPrev
+    showPrev && pct
       ? `
     <span class="h-fit w-fit text-sm ${
       pct === 0
