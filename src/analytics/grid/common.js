@@ -70,12 +70,21 @@ export function NetFlowCellRenders(params) {
 
 export function PercentageBarRenderer(params) {
   const value = Number(params.value)
-  return value === NaN
-    ? `<div class="text-white/30 text-right">N/A</div>`
-    : `
-    <div class="relative w-full h-full flex items-center justify-end text-sm overflow-hidden">
-      <div class="absolute top-0 left-0 bottom-0 bg-[#669999]/20" style="width: ${value.toFixed(2)}%"></div>
-      <span class="relative z-10 pr-1">${value.toFixed(2)}%</span>
+  if (isNaN(value)) {
+    return `<div class="text-white/30 text-right">N/A</div>`
+  }
+
+  const pct = value === 100 ? value : value.toFixed(2)
+
+  return `
+    <div class="flex items-center gap-2 w-full h-full">
+      <div class="w-[73%] bg-white/10 rounded-full h-1.5 overflow-hidden">
+        <div
+          class="bg-[#669999] h-full rounded-full"
+          style="width: ${pct}%">
+        </div>
+      </div>
+      <span class="w-[27%] text-sm text-white/80 whitespace-nowrap">${pct}%</span>
     </div>
   `
 }
