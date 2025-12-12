@@ -8,6 +8,8 @@ import {
   PaginationModule,
   PinnedRowModule,
   RowAutoHeightModule,
+  TooltipModule,
+  ValidationModule,
 } from 'ag-grid-community'
 
 ModuleRegistry.registerModules([
@@ -17,6 +19,8 @@ ModuleRegistry.registerModules([
   ClientSideRowModelModule,
   CellStyleModule,
   ColumnAutoSizeModule,
+  TooltipModule,
+  ValidationModule,
 ])
 
 import { setupSeriesChart } from './chart.js'

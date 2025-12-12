@@ -10,6 +10,7 @@ import {
   NetFlowCellRenders,
 } from '../../grid/common.js'
 import { installResizeHandler } from '../../resize.js'
+import { TrendHeader } from './header.js'
 
 export function setupNetworkAssetsGrid(element, network) {
   let grid
@@ -28,6 +29,13 @@ export function setupNetworkAssetsGrid(element, network) {
       paginationPageSize: 15,
       pagination: true,
       paginationPageSizeSelector: false,
+      tooltipShowDelay: 0,
+      tooltipHideDelay: 200,
+      context: {
+        eventName: 'networkAssetsTypeChanged',
+        initialType: currentOpts.type,
+        initialTimeframe: currentOpts.timeframe,
+      },
       autoSizeStrategy: isMobile()
         ? {
             type: 'fitCellContents',
@@ -82,6 +90,7 @@ export function setupNetworkAssetsGrid(element, network) {
           sortable: false,
           valueFormatter: ({ value }) => value[value.length - 1],
           cellRenderer: SparklineCellRenderer,
+          headerComponent: TrendHeader,
         },
       ],
     }

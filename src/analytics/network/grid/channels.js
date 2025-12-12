@@ -10,6 +10,7 @@ import {
   NetFlowCellRenders,
 } from '../../grid/common.js'
 import { installResizeHandler } from '../../resize.js'
+import { TrendHeader } from './header.js'
 
 export function setupNetworkChannelsGrid(element, network) {
   let grid
@@ -26,6 +27,12 @@ export function setupNetworkChannelsGrid(element, network) {
       paginationPageSize: 15,
       pagination: true,
       paginationPageSizeSelector: false,
+      tooltipShowDelay: 0,
+      tooltipHideDelay: 200,
+      context: {
+        eventName: 'networkChannelsTypeChanged',
+        initialType: 'volume',
+      },
       autoSizeStrategy: isMobile()
         ? {
             type: 'fitCellContents',
@@ -82,6 +89,7 @@ export function setupNetworkChannelsGrid(element, network) {
           sortable: false,
           valueFormatter: ({ value }) => value[value.length - 1],
           cellRenderer: SparklineCellRenderer,
+          headerComponent: TrendHeader,
         },
       ],
       onRowClicked: (event) => {
