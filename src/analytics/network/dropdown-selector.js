@@ -1,8 +1,8 @@
 const descriptions = {
   volume: 'Total volume in USD',
-  count: 'Number of transfers',
+  count: 'Number of transfers made',
   flow: 'Inflow, outflow and netflow in USD',
-  share: 'Volume share over total ecosystem',
+  share: 'USD volume share over total ecosystem volume',
   asset: 'Total volume in asset amount',
 }
 
@@ -21,17 +21,21 @@ export function setupDropdownSelectors() {
 }
 
 function setupDropdownSelector(container) {
-  const { eventName, initialValue } = container.dataset
+  const { eventName, initialValue, tooltipTarget } = container.dataset
   const button = container.querySelector('[data-dropdown-button]')
   const menu = container.querySelector('[data-dropdown-options]')
   const selection = container.querySelector('[data-dropdown-label]')
   const items = container.querySelectorAll('[data-value]')
+  const tooltip = tooltipTarget ? document.querySelector(tooltipTarget) : null
 
   let selected = initialValue
 
   function updateSelection(value) {
     selected = value
     selection.textContent = labels[value] ?? value
+
+    if (tooltip) tooltip.textContent = descriptions[value] ?? ''
+
     menu.classList.add('hidden')
     container.classList.remove('open')
     button.setAttribute('aria-expanded', 'false')

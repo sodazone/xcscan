@@ -90,7 +90,7 @@ export function setupChannelsGrid(element) {
           sortingOrder: ['desc', 'asc'],
         },
         {
-          headerName: 'Trend',
+          headerName: 'Volume Trend',
           field: 'series',
           maxWidth: 150,
           minWidth: 150,
