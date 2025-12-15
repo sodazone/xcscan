@@ -4,6 +4,11 @@ import { httpUrl } from '../env.js'
 const queryUrl = `${httpUrl}/query/xcm`
 
 export const TIME_PERIODS = {
+  semiannually: {
+    label: 'Last 6 months',
+    timeframe: '6 months',
+    bucket: '1 days',
+  },
   quarterly: {
     label: 'Last 3 months',
     timeframe: '3 months',
