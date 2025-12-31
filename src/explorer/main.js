@@ -10,6 +10,7 @@ import {
   loadResources,
   makeGuardedClickHandler,
   prettify,
+  isPending,
 } from './common.js'
 import {
   createCopyLinkHTML,
@@ -22,8 +23,6 @@ import {
   resolveQueryType,
 } from './search.js'
 import { loadFiltersFromSession, saveFiltersToSession } from './session.js'
-
-const PENDING_STATUS = ['sent', 'waiting']
 
 const pageCursors = [null]
 let currentPage = 0
@@ -415,7 +414,7 @@ function renderTransactionsTable(results) {
     const existing = items?.find((item) => item.id === journey.id)
     if (
       existing &&
-      (PENDING_STATUS.includes(existing.status) || existing.status === 'failed') // include failed since some messages can be retried
+      (isPending(existing.status) || existing.status === 'failed') // include failed since some messages can be retried
     ) {
       if (isStatusNotInFilter(journey, filters)) {
         // If updated status no longer matches filter, remove it
@@ -456,6 +455,25 @@ function renderTransactionsTable(results) {
           text.textContent = statusLabel
         }
       })
+
+      // Update destination and beneficiary
+      if (
+        existing.to !== journey.to ||
+        existing.destination !== journey.destination
+      ) {
+        const toCells = row.querySelectorAll('[data-label="To"]')
+        if (toCells && toCells.length > 0) {
+          const toHTML = `
+            <div class="flex flex-col space-y-1">
+            ${renderTo(journey)}
+            </div>
+          `
+
+          toCells.forEach((toCell) => {
+            toCell.innerHTML = toHTML
+          })
+        }
+      }
 
       // Update the assets
       const assetCells = row.querySelectorAll('[data-label="Assets"]')
@@ -499,6 +517,29 @@ function renderTransactionsTable(results) {
     }
   }
 
+  function onReplaceJourney({ replaces }, _filters) {
+    if (!items || !replaces) return
+
+    const index = items.findIndex((item) => item.id === replaces.id)
+    if (index === -1) return
+
+    const oldJourney = items[index]
+    const wasLastItem = index === items.length - 1
+
+    items.splice(index, 1)
+
+    const row = document.getElementById(oldJourney.correlationId)
+    if (row) {
+      row.remove()
+    }
+
+    if (currentPage === 0 && wasLastItem && items.length > 0) {
+      const lastItem = items[items.length - 1]
+      pageCursors.length = 1
+      pageCursors.push(encodeCursor(lastItem))
+    }
+  }
+
   function liveStatus() {
     const connectedIco = document.getElementById('sse-live-icon-connected')
     const disconnectedIco = document.getElementById(
@@ -532,6 +573,7 @@ function renderTransactionsTable(results) {
   closeSubscription = subscribeToJourneys(filters, {
     onNewJourney,
     onUpdateJourney,
+    onReplaceJourney,
     onOpen,
     onError,
   })

@@ -7,6 +7,7 @@ import {
   formatAssetAmount,
   formatNetworkWithIconHTML,
   getStatusLabel,
+  isPending,
   loadResources,
   pad,
 } from '../common.js'
@@ -290,14 +291,26 @@ async function loadTransactionDetail() {
         oldLegs.replaceWith(newLegs)
       }
 
-      if (disconnect != null && updatedJourney.status !== 'sent') {
+      if (disconnect != null && !isPending(updatedJourney.status)) {
         disconnect()
       }
     }
 
-    if (journey.status === 'sent') {
+    async function onReplaceJourney({ ids }) {
+      if (ids && ids.correlationId != null) {
+        try {
+          const journey = await getJourneyById(ids.correlationId)
+          onUpdateJourney(journey)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    }
+
+    if (isPending(journey.status)) {
       disconnect = subscribeToJourney(journey.correlationId, {
         onUpdateJourney,
+        onReplaceJourney,
         onError: console.error,
       })
     }

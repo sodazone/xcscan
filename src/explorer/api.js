@@ -192,7 +192,7 @@ export async function getJourneyById(id) {
 
 export function subscribeToJourney(
   id,
-  { onUpdateJourney, onOpen = () => {}, onError = () => {} }
+  { onUpdateJourney, onReplaceJourney, onOpen = () => {}, onError = () => {} }
 ) {
   const source = new EventSource(`${sseUrl}?id=${id}`)
 
@@ -200,6 +200,9 @@ export function subscribeToJourney(
 
   source.addEventListener('update_journey', (e) =>
     onUpdateJourney(JSON.parse(e.data))
+  )
+  source.addEventListener('replaces_journey', (e) =>
+    onReplaceJourney(JSON.parse(e.data))
   )
 
   source.onerror = (error) => {
@@ -219,7 +222,13 @@ export function subscribeToJourney(
 
 export function subscribeToJourneys(
   filters,
-  { onUpdateJourney, onNewJourney, onOpen = () => {}, onError = () => {} }
+  {
+    onUpdateJourney,
+    onNewJourney,
+    onReplaceJourney,
+    onOpen = () => {},
+    onError = () => {},
+  }
 ) {
   // do not pass status filters to server
   // we will handle it in onUpdateJourney and onNewJourney
@@ -234,6 +243,9 @@ export function subscribeToJourneys(
   )
   source.addEventListener('new_journey', (e) =>
     onNewJourney(JSON.parse(e.data), filters)
+  )
+  source.addEventListener('replace_journey', (e) =>
+    onReplaceJourney(JSON.parse(e.data), filters)
   )
 
   source.onerror = (error) => {

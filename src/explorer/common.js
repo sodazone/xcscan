@@ -10,6 +10,12 @@ import { humanizeNumber } from '../formats.js'
 
 let loaded = false
 
+const PENDING_STATUS = ['sent', 'waiting']
+
+export function isPending(status) {
+  return PENDING_STATUS.includes(status)
+}
+
 export async function loadResources() {
   return loaded
     ? Promise.resolve()

@@ -32,9 +32,17 @@ export function getElapsedText(start, end) {
     console.warn('ts discrepancy', start, end)
     return '(+0m 0s)'
   }
+
   const deltaSec = Math.floor((end - start) / 1000)
-  const minutes = Math.floor(deltaSec / 60)
+
+  const hours = Math.floor(deltaSec / 3600)
+  const minutes = Math.floor((deltaSec % 3600) / 60)
   const seconds = deltaSec % 60
+
+  if (hours > 0) {
+    return `(+${hours}h ${minutes}m ${seconds}s)`
+  }
+
   return `(+${minutes}m ${seconds}s)`
 }
 
