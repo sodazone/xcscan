@@ -201,7 +201,7 @@ export function subscribeToJourney(
   source.addEventListener('update_journey', (e) =>
     onUpdateJourney(JSON.parse(e.data))
   )
-  source.addEventListener('replaces_journey', (e) =>
+  source.addEventListener('replace_journey', (e) =>
     onReplaceJourney(JSON.parse(e.data))
   )
 
