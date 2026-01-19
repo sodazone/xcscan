@@ -11,6 +11,25 @@ import { getExplorerBlockLink, getExplorerTxLink } from '../../links'
 import { createCollapsibleJsonViewer } from '../json'
 import { asPositionSuffix, createStopDetails } from './common'
 
+function extractXcmProgram(instruction) {
+  if (instruction === null || instruction === undefined) {
+    return null
+  }
+  if (
+    'program' in instruction &&
+    instruction.program !== null &&
+    instruction.program !== undefined &&
+    'type' in instruction.program &&
+    'value' in instruction.program
+  ) {
+    return instruction.program
+  }
+  if ('type' in instruction && 'value' in instruction) {
+    return instruction
+  }
+  return null
+}
+
 function createLegStopHTML(stop) {
   if (stop == null) return null
 
@@ -97,109 +116,161 @@ function createBridgeDetailsContent(stop) {
     'flex flex-col bg-white/5 rounded-xl p-4 space-y-4 h-full text-sm hidden'
 
   const executeLocationEl = document.createElement('div')
+  executeLocationEl.className = 'flex flex-col space-y-4'
 
   const bridgeName = normaliseBridgeName(
     stop.from?.bridge?.bridgeName ?? stop.to?.bridge?.bridgeName
   )
-  const bridgeNameHTML = `<div class= "text-white/80">${resolveProtocol(bridgeName)}</div>`
+  const bridgeNameHTML = `<div class="text-white/80">${resolveProtocol(bridgeName)}</div>`
 
   const channelIdHTML =
     stop.from?.bridge?.channelId || stop.to?.bridge?.channelId
       ? `
+      <div class="flex flex-col space-y-1">
+        <span class="text-white/50">${bridgeName === 'pkbridge' ? 'Lane ID' : 'Channel ID'}</span>
+        <span class="break-all text-white/80 text-mono">${stop.from?.bridge?.channelId ?? stop.to?.bridge?.channelId}</span>
+      </div>
+    `
+      : ''
+
+  const nonceHTML =
+    stop.from?.bridge?.nonce || stop.to?.bridge?.nonce
+      ? `
     <div class="flex flex-col space-y-1">
-      <span class="text-white/50">${bridgeName === 'pkbridge' ? 'Lane ID' : 'Channel ID'}</span>
-      <span class="break-all text-white/80 text-mono">${stop.from?.bridge?.channelId ?? stop.to?.bridge?.channelId}</span>
+      <span class="text-white/50">Nonce</span>
+      <span class="break-all text-white/80 text-mono">${stop.from?.bridge?.nonce ?? stop.to?.bridge?.nonce}</span>
     </div>
   `
       : ''
 
-  const nonceHTML = `
-    <div class="flex flex-col space-y-1">
-      <span class="text-white/50">Nonce</span>
-      <span class="break-all text-white/80 text-mono">${stop.from?.bridge?.nonce}</span>
-    </div>
-  `
-
-  const topicIdHTML = stop.messageId
-    ? `
-    <div class="flex flex-col space-y-1">
-      <span class="text-white/50">Topic ID</span>
-      <span class="break-all text-white/80 text-mono">${stop.messageId}</span>
-    </div>`
-    : ''
-
-  executeLocationEl.className = 'flex flex-col space-y-4'
   executeLocationEl.innerHTML = `
     ${bridgeNameHTML}
     ${channelIdHTML}
     ${nonceHTML}
-    ${topicIdHTML}
   `
 
   container.appendChild(executeLocationEl)
 
-  if (stop.instructions) {
-    const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
-      depth: 2,
-      label: 'XCM Program Code',
-      isOpen: true,
+  const instructions = normaliseInstructions(stop.instructions)
+  if (instructions.length > 0) {
+    instructions.forEach((instruction, index) => {
+      const section = document.createElement('div')
+      section.className = 'flex flex-col space-y-4'
+
+      const messageId = instruction.messageId ?? stop.messageId
+      const topicIdHTML = messageId
+        ? `
+          <div class="flex flex-col space-y-1">
+            <span class="text-white/50">Topic ID</span>
+            <span class="break-all text-white/80 text-mono">${messageId}</span>
+          </div>
+        `
+        : ''
+
+      section.innerHTML = `
+        ${index > 0 ? '<hr class="border-white/10" />' : ''}
+        ${topicIdHTML}
+      `
+
+      container.appendChild(section)
+
+      const program = extractXcmProgram(instruction)
+      if (program) {
+        const xcmViewer = createCollapsibleJsonViewer(program, {
+          depth: 2,
+          label: `XCM Program${instructions.length > 1 ? ` #${index + 1}` : ''}`,
+          isOpen: index === 0,
+        })
+        container.appendChild(xcmViewer)
+      }
     })
-    container.appendChild(xcmViewer)
   }
 
   return container
 }
 
 function createXcmDetailsContent(stop) {
-  if (!stop.messageHash && !stop.messageId && !stop.instructions) {
-    return null
-  }
+  const instructions = normaliseInstructions(stop.instructions)
+  if (instructions.length === 0) return null
 
   const container = document.createElement('div')
   container.className =
     'flex flex-col bg-white/5 rounded-xl p-4 space-y-4 h-full text-sm hidden'
 
-  const executeLocationEl = document.createElement('div')
-  const networkHTML = formatNetworkWithIconHTML(stop.to.chainId)
-  const eventHTML = createEventMetaHTML({
-    event: stop.to.event,
-    blockNumber: stop.to.blockNumber,
-  })
+  instructions.forEach((instruction, index) => {
+    const section = document.createElement('div')
+    section.className = 'flex flex-col space-y-4'
 
-  const topicIdHTML =
-    stop.messageId && stop.messageId !== stop.messageHash
-      ? `
-    <div class="flex flex-col space-y-1">
-      <span class="text-white/50">Topic ID</span>
-      <span class="break-all text-white/80 text-mono">${stop.messageId}</span>
-    </div>`
+    const messageId = instruction.messageId ?? stop.messageId
+    const messageHash = instruction.messageHash ?? stop.messageHash
+
+    const executedAt =
+      'executedAt' in instruction ? instruction.executedAt : null
+
+    const chainId = stop.to?.chainId ?? stop.from?.chainId
+
+    // Instruction header (only when multiple)
+    const instructionHeader =
+      instructions.length > 1
+        ? `<div class="text-white font-semibold">
+             Instruction #${index + 1}
+           </div>`
+        : ''
+
+    const messageHashHTML = messageHash
+      ? `<div class="flex flex-col space-y-1">
+           <span class="text-white/50">Message Hash</span>
+           <span class="break-all text-white/80 text-mono">${messageHash}</span>
+         </div>`
       : ''
 
-  const messageHashHTML = `
-    <div class="flex flex-col space-y-1">
-      <span class="text-white/50">Message Hash</span>
-      <span class="break-all text-white/80 text-mono">${stop.messageHash}</span>
-    </div>
-  `
+    const topicIdHTML =
+      messageId && messageId !== messageHash
+        ? `<div class="flex flex-col space-y-1">
+             <span class="text-white/50">Topic ID</span>
+             <span class="break-all text-white/80 text-mono">${messageId}</span>
+           </div>`
+        : ''
 
-  executeLocationEl.className = 'flex flex-col space-y-4'
-  executeLocationEl.innerHTML = `
-    ${networkHTML}
-    ${eventHTML}
-    ${topicIdHTML}
-    ${messageHashHTML}
-  `
+    const executedAtHTML = executedAt
+      ? `<div class="flex flex-col space-y-2">
+           <div class="text-white/50 flex space-x-2 items-center">
+             <span>Executed</span>
+             ${formatStatusIconHTML(executedAt.outcome)}
+           </div>
+           <div class="space-y-1 text-white/80">
+             ${formatNetworkWithIconHTML(chainId)}
+             ${createEventMetaHTML(
+               {
+                 event: executedAt.event,
+                 blockNumber: stop.to.blockNumber,
+               },
+               false
+             )}
+           </div>
+         </div>`
+      : ''
 
-  container.appendChild(executeLocationEl)
+    section.innerHTML = `
+      ${index > 0 ? '<hr class="border-white/10" />' : ''}
+      ${instructionHeader}
+      ${messageHashHTML}
+      ${topicIdHTML}
+      ${executedAtHTML}
+    `
 
-  if (stop.instructions) {
-    const xcmViewer = createCollapsibleJsonViewer(stop.instructions, {
-      depth: 2,
-      label: 'XCM Program Code',
-      isOpen: true,
-    })
-    container.appendChild(xcmViewer)
-  }
+    container.appendChild(section)
+
+    const program = extractXcmProgram(instruction)
+    if (program) {
+      const xcmViewer = createCollapsibleJsonViewer(program, {
+        depth: 2,
+        label: 'XCM Program',
+        isOpen: true,
+      })
+      container.appendChild(xcmViewer)
+    }
+  })
 
   return container
 }
@@ -273,11 +344,11 @@ function createLegStopMetaHTML({
   `
 }
 
-function createEventMetaHTML({ event, blockNumber }) {
+function createEventMetaHTML({ event, blockNumber }, showHeader = true) {
   return event?.module
     ? `
     <div class="flex flex-col space-y-1">
-      <div class="text-white/50">Event</div>
+      ${showHeader ? `<div class="text-white/50">Event</div>` : ''}
       <div class="flex flex-col space-y-1">
         <span title="${event.module}.${event.name}" class="font-medium truncate">${event.module}.${event.name}</span>
         <span class="text-white/90">${blockNumber}${asPositionSuffix(event.blockPosition)}</span>
@@ -285,6 +356,11 @@ function createEventMetaHTML({ event, blockNumber }) {
     </div>
     `
     : ''
+}
+
+function normaliseInstructions(instructions) {
+  if (!instructions) return []
+  return Array.isArray(instructions) ? instructions : [instructions]
 }
 
 export const xcmRenderer = {
