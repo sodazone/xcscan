@@ -6,11 +6,29 @@ import {
   resolveNetworkIcon,
   resolveNetworkName,
 } from '../extras.js'
-import { humanizeNumber } from '../formats.js'
+import { getSafeLocale, humanizeNumber } from '../formats.js'
 
 let loaded = false
+let hasStorage = null
 
 const PENDING_STATUS = ['sent', 'waiting']
+
+export function hasLocalStorage() {
+  if (hasStorage !== null) {
+    return hasStorage
+  }
+
+  try {
+    const testKey = 'test'
+    localStorage.setItem(testKey, testKey)
+    localStorage.removeItem(testKey)
+    hasStorage = true
+  } catch {
+    hasStorage = false
+  }
+
+  return hasStorage
+}
 
 export function isPending(status) {
   return PENDING_STATUS.includes(status)
@@ -28,7 +46,31 @@ export function shortHash(h) {
   return h.length > 12 ? `${h.slice(0, 6)}…${h.slice(-6)}` : h
 }
 
-export function formatNetworkWithIconHTML(networkId) {
+export function formatLocalAndUTC(dateInput) {
+  const date = new Date(dateInput)
+
+  const yyyy = date.getFullYear()
+  const mm = pad(date.getMonth() + 1)
+  const dd = pad(date.getDate())
+  const hh = pad(date.getHours())
+  const mi = pad(date.getMinutes())
+  const ss = pad(date.getSeconds())
+
+  const timeZoneName =
+    new Intl.DateTimeFormat(getSafeLocale(), {
+      timeZoneName: 'short',
+    })
+      .formatToParts(date)
+      .find((part) => part.type === 'timeZoneName')?.value || ''
+
+  const local = `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} ${timeZoneName}`
+
+  const utc = date.toISOString().split('T').join(' ').split('.')[0] + ' UTC'
+
+  return `<span title="${utc}">${local}</span>`
+}
+
+export function formatNetworkWithIconHTML(networkId, showName = true) {
   const name = resolveNetworkName(networkId)
   const iconUrl = resolveNetworkIcon(networkId)
 
@@ -39,7 +81,7 @@ export function formatNetworkWithIconHTML(networkId) {
   return `
     <div class="flex items-center gap-2">
       <img src="${iconUrl}" alt="${name}" class="size-6 rounded-full bg-black/20 border-black/40 border" />
-      <span>${name ?? networkId}</span>
+      ${showName ? `<span class="truncate">${name ?? networkId}</span>` : ''}
     </div>
   `
 }
@@ -80,6 +122,13 @@ function safeNormalizeAmount(amount, decimals) {
   const dec = safeNumber(decimals)
   if (amount == null || decimals == null) return null
   return amt / 10 ** dec
+}
+
+export function formatUnknownAssetAmount(asset) {
+  return `<div class="flex space-x-1">
+      <span>${humanizeNumber(asset.amount)}</span>
+      <span class="text-white/60">${asset.symbol ?? 'UNIT'}</span>
+    </div>`
 }
 
 export function formatAssetAmount(
@@ -128,7 +177,13 @@ export function assetIconHTML({ asset }, usePlaceholder = false) {
     }
   }
   return usePlaceholder
-    ? `<span class="flex items-center justify-center text-sm font-bold text-cyan-100/30 size-6 rounded-full border-2 border-cyan-100/30">?</span>`
+    ? `
+      <div class="relative inline-block w-6 h-6">
+        <div class="w-full h-full flex items-center justify-center text-sm font-bold text-cyan-100/30 rounded-full border-2 border-cyan-100/30">
+          ?
+        </div>
+      </div>
+    `
     : ''
 }
 

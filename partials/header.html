@@ -46,7 +46,13 @@
       class="<%= currentPage === 'home' || currentPage === 'tx' ? 'text-white/80' : 'hover:text-white/80' %>"
       href="/"
     >
-      TRANSACTIONS
+      CROSSCHAIN
+    </a>
+    <a
+      class="<%= currentPage === 'intrachain' ? 'text-white/80' : 'hover:text-white/80' %>"
+      href="/intrachain/index.html"
+    >
+      INTRACHAIN
     </a>
     <a
       class="<%= currentPage === 'analytics' || currentPage === 'network' ? 'text-white/80' : 'hover:text-white/80' %>"
@@ -85,7 +91,13 @@
       class="flex flex-col items-center space-y-8 mt-24 px-6 text-xl"
     >
       <a href="/" class="focus:text-white menu-link" onclick="toggleMenu()"
-        >Transactions</a
+        >Crosschain</a
+      >
+      <a
+        href="/intrachain/index.html"
+        class="focus:text-white menu-link"
+        onclick="toggleMenu()"
+        >Intrachain</a
       >
       <a
         href="/analytics/index.html"

@@ -1,20 +1,13 @@
-import { NetworkInfos, resolveNetworkName } from '../extras.js'
-import { humanizeNumber } from '../formats.js'
-import { fetchFilterableAssets } from './api.js'
-import {
-  assetIconHTML,
-  enforceNumericInput,
-  getStatusLabel,
-  selectableActions,
-  selectableStatus,
-  selectableProtocols,
-} from './common.js'
+import { NetworkInfos, resolveNetworkName } from '../../extras.js'
+import { humanizeNumber } from '../../formats.js'
+// import { fetchFilterableAssets } from './api.js'
+import { assetIconHTML, enforceNumericInput } from '../common.js'
 
 import {
   MultiCheckboxDropdown,
   setupToggles,
-} from './components/multi-checkbox-dropdown.js'
-import { createSwitch } from './components/switch.js'
+} from '../components/multi-checkbox-dropdown.js'
+import { fetchFilterableAssets, fetchFilterableNetworks } from './api.js'
 
 let filterableAssets = []
 
@@ -56,7 +49,7 @@ async function loadAssetsFilter(ctx) {
     return `
       <div class="flex space-x-2 items-center ml-2">
         ${assetIconHTML(asset, true)}
-        <span>${asset.symbol}</span>
+        <span>${asset.symbol ?? 'unknown'}</span>
       </div>`
   }
 
@@ -87,65 +80,12 @@ async function loadAssetsFilter(ctx) {
   }
 }
 
-function loadStatusFilter(ctx) {
-  const dropdown = MultiCheckboxDropdown({
-    containerId: 'filter-status-content',
-    items: selectableStatus,
-    labelResolver: getStatusLabel,
-    valueResolver: (s) => s,
-    resolveCollection: () => ctx.filters.selectedStatus,
-    onUpdate: ctx.update,
-  })
-
-  return {
-    reset: () => {
-      ctx.filters.selectedStatus.length = 0
-      dropdown.reset()
-    },
-  }
-}
-
-function loadProtocolsFilter(ctx) {
-  const dropdown = MultiCheckboxDropdown({
-    containerId: 'filter-protocols-content',
-    items: selectableProtocols,
-    resolveCollection: () => ctx.filters.selectedProtocols,
-    onUpdate: ctx.update,
-  })
-
-  return {
-    reset: () => {
-      ctx.filters.selectedProtocols.length = 0
-      dropdown.reset()
-    },
-  }
-}
-
-function loadActionsFilter(ctx) {
-  const dropdown = MultiCheckboxDropdown({
-    containerId: 'filter-actions-content',
-    items: selectableActions,
-    resolveCollection: () => ctx.filters.selectedActions,
-    onUpdate: ctx.update,
-  })
-
-  return {
-    reset: () => {
-      ctx.filters.selectedActions.length = 0
-      dropdown.reset()
-    },
-  }
-}
-
-function loadChainsFilter(ctx) {
-  const switchElement = document.getElementById('filter-chains-switch')
-  const flatContainer = document.getElementById('filter-chain-content')
-  const groupedContainer = document.getElementById('filter-chains-content')
-
-  const chains = Object.values(NetworkInfos)
-    .map((chain) => ({
-      ...chain,
-      label: resolveNetworkName(chain.urn) ?? chain.urn,
+async function loadChainsFilter(ctx) {
+  const fc = await fetchFilterableNetworks()
+  const chains = fc
+    .map((chainId) => ({
+      urn: chainId,
+      label: resolveNetworkName(chainId) ?? chainId,
     }))
     .sort((a, b) => a.label.localeCompare(b.label))
 
@@ -161,133 +101,16 @@ function loadChainsFilter(ctx) {
     groupBy: null,
   })
 
-  // Origin Destination pairs
-  const groupedDropdown = MultiCheckboxDropdown({
-    containerId: 'filter-chains-content',
-    items: chains,
-    labelResolver: (c) => c.label,
-    valueResolver: (c) => c.urn,
-    resolveCollection: (el) =>
-      el.dataset.filter === 'origin'
-        ? ctx.filters.selectedOrigins
-        : ctx.filters.selectedDestinations,
-    onUpdate: ctx.update,
-    groupBy: [
-      { label: 'Origin', type: 'origin' },
-      { label: 'Destination', type: 'destination' },
-    ],
-  })
-
-  const switchMode = createSwitch(switchElement, ctx.filters.chainPairMode)
-
-  switchElement.addEventListener('switch-change', ({ detail }) => {
-    updateMode(detail.on)
-    ctx.update()
-  })
-
-  updateMode(ctx.filters.chainPairMode)
-
   function reset() {
     ctx.filters.selectedChains.length = 0
-    ctx.filters.selectedOrigins.length = 0
-    ctx.filters.selectedDestinations.length = 0
-    ctx.filters.chainPairMode = false
-
     flatDropdown.reset()
-    groupedDropdown.reset()
-    switchMode.reset()
-    updateMode(false)
 
     ctx.update()
-  }
-
-  function updateLabels() {
-    if (ctx.filters.chainPairMode) {
-      groupedDropdown.updateLabels()
-    } else {
-      flatDropdown.updateLabels()
-    }
-  }
-
-  function updateMode(grouped) {
-    ctx.filters.chainPairMode = grouped
-
-    if (grouped) {
-      ctx.filters.selectedChains.length = 0
-      flatDropdown.getCheckboxes().forEach((cb) => {
-        cb.checked = false
-        cb.disabled = false
-      })
-    } else {
-      ctx.filters.selectedOrigins.length = 0
-      ctx.filters.selectedDestinations.length = 0
-      groupedDropdown.getCheckboxes().forEach((cb) => {
-        cb.checked = false
-        cb.disabled = false
-      })
-    }
-
-    flatContainer.style.display = grouped ? 'none' : 'grid'
-    groupedContainer.style.display = grouped ? 'grid' : 'none'
-    flatDropdown.searchInput.style.display = grouped ? 'none' : 'flex'
-    groupedDropdown.searchInput.style.display = grouped ? 'flex' : 'none'
-
-    updateLabels()
   }
 
   document
     .getElementById('clear-filter-chains')
     .addEventListener('click', reset)
-
-  // Disable same values
-  const syncDisabledStates = () => {
-    const originChecked = Array.from(
-      document.querySelectorAll('input[data-filter="origin"]:checked')
-    ).map((el) => el.value)
-    const destChecked = Array.from(
-      document.querySelectorAll('input[data-filter="destination"]:checked')
-    ).map((el) => el.value)
-
-    for (const input of document.querySelectorAll(
-      'input[data-filter="origin"]'
-    )) {
-      input.disabled = destChecked.includes(input.value)
-    }
-
-    for (const input of document.querySelectorAll(
-      'input[data-filter="destination"]'
-    )) {
-      input.disabled = originChecked.includes(input.value)
-    }
-  }
-
-  document
-    .getElementById('filter-chains-content')
-    .addEventListener('change', (e) => {
-      if (e.target.matches('input[data-filter]')) {
-        syncDisabledStates()
-      }
-    })
-
-  document
-    .getElementById('clear-filter-chains')
-    .addEventListener('click', () => {
-      ctx.filters.selectedOrigins.length = 0
-      ctx.filters.selectedDestinations.length = 0
-      let filterDirty = false
-      const checkboxes = flatDropdown.getCheckboxes()
-      for (const checkbox of checkboxes) {
-        if (checkbox.checked) filterDirty = true
-        checkbox.checked = false
-        checkbox.disabled = false
-      }
-      updateLabels()
-      if (filterDirty) {
-        ctx.update()
-      }
-    })
-
-  syncDisabledStates()
 
   return {
     reset,
@@ -416,6 +239,44 @@ function loadAmountFilter(ctx) {
   }
 }
 
+const selectableTypes = ['user', 'mixed', 'system']
+export const typeLabels = {
+  user: 'Wallet',
+  mixed: 'Wallet to Protocol',
+  system: 'Protocol',
+}
+export const typeDescriptions = {
+  user: 'Transfers between two user wallets.',
+  mixed:
+    'Transfers between a wallet and a protocol account (staking, treasury, DEX, etc.).',
+  system: 'Transfers between protocol or system accounts only.',
+}
+
+export function getTypeLabel(type) {
+  return typeLabels[type.toLowerCase()] ?? 'Unknown'
+}
+export function getTypeDescription(type) {
+  return typeDescriptions[type.toLowerCase()] ?? 'Unknown transfer type'
+}
+
+function loadTypeFilter(ctx) {
+  const dropdown = MultiCheckboxDropdown({
+    containerId: 'filter-type-content',
+    items: selectableTypes,
+    labelResolver: getTypeLabel,
+    valueResolver: (s) => s,
+    resolveCollection: () => ctx.filters.selectedTypes,
+    onUpdate: ctx.update,
+  })
+
+  return {
+    reset: () => {
+      ctx.filters.selectedTypes.length = 0
+      dropdown.reset()
+    },
+  }
+}
+
 function buildChainsSummary(chains) {
   return chains.map((chain) => resolveNetworkName(chain) ?? chain).join(', ')
 }
@@ -423,22 +284,8 @@ function buildChainsSummary(chains) {
 export function getActiveFiltersSummary(filters) {
   const parts = []
 
-  if (filters.selectedOrigins.length > 0) {
-    parts.push(`Origins: ${buildChainsSummary(filters.selectedOrigins)}`)
-  }
-  if (filters.selectedDestinations.length > 0) {
-    parts.push(
-      `Destinations: ${buildChainsSummary(filters.selectedDestinations)}`
-    )
-  }
   if (filters.selectedChains.length > 0) {
     parts.push(`Chains: ${buildChainsSummary(filters.selectedChains)}`)
-  }
-  if (filters.selectedStatus.length > 0) {
-    parts.push(`Status: ${filters.selectedStatus.join(', ')}`)
-  }
-  if (filters.selectedActions.length > 0) {
-    parts.push(`Actions: ${filters.selectedActions.join(', ')}`)
   }
   if (filters.selectedAssets.length > 0) {
     parts.push(
@@ -504,20 +351,16 @@ export async function loadSearch(ctx) {
     })
   }
 
-  const chainsFilter = loadChainsFilter(ctx)
-  const actionsFilter = loadActionsFilter(ctx)
-  const statusFilter = loadStatusFilter(ctx)
+  const chainsFilter = await loadChainsFilter(ctx)
   const amountFilter = loadAmountFilter(ctx)
-  const protocolsFilter = loadProtocolsFilter(ctx)
   const assetsFilter = await loadAssetsFilter(ctx)
+  const typesFilter = loadTypeFilter(ctx)
 
   function resetAllFilters() {
     chainsFilter.reset()
-    actionsFilter.reset()
-    protocolsFilter.reset()
-    statusFilter.reset()
     amountFilter.reset()
     assetsFilter.reset()
+    typesFilter.reset()
   }
 
   document

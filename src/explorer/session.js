@@ -1,17 +1,20 @@
 const FILTERS_STORAGE_KEY = 'journeys-filters'
 
-export function saveFiltersToSession(filters) {
+export function saveFiltersToSession(
+  filters,
+  storageKey = FILTERS_STORAGE_KEY
+) {
   try {
     const { currentSearchTerm, ...rest } = filters
-    sessionStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(rest))
+    sessionStorage.setItem(storageKey, JSON.stringify(rest))
   } catch {
     // ignore sessionStorage errors (e.g. private mode)
   }
 }
 
-export function loadFiltersFromSession() {
+export function loadFiltersFromSession(storageKey = FILTERS_STORAGE_KEY) {
   try {
-    const stored = sessionStorage.getItem(FILTERS_STORAGE_KEY)
+    const stored = sessionStorage.getItem(storageKey)
     if (!stored) {
       return null
     }

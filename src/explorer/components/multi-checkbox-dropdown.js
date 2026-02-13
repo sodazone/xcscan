@@ -79,11 +79,11 @@ export function MultiCheckboxDropdown({
   function renderCheckbox(item, itemType = type) {
     const id = `${itemType}-${valueResolver(item)}`
     return `
-      <label for="${id}" class="group flex items-center gap-2 p-2 rounded cursor-pointer transition-colors text-white/80 
-        hover:bg-white/5 
-        has-[:checked]:bg-white/10 
-        has-[:checked]:text-white 
-        has-[:disabled]:opacity-40 
+      <label for="${id}" class="group flex items-center gap-2 p-2 rounded cursor-pointer transition-colors text-white/80
+        hover:bg-white/5
+        has-[:checked]:bg-white/10
+        has-[:checked]:text-white
+        has-[:disabled]:opacity-40
         has-[:disabled]:cursor-not-allowed">
         <input
           id="${id}"
@@ -164,6 +164,7 @@ export function MultiCheckboxDropdown({
   }
 
   const fuzzySearch = container.parentNode.querySelector('.fuzzy-search-bar')
+
   let searchInput
   if (fuzzySearch) {
     searchInput = createFuzzySearch({

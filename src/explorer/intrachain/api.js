@@ -1,13 +1,9 @@
-import { fetchWithRetry } from '../api.js'
-import { httpUrl } from '../env.js'
-import {
-  actionsToQueryValues,
-  hasLocalStorage,
-  protocolsToQueryValues,
-} from './common.js'
+import { fetchWithRetry } from '../../api.js'
+import { httpUrl } from '../../env.js'
+import { hasLocalStorage } from '../common.js'
 
-const sseUrl = `${httpUrl}/sse/crosschain/default`
-const queryUrl = `${httpUrl}/query/crosschain`
+const sseUrl = `${httpUrl}/sse/transfers/default`
+const queryUrl = `${httpUrl}/query/transfers`
 
 const CACHE_EXPIRY_MS = 3_600_000
 const MAX_ASSETS = 200
@@ -16,33 +12,25 @@ async function _fetch(args) {
   return await fetchWithRetry(queryUrl, args)
 }
 
-function asCriteria(filters) {
+function asIcCriteria(filters) {
   const {
     currentSearchTerm,
-    chainPairMode,
     selectedChains,
-    selectedDestinations,
-    selectedOrigins,
-    selectedStatus,
-    selectedActions,
-    selectedUsdAmounts,
     selectedAssets,
-    selectedProtocols,
+    selectedUsdAmounts,
+    selectedTypes,
   } = filters
 
   const criteria = {}
 
-  // Text search
   if (currentSearchTerm) {
     const trimmed = currentSearchTerm.trim()
     if (trimmed.length > 2 && trimmed.length < 100) {
-      // Prefix qualifier
       const prefixMatch = /^([at]):(.+)$/.exec(trimmed)
       if (prefixMatch) {
         const [, prefix, value] = prefixMatch
         if (prefix === 'a') criteria.address = value
         else if (prefix === 't') criteria.txHash = value.toLowerCase()
-        // 0x
       } else if (trimmed.startsWith('0x')) {
         const byteLength = (trimmed.length - 2) / 2
         if (byteLength === 20) {
@@ -51,35 +39,21 @@ function asCriteria(filters) {
           criteria.txHash = trimmed
         }
       } else {
-        // Fallback: treat as address
         criteria.address = trimmed
       }
     }
   }
 
-  // Structured filters
-  if (chainPairMode) {
-    if (selectedDestinations?.length) {
-      criteria.destinations = [...selectedDestinations]
-    }
-    if (selectedOrigins?.length) {
-      criteria.origins = [...selectedOrigins]
-    }
-  } else if (selectedChains?.length) {
+  if (selectedChains?.length) {
     criteria.networks = [...selectedChains]
   }
 
-  if (selectedStatus?.length) {
-    criteria.status = [...selectedStatus]
-  }
-  if (selectedActions?.length) {
-    criteria.actions = [...actionsToQueryValues(selectedActions)]
-  }
   if (selectedAssets?.length) {
     criteria.assets = [...selectedAssets]
   }
-  if (selectedProtocols?.length) {
-    criteria.protocols = [...protocolsToQueryValues(selectedProtocols)]
+
+  if (selectedTypes?.length) {
+    criteria.types = [...selectedTypes]
   }
 
   const { amountPreset, amountGte, amountLte } = selectedUsdAmounts || {}
@@ -101,6 +75,70 @@ function asCriteria(filters) {
   }
 
   return criteria
+}
+
+export async function listTransfers({ filters, pagination }) {
+  try {
+    const criteria = asIcCriteria(filters)
+    return await _fetch({
+      args: {
+        op: 'transfers.list',
+        criteria,
+      },
+      pagination,
+    })
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+export async function getTransferById(id) {
+  try {
+    return await _fetch({
+      args: {
+        op: 'transfers.by_id',
+        criteria: {
+          id,
+        },
+      },
+    })
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+export async function _fetchFilterableNetworks() {
+  try {
+    const { items } = await _fetch({
+      args: {
+        op: 'networks.list',
+      },
+    })
+    return items
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+export async function fetchFilterableNetworks() {
+  if (hasLocalStorage()) {
+    const cacheKey = 'icTransfersCache_filterable_networks'
+    const cached = localStorage.getItem(cacheKey)
+    if (cached) {
+      const { timestamp, data } = JSON.parse(cached)
+      if (Date.now() - timestamp < CACHE_EXPIRY_MS) {
+        return data
+      }
+    }
+
+    const data = await _fetchFilterableNetworks()
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify({ timestamp: Date.now(), data })
+    )
+    return data
+  }
+  return _fetchFilterableNetworks()
 }
 
 async function _fetchFilerableAssets() {
@@ -127,7 +165,7 @@ async function _fetchFilerableAssets() {
 
 export async function fetchFilterableAssets() {
   if (hasLocalStorage()) {
-    const cacheKey = 'xcsExplorerCache_filterable_assets'
+    const cacheKey = 'icTransfersCache_filterable_assets'
     const cached = localStorage.getItem(cacheKey)
     if (cached) {
       const { timestamp, data } = JSON.parse(cached)
@@ -146,101 +184,28 @@ export async function fetchFilterableAssets() {
   return _fetchFilerableAssets()
 }
 
-export async function listJourneys({ filters, pagination }) {
-  try {
-    const criteria = asCriteria(filters)
-    return await _fetch({
-      args: {
-        op: 'journeys.list',
-        criteria,
-      },
-      pagination,
-    })
-  } catch (error) {
-    console.error(error.message)
-  }
-}
-
-export async function getJourneyById(id) {
-  try {
-    return await _fetch({
-      args: {
-        op: 'journeys.by_id',
-        criteria: {
-          id,
-        },
-      },
-    })
-  } catch (error) {
-    console.error(error.message)
-  }
-}
-
-export function subscribeToJourney(
-  id,
-  { onUpdateJourney, onReplaceJourney, onOpen = () => {}, onError = () => {} }
-) {
-  const source = new EventSource(`${sseUrl}?id=${id}`)
-
-  source.onopen = onOpen
-
-  source.addEventListener('update_journey', (e) =>
-    onUpdateJourney(JSON.parse(e.data))
-  )
-  source.addEventListener('replace_journey', (e) =>
-    onReplaceJourney(JSON.parse(e.data))
-  )
-
-  source.onerror = (error) => {
-    console.error('SSE error:', error)
-    onError(error)
-
-    if (source.readyState === EventSource.CLOSED) {
-      // TODO: exponential retry
-      console.warn('SSE connection closed by server.')
-    }
-  }
-
-  return () => {
-    source.close()
-  }
-}
-
-export function subscribeToJourneys(
+export function subscribeToTransfers(
   filters,
-  {
-    onUpdateJourney,
-    onNewJourney,
-    onReplaceJourney,
-    onOpen = () => {},
-    onError = () => {},
-  }
+  { onNewTransfer, onOpen = () => {}, onError = () => {} }
 ) {
   // do not pass status filters to server
   // we will handle it in onUpdateJourney and onNewJourney
-  const _filters = { ...filters, selectedStatus: [] }
-  const params = new URLSearchParams(asCriteria(_filters)).toString()
+  const params = new URLSearchParams(asIcCriteria(filters)).toString()
   const source = new EventSource(`${sseUrl}?${params}`)
 
   source.onopen = onOpen
 
-  source.addEventListener('update_journey', (e) =>
-    onUpdateJourney(JSON.parse(e.data), filters)
-  )
-  source.addEventListener('new_journey', (e) =>
-    onNewJourney(JSON.parse(e.data), filters)
-  )
-  source.addEventListener('replace_journey', (e) =>
-    onReplaceJourney(JSON.parse(e.data), filters)
+  source.addEventListener('new_transfer', (e) =>
+    onNewTransfer(JSON.parse(e.data), filters)
   )
 
   source.onerror = (error) => {
-    console.error('SSE error:', error)
+    console.error('[transfers] SSE error:', error)
     onError(error)
 
     if (source.readyState === EventSource.CLOSED) {
       // TODO: exponential retry
-      console.warn('SSE connection closed by server.')
+      console.warn('[transfers] SSE connection closed by server.')
     }
   }
 

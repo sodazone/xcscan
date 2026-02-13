@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('/head.html') %>
+  </head>
+
+  <body>
+    <%- include('/header.html', { currentPage: 'intrachain' }) %>
+    <main class="w-full pt-start">
+      <section>
+        <div
+          id="search"
+          class="mx-auto flex w-full max-w-screen-xl flex-col items-center gap-6 py-2 px-4 md:gap-10 md:py-4 md:px-4"
+        >
+          <!-- Search -->
+          <div class="w-full relative group">
+            <form id="search" action="#" class="relative">
+              <input
+                name="query"
+                type="text"
+                placeholder="Search by address or tx hash"
+                autocomplete="off"
+                spellcheck="false"
+                class="peer w-full pr-10 pl-3 py-3 rounded-lg bg-white/5 text-white placeholder-white/40 focus:outline-none focus:bg-teal-300/10 focus:border-teal-300/20 transition duration-200"
+              />
+              <button
+                type="submit"
+                class="absolute cursor-pointer right-2 md:right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white focus:text-white focus:outline-none active:scale-95 transition-transform duration-150"
+              >
+                <!-- Search icon -->
+                <svg
+                  class="size-5 pointer-events-none transition-opacity duration-200"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+
+                <!-- Spinner -->
+                <svg
+                  class="w-4 h-4 pointer-events-none absolute inset-0 m-auto animate-spin text-white opacity-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-dasharray="15.7 47.1"
+                    stroke-dashoffset="0"
+                    class="opacity-75"
+                    fill="none"
+                  />
+                </svg>
+              </button>
+            </form>
+            <div
+              id="search-input-error"
+              class="hidden italic text-white/70 px-2 my-2"
+            >
+              Please, enter a valid tx hash or address
+            </div>
+          </div>
+
+          <div
+            id="search-indicator"
+            class="hidden text-sm text-white/60 mb-2 flex flex-col mr-auto max-w-full space-y-2 md:flex-row md:space-x-2 md:space-y-0 md:items-center"
+          >
+            <span class="text-white/40">Showing results for</span>
+            <div class="flex space-x-2 items-center">
+              <span class="italic truncate" id="search-indicator-text"></span>
+              <button
+                id="search-indicator-clear"
+                class="cursor-pointer min-w-5 size-5 flex items-center justify-center rounded-full bg-white/10 text-black/90 text-lg font-semibold hover:bg-white/20"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="flex w-full flex-col space-y-4 md:space-y-0 md:flex-row px-2 py-1 md:justify-between md:align-bottom md:border-b md:border-white/5"
+          >
+            <div class="flex w-full md:w-fit justify-between items-center">
+              <div
+                class="flex items-center space-x-2 text-white/80 whitespace-nowrap"
+              >
+                <span
+                  id="sse-live-icon-disconnected"
+                  class="relative flex h-2 w-2 items-center justify-center"
+                >
+                  <span
+                    class="relative inline-flex rounded-full h-2 w-2 bg-white/10"
+                  ></span>
+                </span>
+                <span
+                  id="sse-live-icon-error"
+                  class="hidden relative flex h-2 w-2 items-center justify-center"
+                >
+                  <span
+                    class="relative inline-flex rounded-full h-2 w-2 bg-orange-400"
+                  ></span>
+                </span>
+                <span
+                  id="sse-live-icon-connected"
+                  class="hidden relative flex h-2 w-2 items-center justify-center"
+                >
+                  <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+                  ></span>
+                  <span
+                    class="relative inline-flex rounded-full h-2 w-2 bg-green-500"
+                  ></span>
+                </span>
+                <span>Live Transactions</span>
+              </div>
+              <div
+                id="filters-button"
+                data-toggle
+                data-target="filters"
+                class="md:hidden flex items-center space-x-2 text-sm text-white/50 cursor-pointer"
+              >
+                <div>
+                  Filters
+                  <span
+                    id="filters-counter"
+                    class="text-white/80 font-semibold"
+                  ></span>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  class="size-5"
+                >
+                  <path
+                    d="M17 2.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5ZM17 15.75a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 1.5 0v-1.5ZM3.75 15a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM4.5 2.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5ZM10 11a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5A.75.75 0 0 1 10 11ZM10.75 2.75a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 1.5 0v-1.5ZM10 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM3.75 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM16.25 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div
+              id="filters"
+              class="hidden flex-col md:flex md:flex-row md:items-center md:gap-4"
+            >
+              <div
+                class="flex flex-col gap-y-4 w-full md:flex-row md:gap-x-4 md:gap-y-0"
+              >
+                <!-- Type Filter -->
+                <div class="relative dropdown">
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Type</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+
+                  <div
+                    id="filter-type"
+                    class="dropdown-menu hidden flex w-screen md:w-48"
+                  >
+                    <div
+                      class="flex items-center md:hidden border-b border-white/5 p-4"
+                    >
+                      <span class="text-xs text-white/80 uppercase"
+                        >Select Transfer Type</span
+                      >
+                      <button
+                        data-dropdown-close
+                        class="flex items-center ml-auto space-x-1"
+                        id="close-filter-type"
+                      >
+                        <div
+                          class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#121212"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-3.5 h-3.5"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </div>
+                      </button>
+                    </div>
+                    <div
+                      id="filter-type-content"
+                      class="grid gap-3 px-4 md:py-4"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Chains Filter -->
+                <div class="relative dropdown">
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Chains</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+
+                  <div
+                    id="filter-chains"
+                    class="dropdown-menu dropdown-left hidden flex h-screen w-screen md:h-auto md:w-auto md:max-w-2xl"
+                  >
+                    <div
+                      class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
+                    >
+                      <span class="text-xs text-white/80 uppercase">
+                        Select Chains
+                      </span>
+                      <div class="ml-auto flex items-center gap-x-6">
+                        <button
+                          data-dropdown-close
+                          class="md:hidden"
+                          id="close-filter-chains"
+                        >
+                          <div
+                            class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="#121212"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              class="w-3.5 h-3.5"
+                            >
+                              <line x1="18" y1="6" x2="6" y2="18" />
+                              <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <div
+                        class="flex gap-6 items-center px-4 pt-4 justify-between"
+                      >
+                        <span class="text-white/50 text-sm"
+                          >Filter by chains</span
+                        >
+                        <button
+                          id="clear-filter-chains"
+                          class="cursor-pointer text-white/40 hover:text-white text-sm"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div class="fuzzy-search-bar"></div>
+                    </div>
+                    <div
+                      id="filter-chain-content"
+                      class="flex-1 overflow-y-auto flex-col gap-3 pl-4 pr-1 pt-1 pb-4 scroll-pb-6 md:w-[350px]"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Assets Filter -->
+                <div class="relative dropdown">
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Assets</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+
+                  <div
+                    id="filter-assets"
+                    class="dropdown-menu hidden flex h-screen md:h-auto w-screen md:w-auto md:max-w-2xl"
+                  >
+                    <div
+                      class="flex space-x-4 items-center justify-end py-3 px-4 border-b border-white/5"
+                    >
+                      <span class="text-xs text-white/80 uppercase">
+                        Select Assets
+                      </span>
+                      <div class="ml-auto flex items-center gap-x-6">
+                        <button
+                          data-dropdown-close
+                          class="md:hidden"
+                          id="close-filter-assets"
+                        >
+                          <div
+                            class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="#121212"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              class="w-3.5 h-3.5"
+                            >
+                              <line x1="18" y1="6" x2="6" y2="18" />
+                              <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <div
+                        class="flex gap-6 items-center px-4 pt-4 text-sm justify-between"
+                      >
+                        <span class="text-white/50">Filter by assets</span>
+                        <button
+                          id="clear-filter-assets"
+                          class="cursor-pointer text-white/40 hover:text-white text-sm align-right"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div
+                        class="fuzzy-search-bar"
+                        id="assets-search-bar"
+                      ></div>
+                    </div>
+                    <div
+                      id="filter-assets-content"
+                      class="flex-1 overflow-y-auto grid gap-3 pl-4 pr-1 pt-1 pb-4 scroll-pb-6 md:w-xs"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- USD Filter -->
+                <div id="filter-usd-amount" class="relative dropdown">
+                  <button class="dropdown-toggle w-full">
+                    <div class="flex justify-between items-center w-full gap-2">
+                      <span class="text-white/40">Amounts</span>
+                      <div class="flex items-center gap-1">
+                        <span data-dropdown-labels class="text-white text-left"
+                          >All</span
+                        >
+                        <svg
+                          class="dropdown-chevron"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+
+                  <div class="dropdown-menu hidden flex w-screen md:w-fit">
+                    <div
+                      class="flex items-center md:hidden border-b border-white/5 p-4"
+                    >
+                      <span class="text-xs text-white/80 uppercase"
+                        >Select Amounts</span
+                      >
+                      <button
+                        data-dropdown-close
+                        class="flex items-center ml-auto space-x-1"
+                        id="close-filter-usd-amount"
+                      >
+                        <div
+                          class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#121212"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-3.5 h-3.5"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </div>
+                      </button>
+                    </div>
+                    <div
+                      id="filter-usd-amount-content"
+                      class="p-4 w-full md:w-64 flex flex-col gap-4 text-sm text-white/80"
+                    >
+                      <div class="flex gap-x-2 justify-between items-center">
+                        <span class="text-white/50">USD Amount</span>
+                        <button
+                          id="filter-usd-amount-reset"
+                          class="text-sm text-white/40 hover:text-white px-2 py-1 cursor-pointer p-2"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div class="flex flex-col gap-1">
+                        <label>Min</label>
+                        <input
+                          id="filter-usd-amount-gte"
+                          type="text"
+                          pattern="[0-9]*"
+                          inputmode="numeric"
+                          autocomplete="off"
+                          class="w-full bg-black/20 text-white px-2 py-3 rounded focus:outline-none"
+                          placeholder="e.g. 10000"
+                        />
+                      </div>
+                      <div class="flex flex-col gap-1">
+                        <label>Max</label>
+                        <input
+                          id="filter-usd-amount-lte"
+                          type="text"
+                          pattern="[0-9]*"
+                          inputmode="numeric"
+                          autocomplete="off"
+                          class="w-full bg-black/20 text-white px-2 py-3 rounded focus:outline-none"
+                          placeholder="e.g. 10000000"
+                        />
+                      </div>
+                      <div class="flex flex-col gap-2">
+                        <span class="text-white/50">Presets</span>
+                        <label
+                          class="group flex items-center gap-2 p-2 cursor-pointer transition-colors text-white/80 hover:bg-white/5 has-[:checked]:bg-white/10 has-[:checked]:text-white has-[:disabled]:opacity-40 has-[:disabled]:cursor-not-allowed"
+                          ><input
+                            type="radio"
+                            class="accent-white"
+                            name="filter-usd-amount-preset"
+                            value="10000+"
+                          />
+                          ≥ $10k</label
+                        >
+                        <label
+                          class="group flex items-center gap-2 p-2 cursor-pointer transition-colors text-white/80 hover:bg-white/5 has-[:checked]:bg-white/10 has-[:checked]:text-white has-[:disabled]:opacity-40 has-[:disabled]:cursor-not-allowed"
+                          ><input
+                            type="radio"
+                            class="accent-white"
+                            name="filter-usd-amount-preset"
+                            value="100000+"
+                          />
+                          ≥ $100k</label
+                        >
+                        <label
+                          class="group flex items-center gap-2 p-2 cursor-pointer transition-colors text-white/80 hover:bg-white/5 has-[:checked]:bg-white/10 has-[:checked]:text-white has-[:disabled]:opacity-40 has-[:disabled]:cursor-not-allowed"
+                          ><input
+                            type="radio"
+                            class="accent-white"
+                            name="filter-usd-amount-preset"
+                            value="1000000+"
+                          />
+                          ≥ $1M</label
+                        >
+                      </div>
+                      <button
+                        id="filter-usd-amount-apply"
+                        class="cursor-pointer w-full bg-white/10 rounded px-2 py-3 text-white"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="px-3 w-full md:w-auto flex justify-start mt-4 md:mt-0"
+              >
+                <button
+                  id="filters-reset-all"
+                  class="text-sm text-white/40 cursor-pointer hover:text-white border border-white/10 rounded-lg w-full p-1 md:border-0"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="flex flex-col gap-2 mx-auto max-w-screen-xl px-4 pb-6">
+        <button
+          id="new-transfers-button"
+          class="hidden ml-auto mb-1 mr-2 items-center gap-1.5 text-white/60 text-sm font-medium cursor-pointer hover:text-white/90 transition"
+        >
+          <div id="new-transfers-text" class="flex space-x-1"></div>
+        </button>
+
+        <div class="transaction-table md:min-h-100">
+          <div class="transfer-table-header">
+            <div>Time</div>
+            <div>Network</div>
+            <div>From</div>
+            <div>To</div>
+            <div>Assets</div>
+          </div>
+          <div class="transaction-table-body">
+            <div
+              class="flex animate-pulse rounded-lg space-x-4 h-50 md:h-18 bg-linear-to-r from-white/10 to-transparent"
+            ></div>
+          </div>
+        </div>
+        <!-- pagination footer -->
+        <div
+          class="flex items-center justify-end gap-2 mt-4"
+          id="pagination-footer"
+        >
+          <button
+            id="prev-button"
+            class="group flex space-x-2 items-center cursor-pointer px-3 py-1 text-sm text-white/40 disabled:opacity-50 disabled:cursor-default"
+            disabled
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="size-5 text-white/60 group-hover:text-white group-disabled:text-white/60"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span
+              class="btn-label text-white/60 group-hover:text-white group-disabled:text-white/60"
+              >Prev</span
+            >
+          </button>
+
+          <span id="page-indicator" class="text-white/40 text-sm">Page 1</span>
+
+          <button
+            id="next-button"
+            class="group flex space-x-2 items-center cursor-pointer px-3 py-1 text-sm text-white/40 disabled:opacity-50 disabled:cursor-default"
+            disabled
+          >
+            <span
+              class="btn-label text-white/60 group-hover:text-white group-disabled:text-white/60"
+              >Next</span
+            >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="size-5 text-white/60 group-hover:text-white group-disabled:text-white/60"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <%- include('/footer.html') %>
+
+    <script type="module" src="/src/explorer/intrachain/main.js"></script>
+  </body>
+</html>

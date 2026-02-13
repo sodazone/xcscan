@@ -1,6 +1,24 @@
 import { resolveNetworkName } from '../extras'
 
 const WELL_KNOWN = {
+  'modlhb/trsry': {
+    name: 'Treasury',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 text-white/40">
+  <path fill-rule="evenodd" d="M7.605 2.112a.75.75 0 0 1 .79 0l5.25 3.25A.75.75 0 0 1 13 6.707V12.5h.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H3V6.707a.75.75 0 0 1-.645-1.345l5.25-3.25ZM4.5 8.75a.75.75 0 0 1 1.5 0v3a.75.75 0 0 1-1.5 0v-3ZM8 8a.75.75 0 0 0-.75.75v3a.75.75 0 0 0 1.5 0v-3A.75.75 0 0 0 8 8Zm2 .75a.75.75 0 0 1 1.5 0v3a.75.75 0 0 1-1.5 0v-3ZM8 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+</svg>`,
+  },
+  'modl/trsry': {
+    name: 'Treasury',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 text-white/40">
+  <path fill-rule="evenodd" d="M7.605 2.112a.75.75 0 0 1 .79 0l5.25 3.25A.75.75 0 0 1 13 6.707V12.5h.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H3V6.707a.75.75 0 0 1-.645-1.345l5.25-3.25ZM4.5 8.75a.75.75 0 0 1 1.5 0v3a.75.75 0 0 1-1.5 0v-3ZM8 8a.75.75 0 0 0-.75.75v3a.75.75 0 0 0 1.5 0v-3A.75.75 0 0 0 8 8Zm2 .75a.75.75 0 0 1 1.5 0v3a.75.75 0 0 1-1.5 0v-3ZM8 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+</svg>`,
+  },
+  'modlpy/trsry': {
+    name: 'Treasury',
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 text-white/40">
+  <path fill-rule="evenodd" d="M7.605 2.112a.75.75 0 0 1 .79 0l5.25 3.25A.75.75 0 0 1 13 6.707V12.5h.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H3V6.707a.75.75 0 0 1-.645-1.345l5.25-3.25ZM4.5 8.75a.75.75 0 0 1 1.5 0v3a.75.75 0 0 1-1.5 0v-3ZM8 8a.75.75 0 0 0-.75.75v3a.75.75 0 0 0 1.5 0v-3A.75.75 0 0 0 8 8Zm2 .75a.75.75 0 0 1 1.5 0v3a.75.75 0 0 1-1.5 0v-3ZM8 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+</svg>`,
+  },
   '0x6d6f646c70792f74727372790000000000000000000000000000000000000000': {
     name: 'Treasury',
     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 text-white/40">
@@ -54,6 +72,31 @@ function resolvePara(address) {
   return resolveNetworkName(`urn:ocn:polkadot:${paraId}`) ?? paraId
 }
 
+export function systemAccountAscii(address) {
+  const hex = address.replace(/^0x/, '')
+
+  const bytes = new Uint8Array(hex.length / 2)
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substr(i * 2, 2), 16)
+  }
+
+  let end = bytes.indexOf(0)
+  if (end === -1) end = bytes.length
+
+  return new TextDecoder('ascii').decode(bytes.slice(0, end))
+}
+
+export function isSystemAccount(address) {
+  const hex = address.replace(/^0x/, '').toLowerCase()
+
+  const bytes = new Uint8Array(4)
+  for (let i = 0; i < 4; i++) {
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
+  }
+
+  return new TextDecoder('ascii').decode(bytes) === 'modl'
+}
+
 export function decodeWellKnownAddressHTML(address) {
   const para = '0x70617261'
   const sibl = '0x7369626c'
@@ -67,8 +110,14 @@ export function decodeWellKnownAddressHTML(address) {
 </div>`
   }
 
-  if (WELL_KNOWN[address] != null) {
-    const { name, svg } = WELL_KNOWN[address]
+  let maybeWellKnown = address
+
+  if (isSystemAccount(address)) {
+    maybeWellKnown = systemAccountAscii(address)
+  }
+
+  if (WELL_KNOWN[maybeWellKnown] != null) {
+    const { name, svg } = WELL_KNOWN[maybeWellKnown]
     return `<div class="flex space-x-1 items-center" title="${name}">
     <span>${name}</span>
     ${svg}
@@ -96,11 +145,23 @@ export function shortenAddress(address) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`
 }
 
-export function resolveAddress({ address, formatted }) {
-  const resolved = address.startsWith('urn')
-    ? null
-    : (decodeWellKnownAddressHTML(address) ??
-      shortenAddress(formatted ?? address))
+export function resolveAddress({ address, formatted, shorten = true }) {
+  if (address.startsWith('urn')) {
+    return null
+  }
 
-  return resolved
+  const system = isSystemAccount(address)
+
+  const addr = system ? systemAccountAscii(address) : address
+
+  const wellKnown = decodeWellKnownAddressHTML(addr)
+  if (wellKnown) {
+    return wellKnown
+  }
+
+  if (system) {
+    return addr
+  }
+
+  return shorten ? shortenAddress(formatted ?? addr) : (formatted ?? addr)
 }

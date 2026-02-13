@@ -53,6 +53,9 @@ export function humanizeNumber(
   if (absValue > 0.01) {
     return formatter.format(value)
   }
+  if (absValue < 0.00001) {
+    return '<0.00001'
+  }
 
   return formatterSmall.format(value)
 }

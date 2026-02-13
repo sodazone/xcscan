@@ -20,16 +20,20 @@ export function viteEjsPlugin() {
 
               // TODO: variables for templates
               const data = {
-                currentPage: req.url.includes('tx')
-                  ? 'tx'
-                  : req.url.includes('analytics')
-                    ? 'analytics'
-                    : req.url.includes('network')
-                      ? 'network'
-                      : 'home',
+                currentPage: req.url.includes('intrachain')
+                  ? 'intrachain'
+                  : req.url.includes('transfer')
+                    ? 'transfer'
+                    : req.url.includes('tx')
+                      ? 'tx'
+                      : req.url.includes('analytics')
+                        ? 'analytics'
+                        : req.url.includes('network')
+                          ? 'network'
+                          : 'home',
               }
 
-              const html = await ejs.render(template, data, {
+              const html = ejs.render(template, data, {
                 root: path.resolve('partials'),
                 async: false,
                 filename: filePath,
@@ -55,13 +59,17 @@ export function viteEjsPlugin() {
         try {
           const filename = ctx.filename || ''
           // TODO: variables for templates, see server method
-          const currentPage = filename.includes('tx')
-            ? 'tx'
-            : filename.includes('analytics')
-              ? 'analytics'
-              : filename.includes('network')
-                ? 'network'
-                : 'home'
+          const currentPage = filename.includes('intrachain')
+            ? 'intrachain'
+            : filename.includes('transfer')
+              ? 'transfer'
+              : filename.includes('tx')
+                ? 'tx'
+                : filename.includes('analytics')
+                  ? 'analytics'
+                  : filename.includes('network')
+                    ? 'network'
+                    : 'home'
 
           const rendered = ejs.render(
             html,

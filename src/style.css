@@ -115,6 +115,20 @@ body {
   @apply font-mono flex flex-col gap-y-4;
 }
 
+.transfer-table-header {
+  @apply hidden text-white/60 w-full font-light text-sm pb-1 md:grid md:mb-2;
+  @apply grid-cols-[minmax(100px,1fr)_minmax(120px,1.2fr)_minmax(160px,1.5fr)_minmax(160px,1.5fr)_minmax(160px,1.5fr)];
+}
+
+.transfer-table-header div,
+.cell {
+  box-sizing: border-box;
+}
+
+.transfer-table-header div {
+  @apply px-4 py-1 truncate;
+}
+
 .transaction-table-header div,
 .cell {
   box-sizing: border-box;
@@ -290,11 +304,15 @@ button.loading .btn-label::after {
   @apply opacity-100;
 }
 
-#journey-summary > div > div:nth-child(odd) {
+#journey-summary > div > div:nth-child(odd),
+#transfer-summary > div > div:nth-child(odd),
+#transfer-details > div > div:nth-child(odd) {
   @apply mb-2 md:mb-0 md:text-right;
 }
 
-#journey-summary > div > div:nth-child(even) {
+#journey-summary > div > div:nth-child(even),
+#transfer-summary > div > div:nth-child(even),
+#transfer-details > div > div:nth-child(even) {
   @apply mb-4 md:mb-0;
 }
 

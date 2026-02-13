@@ -63,23 +63,29 @@ function buildDeeplinkQuery(filters) {
     }
   }
 
-  for (const v of filters.selectedOrigins) push('o', v)
-  for (const v of filters.selectedDestinations) push('d', v)
+  const pushArray = (prefix, arr) => {
+    if (!Array.isArray(arr)) return
+    for (const v of arr) push(prefix, v)
+  }
 
-  for (const v of filters.selectedChains) push('c', v)
+  // Crosschain-only (safe if missing)
+  pushArray('o', filters.selectedOrigins)
+  pushArray('d', filters.selectedDestinations)
+  pushArray('s', filters.selectedStatus)
+  pushArray('x', filters.selectedActions)
+  pushArray('p', filters.selectedProtocols)
 
-  for (const v of filters.selectedStatus) push('s', v)
+  // Shared
+  pushArray('c', filters.selectedChains)
+  pushArray('t', filters.selectedAssets)
 
-  for (const v of filters.selectedActions) push('x', v)
-
-  for (const v of filters.selectedAssets) push('t', v)
-
-  for (const v of filters.selectedProtocols) push('p', v)
-
+  // USD amounts (shared)
   const usd = filters.selectedUsdAmounts
-  if (usd.amountPreset) push('u', usd.amountPreset)
-  if (usd.amountGte != null) push('u', `gte:${usd.amountGte}`)
-  if (usd.amountLte != null) push('u', `lte:${usd.amountLte}`)
+  if (usd) {
+    if (usd.amountPreset) push('u', usd.amountPreset)
+    if (usd.amountGte != null) push('u', `gte:${usd.amountGte}`)
+    if (usd.amountLte != null) push('u', `lte:${usd.amountLte}`)
+  }
 
   return params
 }
@@ -117,8 +123,10 @@ export function resolveDeeplinkFilters(filters, params) {
 
   // OD selections override chain selection
   if (
-    filters.selectedOrigins.length > 0 ||
-    filters.selectedDestinations.length > 0
+    filters.selectedOrigins &&
+    filters.selectedDestinations &&
+    (filters.selectedOrigins.length > 0 ||
+      filters.selectedDestinations.length > 0)
   ) {
     filters.selectedChains.length = 0
     filters.chainPairMode = true

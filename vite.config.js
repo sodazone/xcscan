@@ -16,6 +16,8 @@ export default defineConfig({
         analytics: 'analytics/index.html',
         tx: 'tx/index.html',
         network: 'network/index.html',
+        intrachain: 'intrachain/index.html',
+        transfer: 'transfer/index.html',
       },
     },
   },

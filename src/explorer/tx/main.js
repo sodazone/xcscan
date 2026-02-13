@@ -5,6 +5,7 @@ import {
   assetIconHTML,
   formatAction,
   formatAssetAmount,
+  formatLocalAndUTC,
   formatNetworkWithIconHTML,
   getStatusLabel,
   isPending,
@@ -21,30 +22,6 @@ import { createJourneyLegs, getElapsedText } from './legs.js'
 import { createCollapsibleJsonViewer } from './json.js'
 import { resolveProtocols } from '../../protocols.js'
 import { resolveAddress } from '../addresses.js'
-
-function formatLocalAndUTC(dateInput) {
-  const date = new Date(dateInput)
-
-  const yyyy = date.getFullYear()
-  const mm = pad(date.getMonth() + 1)
-  const dd = pad(date.getDate())
-  const hh = pad(date.getHours())
-  const mi = pad(date.getMinutes())
-  const ss = pad(date.getSeconds())
-
-  const timeZoneName =
-    new Intl.DateTimeFormat(getSafeLocale(), {
-      timeZoneName: 'short',
-    })
-      .formatToParts(date)
-      .find((part) => part.type === 'timeZoneName')?.value || ''
-
-  const local = `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} ${timeZoneName}`
-
-  const utc = date.toISOString().split('T').join(' ').split('.')[0] + ' UTC'
-
-  return `<span title="${utc}">${local}</span>`
-}
 
 function getTimeDetails({ sentAt, recvAt }) {
   let timeDetails = ''

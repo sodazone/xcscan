@@ -10,7 +10,12 @@ const okSVG = `
   </svg>
 `
 
-export function createCopyLink({ text, display = null, url = null }) {
+export function createCopyLink({
+  text,
+  display = null,
+  url = null,
+  copyTextClasses = '',
+}) {
   const container = document.createElement('div')
 
   if (
@@ -36,8 +41,7 @@ export function createCopyLink({ text, display = null, url = null }) {
   } else {
     copyText = document.createElement('span')
   }
-  copyText.className =
-    'font-mono truncate max-w-[10rem] group-hover:underline group-hover:text-white transition-colors'
+  copyText.className = `font-mono truncate max-w-[10rem] group-hover:underline group-hover:text-white transition-colors ${copyTextClasses}`
 
   if (display != null && display.startsWith('<')) {
     copyText.innerHTML = display
