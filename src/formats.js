@@ -24,6 +24,10 @@ export function humanizeNumber(
   maximumFractionDigits = 2,
   siSeparator = ''
 ) {
+  if (value === 0) {
+    return value
+  }
+
   const locale = getSafeLocale()
   const absValue = Math.abs(value)
 

@@ -31,6 +31,7 @@ import { setupCounters } from './indicators.js'
 import { setupTimeSelector } from './time-selector.js'
 import { setupSeriesSelector } from './series-selector.js'
 import { setupProtocolsGrid } from './grid/protocols.js'
+import { hasLocalStorage } from '../explorer/common.js'
 
 // TODO: improve wiring on part loaded events (if needed)
 function setupSekeletons() {
@@ -53,8 +54,32 @@ function setupSekeletons() {
   })
 }
 
+function setupBanner() {
+  const cacheKey = 'close-banner'
+  const banner = document.getElementById('crosschain-banner')
+  const closeBtn = document.getElementById('close-banner')
+
+  if (hasLocalStorage) {
+    const alreadyClosed = localStorage.getItem(cacheKey)
+    if (!alreadyClosed) {
+      banner.classList.remove('hidden')
+      banner.classList.add('flex')
+    }
+  }
+
+  closeBtn.addEventListener('click', () => {
+    banner.classList.add('hidden')
+    if (hasLocalStorage) {
+      localStorage.setItem(cacheKey, true)
+    }
+  })
+}
+
 window.onload = () => {
   setupSekeletons()
+
+  // Temporary banner
+  setupBanner()
 
   setupSeriesChart(document.querySelector('#chart'))
   setupAssetsGrid(document.querySelector('#grid-assets'))

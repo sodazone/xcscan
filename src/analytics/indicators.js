@@ -72,7 +72,7 @@ export function setupCounters(network) {
           diff: counters.volumeUsd.diff,
           unit: 'usd',
           format: formatAssetVolume,
-          showPrev: period !== 'semiannually',
+          showPrev: period !== 'annually',
         })
         render({
           title: 'Transfers',
@@ -82,7 +82,7 @@ export function setupCounters(network) {
           diff: counters.diff,
           unit: 'tx',
           format: formatTxs,
-          showPrev: period !== 'semiannually',
+          showPrev: period !== 'annually',
         })
         render({
           title: 'Accounts',
@@ -92,7 +92,7 @@ export function setupCounters(network) {
           diff: counters.accounts.diff,
           unit: '',
           format: formatAccounts,
-          showPrev: period !== 'semiannually',
+          showPrev: period !== 'annually',
         })
         render({
           title: 'Avg. Time',
@@ -105,7 +105,7 @@ export function setupCounters(network) {
           unit: 's',
           invertPct: true,
           format: formatRoundtrip,
-          showPrev: period !== 'semiannually',
+          showPrev: period !== 'annually',
         })
       })
       .catch(console.error)

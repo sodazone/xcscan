@@ -188,11 +188,8 @@ export function subscribeToTransfers(
   filters,
   { onNewTransfer, onOpen = () => {}, onError = () => {} }
 ) {
-  // do not pass status filters to server
-  // we will handle it in onUpdateJourney and onNewJourney
   const params = new URLSearchParams(asIcCriteria(filters)).toString()
   const source = new EventSource(`${sseUrl}?${params}`)
-
   source.onopen = onOpen
 
   source.addEventListener('new_transfer', (e) =>

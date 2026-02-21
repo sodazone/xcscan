@@ -136,7 +136,7 @@ function formatTransferType(transfer) {
 
   return `
     <div
-      class="inline-flex items-center space-x-2 leading-none"
+      class="inline-flex items-center space-x-2"
       title="${description}"
     >
       <span class="w-5 h-5 flex items-center justify-center text-[#07FFFF]/50 shrink-0">
@@ -157,7 +157,7 @@ function createTransferDetails(transfer) {
   details.innerHTML = `
     <div class="flex flex-col md:grid md:grid-cols-[auto_1fr] md:gap-4 text-sm text-white/90 pt-2">
       <div class="text-white/50 w-[6rem]">Type</div>
-      <div>${formatTransferType(transfer)}</div>
+      ${formatTransferType(transfer)}
 
       <div class="text-white/50 w-[6rem]">Block</div>
       ${createCopyLinkHTML({
