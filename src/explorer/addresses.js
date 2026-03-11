@@ -165,3 +165,40 @@ export function resolveAddress({ address, formatted, shorten = true }) {
 
   return shorten ? shortenAddress(formatted ?? addr) : (formatted ?? addr)
 }
+
+export function extractDisplayName(account) {
+  if (account === undefined) {
+    return null
+  }
+  for (const identity of account.identities) {
+    if (identity.display && identity.display !== '') {
+      return identity.display
+    }
+  }
+
+  for (const t of account.tags) {
+    const [_type, value] = t.tag.split(':')
+    if (value) {
+      return value
+    }
+  }
+  return null
+}
+
+export function extractTags(account) {
+  if (account === undefined) {
+    return null
+  }
+
+  const tags = new Set()
+  for (const identity of account.identities) {
+    if (identity.display && identity.display !== '') {
+      tags.add(identity.display)
+    }
+  }
+
+  for (const t of account.tags) {
+    tags.add(t.tag)
+  }
+  return [...tags]
+}

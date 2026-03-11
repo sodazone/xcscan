@@ -1,4 +1,4 @@
-import { resolveAddress } from '../../addresses'
+import { extractTags, resolveAddress } from '../../addresses'
 import {
   assetIconHTML,
   formatAssetAmount,
@@ -6,7 +6,6 @@ import {
   formatNetworkWithIconHTML,
   formatUnknownAssetAmount,
   loadResources,
-  shortHash,
 } from '../../common'
 import {
   createCopyLinkHTML,
@@ -18,7 +17,7 @@ import {
   getExplorerTxLink,
 } from '../../links'
 import { getTransferById } from '../api'
-import { getTypeDescription, getTypeLabel, typeDescriptions } from '../search'
+import { getTypeDescription, getTypeLabel } from '../search'
 
 function asPositionSuffix(pos) {
   return pos != null ? `-${pos}` : ''
@@ -31,17 +30,43 @@ function formatAsset(transfer) {
   return `<div class="flex items-center gap-2 text-white/90">${assetIconHTML(transfer)}${assetAmount}</div>`
 }
 
+function formatTags(tags) {
+  if (!Array.isArray(tags) || tags.length === 0) return ''
+
+  return `
+    <div class="flex flex-wrap gap-1">
+      ${tags
+        .map((tag) => {
+          const [key, value] = tag.split(':')
+          const v = value ?? key
+
+          return `
+            <span
+              class="inline-flex truncate items-center rounded-md border border-neutral-700 px-2 py-0.5 text-xs text-neutral-400 max-w-xs"
+              title="${tag}"
+            >
+              <span class="truncate">${v}</span>
+            </span>
+          `
+        })
+        .join('')}
+    </div>
+  `
+}
+
 function createTransferSummary(transfer) {
   const fromAddress = resolveAddress({
     address: transfer.from,
     formatted: transfer.fromFormatted,
     shorten: false,
   })
+  const fromTags = formatTags(extractTags(transfer.display?.from))
   const toAddress = resolveAddress({
     address: transfer.to,
     formatted: transfer.toFormatted,
     shorten: false,
   })
+  const toTags = formatTags(extractTags(transfer.display?.to))
 
   const summary = document.createElement('div')
   summary.id = 'transfer-summary'
@@ -53,28 +78,34 @@ function createTransferSummary(transfer) {
       ${formatNetworkWithIconHTML(transfer.network)}
 
       <div class="text-white/50 w-[6rem]">From</div>
-      ${createCopyLinkHTML({
-        text: transfer.fromFormatted ?? transfer.from,
-        display: fromAddress,
-        url: getExplorerAddressLink(
-          transfer.network,
-          transfer.from,
-          transfer.fromFormatted
-        ),
-        copyTextClasses: 'md:max-w-[40rem]',
-      })}
+      <div class="flex flex-col gap-y-1">
+        ${createCopyLinkHTML({
+          text: transfer.fromFormatted ?? transfer.from,
+          display: fromAddress,
+          url: getExplorerAddressLink(
+            transfer.network,
+            transfer.from,
+            transfer.fromFormatted
+          ),
+          copyTextClasses: 'md:max-w-[40rem]',
+        })}
+        ${fromTags}
+      </div>
 
       <div class="text-white/50 w-[6rem]">To</div>
-      ${createCopyLinkHTML({
-        text: transfer.toFormatted ?? transfer.to,
-        display: toAddress,
-        url: getExplorerAddressLink(
-          transfer.network,
-          transfer.to,
-          transfer.toFormatted
-        ),
-        copyTextClasses: 'md:max-w-[40rem]',
-      })}
+      <div class="flex flex-col gap-y-1">
+        ${createCopyLinkHTML({
+          text: transfer.toFormatted ?? transfer.to,
+          display: toAddress,
+          url: getExplorerAddressLink(
+            transfer.network,
+            transfer.to,
+            transfer.toFormatted
+          ),
+          copyTextClasses: 'md:max-w-[40rem]',
+        })}
+        ${toTags}
+      </div>
 
       <div class="text-white/50 text-sm w-[6rem]">Asset</div>
       ${formatAsset(transfer)}

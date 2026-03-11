@@ -1,4 +1,4 @@
-import { resolveAddress } from '../addresses.js'
+import { extractDisplayName, resolveAddress } from '../addresses.js'
 import { listTransfers, subscribeToTransfers } from './api.js'
 import {
   formatAssetAmount,
@@ -158,9 +158,10 @@ function renderFrom(item) {
     address: item.from,
     formatted: item.fromFormatted,
   })
+  const displayName = extractDisplayName(item.display?.from)
 
   return `${addressHTML({
-    display: fromAddress,
+    display: displayName ?? fromAddress,
     text: item.fromFormatted ?? item.from,
   })}`
 }
@@ -171,8 +172,10 @@ function renderTo(item) {
     formatted: item.toFormatted,
   })
 
+  const displayName = extractDisplayName(item.display?.to)
+
   return `${addressHTML({
-    display: toAddress,
+    display: displayName ?? toAddress,
     text: item.toFormatted ?? item.to,
   })}`
 }
