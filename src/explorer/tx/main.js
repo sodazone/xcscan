@@ -10,14 +10,12 @@ import {
   getStatusLabel,
   isPending,
   loadResources,
-  pad,
 } from '../common.js'
 import { getExplorerAddressLink } from '../links.js'
 import {
   createCopyLinkHTML,
   installCopyEventListener,
 } from '../components/copy-link.js'
-import { getSafeLocale } from '../../formats.js'
 import { createJourneyLegs, getElapsedText } from './legs.js'
 import { createCollapsibleJsonViewer } from './json.js'
 import { resolveProtocols } from '../../protocols.js'
@@ -236,17 +234,16 @@ async function loadTransactionDetail() {
     }
 
     const journey = items[0]
+    const stops = JSON.parse(journey.stops)
+    const instructions = JSON.parse(journey.instructions)
     const summary = createJourneySummary(journey)
-    const legs = createJourneyLegs(journey)
+    const legs = createJourneyLegs(stops)
 
     container.appendChild(summary)
     container.appendChild(legs)
 
-    if (
-      journey.stops.every((s) => s.instructions == null) &&
-      journey.instructions.length > 0
-    ) {
-      const program = createCollapsibleJsonViewer(journey.instructions, {
+    if (stops.every((s) => s.instructions == null) && instructions.length > 0) {
+      const program = createCollapsibleJsonViewer(instructions, {
         depth: 2,
         label: 'XCM Program Code',
       })
@@ -264,7 +261,7 @@ async function loadTransactionDetail() {
         oldSummary.replaceWith(newSummary)
       }
       if (oldLegs) {
-        const newLegs = createJourneyLegs(updatedJourney)
+        const newLegs = createJourneyLegs(JSON.parse(updatedJourney.stops))
         oldLegs.replaceWith(newLegs)
       }
 

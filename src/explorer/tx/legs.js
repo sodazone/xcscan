@@ -1,21 +1,20 @@
 import { resolveNetworkName } from '../../extras'
 import { resolveStopRenderer } from './stops'
 
-export function createJourneyLegs(journey) {
+export function createJourneyLegs(stops) {
   const container = document.createElement('div')
   container.className = 'mt-8 space-y-6'
   container.id = 'journey-legs'
-  if (journey.stops.length === 0) {
+  if (stops.length === 0) {
     return container
   }
 
   const title = document.createElement('h2')
   title.textContent = 'Legs'
   container.appendChild(title)
-  const isReceived =
-    journey.stops[journey.stops.length - 1].to?.status !== undefined
+  const isReceived = stops[stops.length - 1].to?.status !== undefined
 
-  journey.stops.forEach((stop, index) => {
+  stops.forEach((stop, index) => {
     if (isReceived && stop.relay?.status === undefined) {
       stop.relay = null
     }
