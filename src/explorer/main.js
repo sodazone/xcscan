@@ -110,10 +110,15 @@ function renderAction(item) {
   const action = {
     type: item.type,
   }
-  if (item.type === 'transact' && item.transactCalls?.length) {
-    const call = item.transactCalls[0]
-    action.module = call.module
-    action.method = prettify(call.method)
+  if (item.type === 'transact' && item.transactCalls !== undefined) {
+    try {
+      const calls = JSON.parse(item.transactCalls)
+      const call = calls[0]
+      action.module = call.module
+      action.method = prettify(call.method)
+    } catch {
+      //
+    }
   }
 
   return action.module !== undefined
