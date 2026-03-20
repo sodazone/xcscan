@@ -371,7 +371,9 @@ function loadAmountFilter(ctx) {
   })
 
   function handleCustomInput() {
-    presetRadios.forEach((r) => (r.checked = false))
+    presetRadios.forEach((r) => {
+      r.checked = false
+    })
   }
 
   gteInput.addEventListener('input', handleCustomInput)
@@ -384,8 +386,8 @@ function loadAmountFilter(ctx) {
 
     ctx.filters.selectedUsdAmounts = {
       amountPreset: selectedPreset || null,
-      amountGte: isNaN(gte) ? null : gte,
-      amountLte: isNaN(lte) ? null : lte,
+      amountGte: Number.isNaN(gte) ? null : gte,
+      amountLte: Number.isNaN(lte) ? null : lte,
     }
 
     applyAmountsFilter()
@@ -394,7 +396,9 @@ function loadAmountFilter(ctx) {
   function reset() {
     gteInput.value = ''
     lteInput.value = ''
-    presetRadios.forEach((r) => (r.checked = false))
+    presetRadios.forEach((r) => {
+      r.checked = false
+    })
 
     ctx.filters.selectedUsdAmounts = {
       amountPreset: null,

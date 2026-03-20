@@ -29,6 +29,7 @@
               >
                 <!-- Search icon -->
                 <svg
+                  aria-hidden="true"
                   class="size-5 pointer-events-none transition-opacity duration-200"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -45,6 +46,7 @@
 
                 <!-- Spinner -->
                 <svg
+                  aria-hidden="true"
                   class="w-4 h-4 pointer-events-none absolute inset-0 m-auto animate-spin text-white opacity-0"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -89,10 +91,12 @@
             <div class="flex space-x-2 items-center">
               <span class="italic truncate" id="search-indicator-text"></span>
               <button
+                type="button"
                 id="search-indicator-clear"
                 class="cursor-pointer min-w-5 size-5 flex items-center justify-center rounded-full bg-white/10 text-black/90 text-lg font-semibold hover:bg-white/20"
               >
                 <svg
+                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
@@ -161,6 +165,7 @@
                   ></span>
                 </div>
                 <svg
+                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
                   class="size-5"
@@ -181,7 +186,7 @@
               >
                 <!-- Chains Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle w-full">
+                  <button type="button" class="dropdown-toggle w-full">
                     <div class="flex justify-between items-center w-full gap-2">
                       <span class="text-white/40">Chains</span>
                       <div class="flex items-center gap-1">
@@ -189,6 +194,7 @@
                           >All</span
                         >
                         <svg
+                          aria-hidden="true"
                           class="dropdown-chevron"
                           fill="none"
                           stroke="currentColor"
@@ -213,6 +219,7 @@
                       </span>
                       <div class="ml-auto flex items-center gap-x-6">
                         <button
+                          type="button"
                           data-dropdown-close
                           class="md:hidden"
                           id="close-filter-chains"
@@ -221,6 +228,7 @@
                             class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
                           >
                             <svg
+                              aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               fill="none"
@@ -253,6 +261,7 @@
                           >
                         </div>
                         <button
+                          type="button"
                           id="clear-filter-chains"
                           class="cursor-pointer text-white/40 hover:text-white text-sm"
                         >
@@ -274,7 +283,7 @@
 
                 <!-- Assets Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle w-full">
+                  <button type="button" class="dropdown-toggle w-full">
                     <div class="flex justify-between items-center w-full gap-2">
                       <span class="text-white/40">Assets</span>
                       <div class="flex items-center gap-1">
@@ -282,6 +291,7 @@
                           >All</span
                         >
                         <svg
+                          aria-hidden="true"
                           class="dropdown-chevron"
                           fill="none"
                           stroke="currentColor"
@@ -306,6 +316,7 @@
                       </span>
                       <div class="ml-auto flex items-center gap-x-6">
                         <button
+                          type="button"
                           data-dropdown-close
                           class="md:hidden"
                           id="close-filter-assets"
@@ -314,6 +325,7 @@
                             class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
                           >
                             <svg
+                              aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 24 24"
                               fill="none"
@@ -336,6 +348,7 @@
                       >
                         <span class="text-white/50">Filter by assets</span>
                         <button
+                          type="button"
                           id="clear-filter-assets"
                           class="cursor-pointer text-white/40 hover:text-white text-sm align-right"
                         >
@@ -353,7 +366,7 @@
 
                 <!-- Actions Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle w-full">
+                  <button type="button" class="dropdown-toggle w-full">
                     <div class="flex justify-between items-center w-full gap-2">
                       <span class="text-white/40">Actions</span>
                       <div class="flex items-center gap-1">
@@ -361,6 +374,7 @@
                           >All</span
                         >
                         <svg
+                          aria-hidden="true"
                           class="dropdown-chevron"
                           fill="none"
                           stroke="currentColor"
@@ -384,6 +398,7 @@
                         >Select Actions</span
                       >
                       <button
+                        type="button"
                         data-dropdown-close
                         class="flex items-center ml-auto space-x-1"
                         id="close-filter-actions"
@@ -392,6 +407,7 @@
                           class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
                         >
                           <svg
+                            aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
@@ -416,7 +432,7 @@
 
                 <!-- Protocols Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle w-full">
+                  <button type="button" class="dropdown-toggle w-full">
                     <div class="flex justify-between items-center w-full gap-2">
                       <span class="text-white/40">Protocols</span>
                       <div class="flex items-center gap-1">
@@ -424,6 +440,7 @@
                           >All</span
                         >
                         <svg
+                          aria-hidden="true"
                           class="dropdown-chevron"
                           fill="none"
                           stroke="currentColor"
@@ -447,6 +464,7 @@
                         >Select Protocols</span
                       >
                       <button
+                        type="button"
                         data-dropdown-close
                         class="flex items-center ml-auto space-x-1"
                         id="close-filter-protocols"
@@ -455,6 +473,7 @@
                           class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
                         >
                           <svg
+                            aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
@@ -479,7 +498,7 @@
 
                 <!-- Status Filter -->
                 <div class="relative dropdown">
-                  <button class="dropdown-toggle w-full">
+                  <button type="button" class="dropdown-toggle w-full">
                     <div class="flex justify-between items-center w-full gap-2">
                       <span class="text-white/40">Status</span>
                       <div class="flex items-center gap-1">
@@ -487,6 +506,7 @@
                           >All</span
                         >
                         <svg
+                          aria-hidden="true"
                           class="dropdown-chevron"
                           fill="none"
                           stroke="currentColor"
@@ -510,6 +530,7 @@
                         >Select Status</span
                       >
                       <button
+                        type="button"
                         data-dropdown-close
                         class="flex items-center ml-auto space-x-1"
                         id="close-filter-status"
@@ -518,6 +539,7 @@
                           class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
                         >
                           <svg
+                            aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
@@ -542,7 +564,7 @@
 
                 <!-- USD Filter -->
                 <div id="filter-usd-amount" class="relative dropdown">
-                  <button class="dropdown-toggle w-full">
+                  <button type="button" class="dropdown-toggle w-full">
                     <div class="flex justify-between items-center w-full gap-2">
                       <span class="text-white/40">Amounts</span>
                       <div class="flex items-center gap-1">
@@ -550,6 +572,7 @@
                           >All</span
                         >
                         <svg
+                          aria-hidden="true"
                           class="dropdown-chevron"
                           fill="none"
                           stroke="currentColor"
@@ -570,6 +593,7 @@
                         >Select Amounts</span
                       >
                       <button
+                        type="button"
                         data-dropdown-close
                         class="flex items-center ml-auto space-x-1"
                         id="close-filter-usd-amount"
@@ -578,6 +602,7 @@
                           class="flex items-center justify-center size-6 rounded-full bg-white/40 hover:bg-white/60"
                         >
                           <svg
+                            aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
@@ -600,6 +625,7 @@
                       <div class="flex gap-x-2 justify-between items-center">
                         <span class="text-white/50">USD Amount</span>
                         <button
+                          type="button"
                           id="filter-usd-amount-reset"
                           class="text-sm text-white/40 hover:text-white px-2 py-1 cursor-pointer p-2"
                         >
@@ -664,6 +690,7 @@
                         >
                       </div>
                       <button
+                        type="button"
                         id="filter-usd-amount-apply"
                         class="cursor-pointer w-full bg-white/10 rounded px-2 py-3 text-white"
                       >
@@ -677,6 +704,7 @@
                 class="px-3 w-full md:w-auto flex justify-start mt-4 md:mt-0"
               >
                 <button
+                  type="button"
                   id="filters-reset-all"
                   class="text-sm text-white/40 cursor-pointer hover:text-white border border-white/10 rounded-lg w-full p-1 md:border-0"
                 >
@@ -710,11 +738,13 @@
           id="pagination-footer"
         >
           <button
+            type="button"
             id="prev-button"
             class="group flex space-x-2 items-center cursor-pointer px-3 py-1 text-sm text-white/40 disabled:opacity-50 disabled:cursor-default"
             disabled
           >
             <svg
+              aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
@@ -735,6 +765,7 @@
           <span id="page-indicator" class="text-white/40 text-sm">Page 1</span>
 
           <button
+            type="button"
             id="next-button"
             class="group flex space-x-2 items-center cursor-pointer px-3 py-1 text-sm text-white/40 disabled:opacity-50 disabled:cursor-default"
             disabled
@@ -744,6 +775,7 @@
               >Next</span
             >
             <svg
+              aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"

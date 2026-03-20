@@ -291,7 +291,7 @@ function createJourneyRow(item) {
       <div>${renderFrom(item)}</div>
     </div>
     ${
-      item.destination && item.destination != item.origin
+      item.destination && item.destination !== item.origin
         ? `
     <div class="cell flex gap-1">
       <div class="text-xs text-white/40 w-[2.5rem]">to</div>
@@ -318,7 +318,7 @@ function createJourneyRow(item) {
         </div>
         <div class="cell flex md:items-center" data-label="To">
         ${
-          item.destination && item.destination != item.origin
+          item.destination && item.destination !== item.origin
             ? `
             <div class="flex flex-col space-y-1">
             ${renderTo(item)}
