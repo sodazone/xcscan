@@ -43,7 +43,9 @@ export function isValidQuery(value) {
 }
 
 async function loadAssetsFilter(ctx) {
-  filterableAssets = await fetchFilterableAssets()
+  filterableAssets = (await fetchFilterableAssets())
+    .filter((a) => a.symbol !== undefined && a.symbol !== null)
+    .slice(0, 100)
 
   const assetRenderer = (asset) => {
     return `
