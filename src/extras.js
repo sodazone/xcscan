@@ -162,12 +162,18 @@ export function resolveAssetIcon(key) {
   }
 
   const [chainId, assetId] = key.split('|')
+  const chainParts = chainId.split(':')
+  const isSystemParachain =
+    ['polkadot', 'kusama'].includes(chainParts[2]) &&
+    chainParts[3] > 0 &&
+    chainParts[3] < 2000
   if (cacheAssetIcons[key]) {
     return {
       assetIconUrl: cacheAssetIcons[key],
-      chainIconUrl: assetId.startsWith('native')
-        ? undefined
-        : resolveNetworkIcon(chainId),
+      chainIconUrl:
+        assetId.startsWith('native') && !isSystemParachain
+          ? undefined
+          : resolveNetworkIcon(chainId),
     }
   }
 
@@ -182,8 +188,9 @@ export function resolveAssetIcon(key) {
   cacheAssetIcons[key] = icon ? `${BASE_ASSETS_URL}/${icon}` : undefined
   return {
     assetIconUrl: cacheAssetIcons[key],
-    chainIconUrl: assetId.startsWith('native')
-      ? undefined
-      : resolveNetworkIcon(chainId),
+    chainIconUrl:
+      assetId.startsWith('native') && !isSystemParachain
+        ? undefined
+        : resolveNetworkIcon(chainId),
   }
 }
