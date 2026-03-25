@@ -153,30 +153,16 @@ function addressHTML({ display, text }) {
   })}</div>`
 }
 
-function renderFrom(item) {
-  const fromAddress = resolveAddress({
-    address: item.from,
-    formatted: item.fromFormatted,
+function renderAddress({ raw, formatted, display }) {
+  const address = resolveAddress({
+    address: raw,
+    formatted: formatted,
   })
-  const displayName = extractDisplayName(item.display?.from)
+  const displayName = extractDisplayName(display)
 
   return `${addressHTML({
-    display: displayName ?? fromAddress,
-    text: item.fromFormatted ?? item.from,
-  })}`
-}
-
-function renderTo(item) {
-  const toAddress = resolveAddress({
-    address: item.to,
-    formatted: item.toFormatted,
-  })
-
-  const displayName = extractDisplayName(item.display?.to)
-
-  return `${addressHTML({
-    display: displayName ?? toAddress,
-    text: item.toFormatted ?? item.to,
+    display: displayName ?? address,
+    text: formatted ?? raw,
   })}`
 }
 
@@ -201,12 +187,12 @@ function createTransferRow(item) {
 
       <div class="cell flex gap-1">
         <div class="text-xs text-white/40 w-[2.5rem]">from</div>
-        <div>${renderFrom(item)}</div>
+        <div>${renderAddress({ raw: item.from, formatted: item.fromFormatted, display: item.display?.from })}</div>
       </div>
 
       <div class="cell flex gap-1">
         <div class="text-xs text-white/40 w-[2.5rem]">to</div>
-        <div>${renderTo(item)}</div>
+        <div>${renderAddress({ raw: item.to, formatted: item.toFormatted, display: item.display?.to })}</div>
       </div>
 
       <div class="cell flex gap-1">
@@ -226,11 +212,11 @@ function createTransferRow(item) {
       </div>
 
       <div class="cell" data-label="From">
-        ${renderFrom(item)}
+        ${renderAddress({ raw: item.from, formatted: item.fromFormatted, display: item.display?.from })}
       </div>
 
       <div class="cell" data-label="To">
-        ${renderTo(item)}
+        ${renderAddress({ raw: item.to, formatted: item.toFormatted, display: item.display?.to })}
       </div>
 
       <div class="cell" data-label="Assets">
