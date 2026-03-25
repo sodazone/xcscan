@@ -126,6 +126,7 @@ export function MultiCheckboxDropdown({
 
   function updateLabels() {
     const checked = checkboxes.filter((c) => c.checked)
+
     const labelsList = checked.map((c) => {
       const item = items.find((i) => valueResolver(i) === c.value)
       return labelResolver(item)
@@ -133,11 +134,51 @@ export function MultiCheckboxDropdown({
 
     let display = 'All'
 
-    if (labelsList.length > 0 && labelsList.length <= maxVisible) {
-      display = labelsList.join(', ')
-    } else if (labelsList.length > maxVisible) {
-      display = `${labelsList.slice(0, maxVisible).join(', ')}, +${labelsList.length - maxVisible}`
+    if (labelsList.length === 1) {
+      labelsEl.textContent = labelsList[0]
+      return
     }
+
+    const shortLabels = []
+    const longLabels = []
+
+    labelsList.forEach((label) => {
+      if (label.length > 10) {
+        longLabels.push(label)
+      } else {
+        shortLabels.push(label)
+      }
+    })
+
+    if (shortLabels.length === 0 && longLabels.length > 0) {
+      const shortest = longLabels.reduce((a, b) =>
+        a.length <= b.length ? a : b
+      )
+
+      const remaining = longLabels.length - 1
+      display = shortest
+
+      if (remaining > 0) {
+        display += `, +${remaining}`
+      }
+
+      labelsEl.textContent = display
+      return
+    }
+
+    let hiddenCount = longLabels.length
+
+    if (shortLabels.length > 0) {
+      const visible = shortLabels.slice(0, maxVisible)
+      hiddenCount += shortLabels.length - visible.length
+
+      display = visible.join(', ')
+
+      if (hiddenCount > 0) {
+        display += `, +${hiddenCount}`
+      }
+    }
+
     labelsEl.textContent = display
   }
 
