@@ -74,16 +74,28 @@ function resolvePara(address) {
 
 export function systemAccountAscii(address) {
   const hex = address.replace(/^0x/, '')
-
   const bytes = new Uint8Array(hex.length / 2)
+
   for (let i = 0; i < bytes.length; i++) {
     bytes[i] = parseInt(hex.substr(i * 2, 2), 16)
   }
 
-  let end = bytes.indexOf(0)
-  if (end === -1) end = bytes.length
+  let asciiPart = ''
+  let hexPart = ''
+  let firstNonPrintableFound = false
 
-  return new TextDecoder('ascii').decode(bytes.slice(0, end))
+  for (const b of bytes) {
+    if (!firstNonPrintableFound && b >= 32 && b <= 126) {
+      asciiPart += String.fromCharCode(b)
+    } else {
+      firstNonPrintableFound = true
+      hexPart += b.toString(16).padStart(2, '0')
+    }
+  }
+
+  hexPart = hexPart.replace(/(?:00)+$/g, '')
+
+  return hexPart ? `${asciiPart}${hexPart}` : asciiPart
 }
 
 export function isSystemAccount(address) {
