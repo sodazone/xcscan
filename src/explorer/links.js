@@ -75,7 +75,7 @@ const EXPLORERS = {
   },
   'urn:ocn:ethereum:8453': {
     type: 'etherscan',
-    url: 'https://basescan.io',
+    url: 'https://basescan.org',
   },
   'urn:ocn:ethereum:56': {
     type: 'etherscan',
