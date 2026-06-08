@@ -71,6 +71,9 @@ function asCriteria(filters) {
 
   if (selectedStatus?.length) {
     criteria.status = [...selectedStatus]
+    if (selectedStatus.includes('sent')) {
+      criteria.status.push('waiting')
+    }
   }
   if (selectedActions?.length) {
     criteria.actions = [...actionsToQueryValues(selectedActions)]
