@@ -201,6 +201,10 @@ export const selectableProtocols = [
     value: 'snowbridge',
   },
   {
+    label: 'Basejump',
+    value: 'basejump',
+  },
+  {
     label: 'Hyperbridge',
     value: 'hyperbridge',
   },
