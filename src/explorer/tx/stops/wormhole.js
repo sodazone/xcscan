@@ -6,7 +6,7 @@ import {
   shortHash,
 } from '../../common'
 import { createCopyLinkHTML } from '../../components/copy-link'
-import { getExplorerTxLink } from '../../links'
+import { getExplorerBlockLink, getExplorerTxLink } from '../../links'
 import { createCollapsibleJsonViewer } from '../json'
 import { createStopDetails } from './common'
 
@@ -69,7 +69,19 @@ function createLegStopHTML(stop) {
     </div>
   `
 
-  const bodyHTML = stop.tx?.txHash
+  const blockBodyHTML = stop.blockNumber
+    ? `<div class="flex space-x-2 font-mono text-sm"><span class="text-white/50">Block</span> ${createCopyLinkHTML(
+        {
+          text: stop.blockNumber,
+          url: getExplorerBlockLink(stop.chainId, stop.blockNumber),
+        }
+      )}</div>`
+    : `
+      <div>
+      </div>
+    `
+
+  const txBodyHTML = stop.tx?.txHash
     ? `<div class="flex space-x-2 font-mono text-sm"><span class="text-white/50">Transaction</span> ${createCopyLinkHTML(
         {
           text: stop.tx.txHash,
@@ -102,7 +114,8 @@ function createLegStopHTML(stop) {
   return `
     <div class="bg-white/5 rounded-xl p-4 space-y-4 h-full ${opacityClass}">
       ${headerHTML}
-      ${bodyHTML}
+      ${blockBodyHTML}
+      ${txBodyHTML}
       ${timestampHTML}
     </div>
   `

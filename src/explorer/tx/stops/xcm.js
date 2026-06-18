@@ -275,59 +275,99 @@ function createXcmDetailsContent(stop) {
   return container
 }
 
-function createLegStopMetaHTML({
-  blockNumber,
+function createTransactionHTML({
   extrinsic = {},
-  event,
+  tx = {},
   chainId,
+  blockNumber,
 }) {
-  const hasModule = extrinsic.module && extrinsic.method
-  const hasTxHash = extrinsic.hash || extrinsic.evmTxHash
+  console.log(extrinsic, tx, chainId)
+  const { hash, evmTxHash, blockPosition } = extrinsic
 
-  const txHashHTML = hasTxHash
-    ? `
+  if (hash || evmTxHash) {
+    return `
       ${
-        extrinsic.hash
+        hash
           ? `
-        <div class="flex items-center space-x-2">
-          <span class="text-white/50">Tx Hash</span>
-          ${createCopyLinkHTML({
-            text: extrinsic.hash,
-            display: shortHash(extrinsic.hash),
-            url: getExplorerTxLink(chainId, {
-              hash: extrinsic.hash,
-              blockNumber,
-              extrinsicIndex: extrinsic.blockPosition,
-            }),
-          })}
-        </div>
-      `
+            <div class="flex items-center space-x-2">
+              <span class="text-white/50">Tx Hash</span>
+              ${createCopyLinkHTML({
+                text: hash,
+                display: shortHash(hash),
+                url: getExplorerTxLink(chainId, {
+                  hash,
+                  blockNumber,
+                  extrinsicIndex: blockPosition,
+                }),
+              })}
+            </div>
+          `
           : ''
       }
+
       ${
-        extrinsic.evmTxHash
+        evmTxHash
           ? `
-        <div class="flex items-center space-x-2">
-          <span class="text-white/50">EVM Tx Hash</span>
-          ${createCopyLinkHTML({
-            text: extrinsic.evmTxHash,
-            display: shortHash(extrinsic.evmTxHash),
-            url: getExplorerTxLink(chainId, { hash: extrinsic.evmTxHash }),
-          })}
-        </div>
-      `
+            <div class="flex items-center space-x-2">
+              <span class="text-white/50">EVM Tx Hash</span>
+              ${createCopyLinkHTML({
+                text: evmTxHash,
+                display: shortHash(evmTxHash),
+                url: getExplorerTxLink(chainId, {
+                  hash: evmTxHash,
+                }),
+              })}
+            </div>
+          `
           : ''
       }
     `
-    : ''
+  }
 
+  const txHash = tx.txHash || tx.txHashSecondary
+
+  if (!txHash) {
+    return ''
+  }
+
+  return `
+    <div class="flex space-x-2 font-mono text-sm">
+      <span class="text-white/50">Transaction</span>
+      ${createCopyLinkHTML({
+        text: txHash,
+        display: shortHash(txHash),
+        url: getExplorerTxLink(chainId, { hash: txHash }),
+      })}
+    </div>
+  `
+}
+
+function createLegStopMetaHTML({
+  blockNumber,
+  extrinsic = {},
+  tx = {},
+  event,
+  chainId,
+}) {
+  const transactionHTML = createTransactionHTML({
+    blockNumber,
+    extrinsic,
+    tx,
+    chainId,
+  })
+
+  const hasModule = extrinsic.module && extrinsic.method
   const extrinsicInfoHTML = hasModule
     ? `
       <div class="flex flex-col space-y-1">
         <div class="text-white/50">Extrinsic</div>
         <div class="flex flex-col space-y-1">
-          <span title="${extrinsic.module}.${extrinsic.method}" class="font-medium text-white/90 truncate">${extrinsic.module}.${extrinsic.method}</span>
-          <span class="text-white/90">${blockNumber}${asPositionSuffix(extrinsic.blockPosition)}</span>
+          <span title="${extrinsic.module}.${extrinsic.method}" class="font-medium text-white/90 truncate">
+            ${extrinsic.module}.${extrinsic.method}
+          </span>
+          <span class="text-white/90">
+            ${blockNumber}${asPositionSuffix(extrinsic.blockPosition)}
+          </span>
         </div>
       </div>
     `
@@ -337,7 +377,7 @@ function createLegStopMetaHTML({
 
   return `
     <div class="text-sm space-y-2">
-      ${txHashHTML}
+      ${transactionHTML}
       ${extrinsicInfoHTML}
       ${eventHTML}
     </div>
