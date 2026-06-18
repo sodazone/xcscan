@@ -185,9 +185,9 @@ function renderAssets(item) {
     return '<div class="text-white/20">-</div>'
   }
 
-  const transfers = item.assets.filter(
-    (a) => (a.role ?? 'transfer') === 'transfer'
-  )
+  const transfers = item.assets
+    .filter((a) => (a.role ?? 'transfer') === 'transfer')
+    .sort((a, b) => Number(b.usd || 0) - Number(a.usd || 0))
   const swapsRaw = item.assets.filter(
     (a) => a.role === 'swap_in' || a.role === 'swap_out'
   )

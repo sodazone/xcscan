@@ -65,7 +65,9 @@ function getAmounts({ assets }) {
 }
 
 function renderTransferAndSwaps(assets) {
-  const transfers = assets.filter((a) => !a.role || a.role === 'transfer')
+  const transfers = assets
+    .filter((a) => !a.role || a.role === 'transfer')
+    .sort((a, b) => Number(b.usd || 0) - Number(a.usd || 0))
   const swapsRaw = assets.filter(
     (a) => a.role === 'swap_in' || a.role === 'swap_out'
   )
