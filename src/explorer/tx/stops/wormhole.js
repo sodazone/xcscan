@@ -81,15 +81,16 @@ function createLegStopHTML(stop) {
       </div>
     `
 
-  const txBodyHTML = stop.tx?.txHash
+  const txHash = stop.tx?.txHashSecondary ?? stop.tx?.txHash
+  const txBodyHTML = txHash
     ? `<div class="flex space-x-2 font-mono text-sm"><span class="text-white/50">Transaction</span> ${createCopyLinkHTML(
         {
-          text: stop.tx.txHash,
-          display: shortHash(stop.tx.txHash),
+          text: txHash,
+          display: shortHash(txHash),
           url: getExplorerTxLink(
             stop.chainId,
             {
-              hash: stop.tx.txHash,
+              hash: txHash,
             },
             'etherscan'
           ),
