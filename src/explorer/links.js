@@ -113,7 +113,7 @@ const EXPLORERS = {
 
 const EXPLORER_VERBS = {
   subscan: {
-    address: 'address',
+    address: 'account',
     block: 'block',
     tx: 'extrinsic',
   },
