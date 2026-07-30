@@ -214,7 +214,7 @@ export function protocolsToQueryValues(protocols) {
   const expanded = (Array.isArray(protocols) ? protocols : [protocols]).flatMap(
     (protocol) => {
       if (protocol === 'wormhole') {
-        return ['wh', 'wh_portal', 'wh_relayer']
+        return ['wh', 'wh_portal', 'wh_relayer', 'wh_ntt']
       }
       return [protocol]
     }
