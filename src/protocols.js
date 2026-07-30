@@ -23,6 +23,12 @@ const protocolIcons = {
       <svg fill="none" class="size-${size}" viewBox="-20 -20 276 198" xmlns="http://www.w3.org/2000/svg"><path d="M182.7 0.979492H53.2752C23.9743 0.979492 0.250977 25.3066 0.250977 55.3381V102.662C0.250977 132.694 23.9743 157.021 53.2752 157.021H184.509V156.944C212.967 155.972 235.749 132.08 235.749 102.688V55.3637C235.749 25.3322 212.025 1.00507 182.725 1.00507L182.7 0.979492ZM168.782 128.62H67.9726V28.2542H168.782V128.62Z" fill="${color}"></path></svg>
     `,
   },
+  wh_ntt: {
+    label: 'NTT',
+    icon: ({ size = 5, color = '#FFFFFF' } = {}) => `
+    <svg fill="none" class="size-${size}" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="26" height="26" rx="13" fill="transparent" stroke="transparent" stroke-width="2"></rect><ellipse cx="13.9999" cy="14.0087" rx="8.55556" ry="8.55555" stroke="${color}" stroke-width="1.375"></ellipse><path d="M3 14.0156H25" stroke="transparent" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.22217 14.0156H23.7777" stroke="${color}" stroke-width="1.375" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="14.0001" cy="14.0109" r="2.44444" fill="${color}"></circle></svg>
+    `,
+  },
   wh: {
     label: 'Wormhole',
     icon: ({ size = 5, color = '#FFFFFF' } = {}) => `
