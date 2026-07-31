@@ -45,6 +45,10 @@ const EXPLORERS = {
     type: 'subscan',
     url: 'https://hydration.subscan.io',
   },
+  'urn:ocn:ethereum:222222': {
+    type: 'subscan',
+    url: 'https://hydration.subscan.io',
+  },
   'urn:ocn:polkadot:2035': {
     type: 'subscan',
     url: 'https://phala.subscan.io',

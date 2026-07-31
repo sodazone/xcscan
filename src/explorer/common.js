@@ -348,7 +348,7 @@ export function formatLocalTimestamp(timestamp, style = 'col') {
 
   const utcTooltip = `UTC ${utcHh}:${utcMi}:${utcSs} · ${utcYyyy}-${utcMm}-${utcDd}`
   const classes =
-    style == 'col'
+    style === 'col'
       ? 'flex-col space-y-1 leading-tight text-sm'
       : 'space-x-2 text-xs'
 

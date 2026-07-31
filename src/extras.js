@@ -73,6 +73,10 @@ const ExtraChains = [
     urn: 'urn:ocn:ethereum:1666600000',
   },
   {
+    runtimeChain: 'Hydration EVM',
+    urn: 'urn:ocn:ethereum:222222',
+  },
+  {
     runtimeChain: 'Aptos',
     urn: 'urn:ocn:aptos:1',
   },
