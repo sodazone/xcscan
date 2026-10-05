@@ -107,8 +107,12 @@ const EXPLORERS = {
     url: 'https://optimistic.etherscan.io',
   },
   'urn:ocn:ethereum:4663': {
-    type: 'blockscout',
-    url: 'https://robinhoodchain.blockscout.com',
+    type: 'etherscan',
+    url: 'https://robin.etherscan.io',
+  },
+  'urn:ocn:ethereum:999': {
+    type: 'etherscan',
+    url: 'https://hyperevmscan.io',
   },
   'urn:ocn:solana:101': {
     type: 'solscan',

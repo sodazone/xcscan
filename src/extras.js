@@ -81,6 +81,10 @@ const ExtraChains = [
     urn: 'urn:ocn:ethereum:4663',
   },
   {
+    runtimeChain: 'HyperEVM',
+    urn: 'urn:ocn:ethereum:999',
+  },
+  {
     runtimeChain: 'Aptos',
     urn: 'urn:ocn:aptos:1',
   },
