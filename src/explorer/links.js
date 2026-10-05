@@ -1,4 +1,4 @@
-const TX_BY_INDEX = ['neckwork', 'statescan']
+const TX_BY_INDEX = ['statescan']
 const EXPLORERS = {
   'urn:ocn:polkadot:0': {
     type: 'subscan',
@@ -47,8 +47,8 @@ const EXPLORERS = {
     url: 'https://hydration-explorer.neckwork.net',
   },
   'urn:ocn:ethereum:222222': {
-    type: 'subscan',
-    url: 'https://hydration.subscan.io',
+    type: 'neckwork',
+    url: 'https://hydration-explorer.neckwork.net',
   },
   'urn:ocn:polkadot:2035': {
     type: 'subscan',
