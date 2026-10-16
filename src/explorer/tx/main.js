@@ -187,19 +187,26 @@ function createJourneySummary(journey) {
     <div class="text-white/50">To</div>
         <div class="flex flex-col space-y-1">
        ${formatNetworkWithIconHTML(journey.destination)}
-	   ${
-       toAddress == null
-         ? ''
-         : `<div class="break-all">${createCopyLinkHTML({
-             text: journey.toFormatted ?? journey.to,
-             display: toAddress,
-             url: getExplorerAddressLink(
-               journey.destination,
-               journey.to,
-               journey.toFormatted
-             ),
-           })}</div>`
-     }
+       ${
+         toAddress == null
+           ? ''
+           : `<div class="break-all">${createCopyLinkHTML({
+               text: journey.toFormatted ?? journey.to,
+               display: toAddress,
+               url: getExplorerAddressLink(
+                 journey.destination,
+                 journey.to,
+                 journey.toFormatted
+               ),
+             })}</div>`
+       }
+       ${
+         journey.destination === 'urn:ocn:near:397'
+           ? `<div class="text-xs text-white/40 flex items-center gap-1.5 pt-0.5">
+           <span>(<span class="italic">SHA-256 of the NEAR address</span>)</span>
+       </div>`
+           : ''
+       }
     </div>
 
     ${

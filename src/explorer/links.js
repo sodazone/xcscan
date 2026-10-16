@@ -122,6 +122,10 @@ const EXPLORERS = {
     type: 'suivision',
     url: 'https://suivision.xyz',
   },
+  'urn:ocn:near:397': {
+    type: 'nearblocks',
+    url: 'https://nearblocks.io',
+  },
 }
 
 const EXPLORER_VERBS = {
@@ -159,6 +163,11 @@ const EXPLORER_VERBS = {
     address: 'account',
     block: 'block',
     tx: 'txblock',
+  },
+  nearblocks: {
+    address: 'address',
+    block: 'blocks',
+    tx: 'txns',
   },
 }
 
