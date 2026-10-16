@@ -7,6 +7,7 @@ import {
   resolveNetworkName,
 } from '../extras.js'
 import { getSafeLocale, humanizeNumber } from '../formats.js'
+import { createCollapsibleJsonViewer } from './tx/json.js'
 
 let loaded = false
 let hasStorage = null
@@ -87,13 +88,25 @@ export function formatNetworkWithIconHTML(networkId, showName = true) {
 }
 
 export function formatAction(entry) {
-  if (entry.type === 'transact' && entry.transactCalls?.length) {
-    const call = entry.transactCalls[0]
-    if (call.module && call.method) {
-      return `${prettify(call.module)} · ${prettify(call.method)}`
-    }
-    if (call.method) {
-      return prettify(call.method)
+  if (entry.type === 'transact' && entry.transactCalls) {
+    const calls = JSON.parse(entry.transactCalls)
+    if (calls.length > 0) {
+      const call = calls[0]
+      let label
+      if (call.module && call.method) {
+        label = `${prettify(call.module)} · ${prettify(call.method)}`
+      } else if (call.method) {
+        label = prettify(call.method)
+      }
+
+      if (call.args) {
+        return createCollapsibleJsonViewer(call.args, {
+          depth: 2,
+          label,
+        })
+      }
+
+      return label
     }
   }
 

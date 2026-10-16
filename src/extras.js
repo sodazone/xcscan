@@ -88,6 +88,10 @@ const ExtraChains = [
     runtimeChain: 'Aptos',
     urn: 'urn:ocn:aptos:1',
   },
+  {
+    runtimeChain: 'Near',
+    urn: 'urn:ocn:near:397',
+  },
 ]
 
 const ExtraStops = {

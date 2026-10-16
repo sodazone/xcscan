@@ -340,7 +340,7 @@ button.loading .btn-label::after {
 }
 
 .json-wrapper-toggle {
-  @apply flex items-center text-white/80 hover:text-white py-1 cursor-pointer mb-1.5;
+  @apply flex items-center text-white/80 hover:text-white cursor-pointer mb-1.5;
 }
 
 .json-line {

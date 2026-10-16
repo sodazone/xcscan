@@ -162,7 +162,7 @@ function createJourneySummary(journey) {
     <div class="flex items-center">${protocols}</div>
 
     <div class="text-white/50">Action</div>
-    <div class="truncate break-all">${actionFormatted}</div>
+    <div id="action-slot" class="truncate break-all"></div>
 
     ${timeDetails}
 
@@ -210,6 +210,15 @@ function createJourneySummary(journey) {
     }
   </div>
 `
+  const actionSlot = summary.querySelector('#action-slot')
+  if (actionSlot) {
+    if (actionFormatted instanceof HTMLElement) {
+      actionSlot.appendChild(actionFormatted)
+    } else {
+      actionSlot.innerHTML = actionFormatted
+    }
+  }
+
   return summary
 }
 
