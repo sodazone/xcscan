@@ -201,7 +201,8 @@ function createJourneySummary(journey) {
              })}</div>`
        }
        ${
-         journey.destination === 'urn:ocn:near:397'
+         journey.destination === 'urn:ocn:near:397' &&
+         journey.toFormatted === journey.to
            ? `<div class="text-xs text-white/40 flex items-center gap-1.5 pt-0.5">
            <span>(<span class="italic">SHA-256 of the NEAR address</span>)</span>
        </div>`

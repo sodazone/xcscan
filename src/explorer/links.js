@@ -205,7 +205,7 @@ export function getExplorerBlockLink(chainId, blockNumber, pref) {
   return resolveURL(chainId, 'block', blockNumber, pref)
 }
 
-const USE_FORMATTED_ADDRESS = ['urn:ocn:solana:101']
+const USE_FORMATTED_ADDRESS = ['urn:ocn:solana:101', 'urn:ocn:near:397']
 
 export function getExplorerAddressLink(
   chainId,
