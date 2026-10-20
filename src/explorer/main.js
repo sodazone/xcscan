@@ -1,5 +1,5 @@
 import { debounce } from '../utils.js'
-import { resolveAddress, resolveSearchAddress } from './addresses.js'
+import { resolveAddress } from './addresses.js'
 import { listJourneys, subscribeToJourneys } from './api.js'
 import {
   asClassName,
@@ -158,16 +158,11 @@ function renderFrom(item) {
     address: item.from,
     formatted: item.fromFormatted,
   })
-  const searchAddress = resolveSearchAddress({
-    chain: fromChain,
-    address: item.from,
-    formatted: item.fromFormatted,
-  })
 
   return `${formatNetworkWithIconHTML(fromChain)}
             ${addressHTML({
               display: fromAddress,
-              text: searchAddress,
+              text: item.fromFormatted ?? item.from,
             })}`
 }
 
@@ -177,16 +172,11 @@ function renderTo(item) {
     address: item.to,
     formatted: item.toFormatted,
   })
-  const searchAddress = resolveSearchAddress({
-    chain: toChain,
-    address: item.to,
-    formatted: item.toFormatted,
-  })
 
   return `${formatNetworkWithIconHTML(toChain)}
             ${addressHTML({
               display: toAddress,
-              text: searchAddress,
+              text: item.toFormatted ?? item.to,
             })}`
 }
 

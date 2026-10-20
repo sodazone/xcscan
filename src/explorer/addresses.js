@@ -178,13 +178,6 @@ export function resolveAddress({ address, formatted, shorten = true }) {
   return shorten ? shortenAddress(formatted ?? addr) : (formatted ?? addr)
 }
 
-export function resolveSearchAddress({ chain, address, formatted }) {
-  if (chain === 'urn:ocn:near:397') {
-    return address
-  }
-  return formatted ?? address
-}
-
 export function extractDisplayName(account) {
   if (account === undefined) {
     return null
